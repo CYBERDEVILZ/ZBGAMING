@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'pages/homePage.dart';
+
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -9,8 +11,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.green,
+    return const MaterialApp(
+      home: HomePage(),
+      debugShowCheckedModeBanner: false,
+      title: "ZB-Gaming",
     );
   }
 }
