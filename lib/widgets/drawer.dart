@@ -17,8 +17,7 @@ class MyDrawer extends StatelessWidget {
                     Container(
                         color: Colors.green,
                         height: 400,
-                        child:
-                            const Placeholder() // use image.asset with fitcover
+                        child: const Placeholder() // zbgaming banner art
                         ),
                     Container(
                       color: Colors.red.withOpacity(0),
@@ -112,8 +111,7 @@ class MyDrawer extends StatelessWidget {
                 )),
             Container(
               margin: const EdgeInsets.only(top: 50),
-              child:
-                  const Placeholder(), // logo for zbgaming (copyrighted thing)
+              child: const Placeholder(), // zbgaming (copyrighted thing)
               height: 100,
             )
           ],
