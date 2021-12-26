@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zbgaming/widgets/drawer.dart';
 import 'package:zbgaming/widgets/home_page_list.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,7 +19,7 @@ class _HomePageState extends State<HomePage> {
           appBar: AppBar(
               title: const Text("Games"), elevation: 0, centerTitle: true),
           body: const HomePageList(),
-          drawer: Container(),
+          drawer: const MyDrawer(),
           bottomNavigationBar: BottomNavigationBar(
               items: const [
                 BottomNavigationBarItem(
