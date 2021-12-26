@@ -6,61 +6,117 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        backgroundColor: Colors.red,
         elevation: 0,
-        child: Material(
-          child: DrawerHeader(
-              margin: const EdgeInsets.all(0),
-              padding: const EdgeInsets.all(0),
-              child: Stack(
-                children: [
-                  Container(
-                      color: Colors.green,
-                      height: MediaQuery.of(context).size.height / 4,
-                      child:
-                          const Placeholder() // use image.asset with fitcover
+        child: ListView(
+          children: [
+            DrawerHeader(
+                margin: const EdgeInsets.all(0),
+                padding: const EdgeInsets.all(0),
+                child: Stack(
+                  children: [
+                    Container(
+                        color: Colors.green,
+                        height: 400,
+                        child:
+                            const Placeholder() // use image.asset with fitcover
+                        ),
+                    Container(
+                      color: Colors.red.withOpacity(0),
+                      height: 400,
+                      child: Center(
+                        child: Column(
+                          children: [
+                            // empty space above login button
+                            const SizedBox(height: 89),
+                            ElevatedButton(
+                              child: const Text("Login"),
+                              onPressed: () {}, // login navigation
+                              style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  fixedSize: MaterialStateProperty.all(
+                                      const Size(200, 30))),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text("Don't have an account? "),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: GestureDetector(
+                                      onTap: () {}, // signup navigation
+                                      child: const Text(
+                                        "Create one",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                  Container(
-                    color: Colors.red.withOpacity(0),
-                    height: MediaQuery.of(context).size.height / 4,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                              height: MediaQuery.of(context).size.height / 8),
-                          ElevatedButton(
-                            child: const Text("Login"),
-                            onPressed: () {}, // login navigation
-                            style: ButtonStyle(
-                                elevation: MaterialStateProperty.all(0),
-                                fixedSize: MaterialStateProperty.all(
-                                    const Size(200, 30))),
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text("Don't have an account? "),
-                              GestureDetector(
-                                onTap: () {},
-                                child: GestureDetector(
-                                  onTap: () {}, // signup navigation
-                                  child: const Text(
-                                    "Create one",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                    )
+                  ],
+                )),
+            ListTile(
+              onTap: () {}, // leads to registered matches
+              leading: const Icon(Icons.flag),
+              trailing: const Icon(Icons.arrow_right),
+              title: const Text("Registered Matches"),
+            ),
+            ListTile(
+              onTap: () {}, // leads to favorites
+              leading: const Icon(Icons.star),
+              trailing: const Icon(Icons.arrow_right),
+              title: const Text("Favorites"),
+            ),
+            ListTile(
+              onTap: () {}, // leads to match history
+              leading: const Icon(Icons.history),
+              trailing: const Icon(Icons.arrow_right),
+              title: const Text("History"),
+            ),
+            ListTile(
+              onTap: () {}, // leads to my account
+              leading: const Icon(Icons.account_circle),
+              trailing: const Icon(Icons.arrow_right),
+              title: const Text("My Account"),
+            ),
+            ListTile(
+              onTap: () {}, // leads to Settings
+              leading: const Icon(Icons.settings),
+              trailing: const Icon(Icons.arrow_right),
+              title: const Text("Settings"),
+            ),
+            const SizedBox(height: 15),
+            Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: OutlinedButton(
+                  onPressed: () {}, // sign out user
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Sign Out",
+                      style: TextStyle(fontSize: 17),
                     ),
-                  )
-                ],
-              )),
+                  ),
+                  style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all(Colors.red),
+                      overlayColor: MaterialStateProperty.all(Colors.red[100]),
+                      side: MaterialStateProperty.all(
+                          const BorderSide(color: Colors.red, width: 2))),
+                )),
+            Container(
+              margin: const EdgeInsets.only(top: 50),
+              child:
+                  const Placeholder(), // logo for zbgaming (copyrighted thing)
+              height: 100,
+            )
+          ],
         ));
   }
 }
