@@ -22,8 +22,7 @@ class MyDrawer extends StatelessWidget {
                       child: Center(
                         child: Column(
                           children: [
-                            // empty space above login button
-                            const SizedBox(height: 89),
+                            const SizedBox(height: 89), // empty space above login button
                             ElevatedButton(
                               child: const Text("Login"),
                               onPressed: () {}, // login navigation
