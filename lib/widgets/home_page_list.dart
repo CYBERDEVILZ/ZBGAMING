@@ -15,9 +15,7 @@ class HomePageList extends StatelessWidget {
 
 // tile blueprint
 class Tile extends StatelessWidget {
-  const Tile(
-      {Key? key, required this.img, required this.title, required this.ontap})
-      : super(key: key);
+  const Tile({Key? key, required this.img, required this.title, required this.ontap}) : super(key: key);
   final String img;
   final String title;
   final VoidCallback ontap;
@@ -48,8 +46,7 @@ class Tile extends StatelessWidget {
               ),
               Expanded(
                   child: Text(title,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 3,
                       textAlign: TextAlign.start)),
@@ -68,14 +65,8 @@ class Tile extends StatelessWidget {
 
 // array containing multiple tiles
 List<Widget> list = [
-  Tile(
-      img: "assets/images/csgo.jpg",
-      title: "Counter Strike: Global Offensive",
-      ontap: () {}),
-  Tile(
-      img: "assets/images/freefire.png",
-      title: "Garena Free Fire",
-      ontap: () {}),
+  Tile(img: "assets/images/csgo.jpg", title: "Counter Strike: Global Offensive", ontap: () {}),
+  Tile(img: "assets/images/freefire.png", title: "Garena Free Fire", ontap: () {}),
   Tile(img: "assets/images/pubg.png", title: "PUBG New State", ontap: () {}),
   Tile(img: "assets/images/valo.jpg", title: "Valorant", ontap: () {}),
 ];

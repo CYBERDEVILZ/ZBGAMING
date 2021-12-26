@@ -16,19 +16,16 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
         bottom: false,
         child: Scaffold(
-          appBar: AppBar(
-              title: const Text("Games"), elevation: 0, centerTitle: true),
+          appBar: AppBar(title: const Text("Games"), elevation: 0, centerTitle: true),
           body: const HomePageList(),
           drawer: const MyDrawer(),
           bottomNavigationBar: BottomNavigationBar(
               items: const [
                 // games
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.gamepad), label: "Games"),
+                BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Games"),
 
                 // favorite organizations
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.star), label: "Favorites")
+                BottomNavigationBarItem(icon: Icon(Icons.star), label: "Favorites")
               ],
               currentIndex: index,
               onTap: (value) {
@@ -40,8 +37,7 @@ class _HomePageState extends State<HomePage> {
             child: const Icon(Icons.flag),
             elevation: 0,
           ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         ));
   }
 }

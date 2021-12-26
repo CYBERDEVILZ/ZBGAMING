@@ -14,10 +14,7 @@ class MyDrawer extends StatelessWidget {
                 padding: const EdgeInsets.all(0),
                 child: Stack(
                   children: [
-                    Container(
-                        color: Colors.green,
-                        height: 400,
-                        child: const Placeholder() // zbgaming banner art
+                    Container(color: Colors.green, height: 400, child: const Placeholder() // zbgaming banner art
                         ),
                     Container(
                       color: Colors.red.withOpacity(0),
@@ -32,8 +29,7 @@ class MyDrawer extends StatelessWidget {
                               onPressed: () {}, // login navigation
                               style: ButtonStyle(
                                   elevation: MaterialStateProperty.all(0),
-                                  fixedSize: MaterialStateProperty.all(
-                                      const Size(200, 30))),
+                                  fixedSize: MaterialStateProperty.all(const Size(200, 30))),
                             ),
                             Container(
                               margin: const EdgeInsets.only(bottom: 5),
@@ -47,8 +43,7 @@ class MyDrawer extends StatelessWidget {
                                       onTap: () {}, // signup navigation
                                       child: const Text(
                                         "Create one",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
+                                        style: TextStyle(fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   )
@@ -106,8 +101,7 @@ class MyDrawer extends StatelessWidget {
                   style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(Colors.red),
                       overlayColor: MaterialStateProperty.all(Colors.red[100]),
-                      side: MaterialStateProperty.all(
-                          const BorderSide(color: Colors.red, width: 2))),
+                      side: MaterialStateProperty.all(const BorderSide(color: Colors.red, width: 2))),
                 )),
             Container(
               margin: const EdgeInsets.only(top: 50),
