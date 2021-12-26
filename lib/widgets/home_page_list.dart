@@ -18,7 +18,7 @@ class Tile extends StatelessWidget {
   const Tile(
       {Key? key, required this.img, required this.title, required this.ontap})
       : super(key: key);
-  final Widget img;
+  final String img;
   final String title;
   final VoidCallback ontap;
   final Widget dropIcon = const Icon(Icons.keyboard_arrow_right);
@@ -26,36 +26,39 @@ class Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
+      padding: const EdgeInsets.only(top: 30, left: 5, right: 5),
       child: GestureDetector(
         onTap: ontap,
-        child: Container(
+        child: SizedBox(
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                child: img,
+                child: ClipRRect(
+                  child: Image.asset(
+                    img,
+                    fit: BoxFit.cover,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 width: 150,
-                margin: const EdgeInsets.only(right: 5),
+                height: 100,
+                margin: const EdgeInsets.only(right: 15),
               ),
               Expanded(
-                  child: Container(
-                      child: Align(
-                        child: Text(title,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3,
-                            textAlign: TextAlign.center),
-                        alignment: Alignment.center,
-                      ),
-                      color: Colors.grey)),
+                  child: Text(title,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                      textAlign: TextAlign.start)),
               Container(
                 child: dropIcon,
                 margin: const EdgeInsets.all(5),
               )
             ],
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
           ),
-          color: Colors.green,
           height: 100,
         ),
       ),
@@ -66,10 +69,13 @@ class Tile extends StatelessWidget {
 // array containing multiple tiles
 List<Widget> list = [
   Tile(
-      img: const Placeholder(),
+      img: "assets/images/csgo.jpg",
       title: "Counter Strike: Global Offensive",
       ontap: () {}),
-  Tile(img: const Placeholder(), title: "Garena Free Fire", ontap: () {}),
-  Tile(img: const Placeholder(), title: "PUBG New State", ontap: () {}),
-  Tile(img: const Placeholder(), title: "Valorant", ontap: () {}),
+  Tile(
+      img: "assets/images/freefire.png",
+      title: "Garena Free Fire",
+      ontap: () {}),
+  Tile(img: "assets/images/pubg.png", title: "PUBG New State", ontap: () {}),
+  Tile(img: "assets/images/valo.jpg", title: "Valorant", ontap: () {}),
 ];
