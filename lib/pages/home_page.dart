@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zbgaming/widgets/home_page_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,8 +15,9 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
         bottom: false,
         child: Scaffold(
-          appBar: AppBar(title: Text("Games"), elevation: 0, centerTitle: true),
-          body: Container(),
+          appBar: AppBar(
+              title: const Text("Games"), elevation: 0, centerTitle: true),
+          body: const HomePageList(),
           drawer: Container(),
           bottomNavigationBar: BottomNavigationBar(
               items: const [
@@ -31,7 +33,7 @@ class _HomePageState extends State<HomePage> {
               }),
           floatingActionButton: FloatingActionButton(
             onPressed: () {},
-            child: Icon(Icons.play_arrow),
+            child: const Icon(Icons.play_arrow),
             elevation: 0,
           ),
           floatingActionButtonLocation:
