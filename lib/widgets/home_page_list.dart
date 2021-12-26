@@ -27,37 +27,37 @@ class Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
-      child: Container(
-        child: Row(
-          children: [
-            Container(
-              child: img,
-              width: 150,
-              margin: const EdgeInsets.only(right: 5),
-            ),
-            Expanded(
-                child: Container(
-                    child: Align(
-                      child: Text(title,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
-                          textAlign: TextAlign.center),
-                      alignment: Alignment.center,
-                    ),
-                    color: Colors.grey)),
-            GestureDetector(
-              onTap: ontap,
-              child: Container(
+      child: GestureDetector(
+        onTap: ontap,
+        child: Container(
+          child: Row(
+            children: [
+              Container(
+                child: img,
+                width: 150,
+                margin: const EdgeInsets.only(right: 5),
+              ),
+              Expanded(
+                  child: Container(
+                      child: Align(
+                        child: Text(title,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3,
+                            textAlign: TextAlign.center),
+                        alignment: Alignment.center,
+                      ),
+                      color: Colors.grey)),
+              Container(
                 child: dropIcon,
                 margin: const EdgeInsets.all(5),
-              ),
-            )
-          ],
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              )
+            ],
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          color: Colors.green,
+          height: 100,
         ),
-        color: Colors.green,
-        height: 100,
       ),
     );
   }
