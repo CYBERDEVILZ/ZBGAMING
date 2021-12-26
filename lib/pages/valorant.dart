@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CsgoTournaments extends StatelessWidget {
-  const CsgoTournaments({Key? key}) : super(key: key);
+class ValorantTournaments extends StatelessWidget {
+  const ValorantTournaments({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
