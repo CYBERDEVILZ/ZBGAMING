@@ -22,19 +22,22 @@ class _HomePageState extends State<HomePage> {
           drawer: const MyDrawer(),
           bottomNavigationBar: BottomNavigationBar(
               items: const [
+                // games
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.ac_unit_outlined), label: "icon1"),
+                    icon: Icon(Icons.gamepad), label: "Games"),
+
+                // favorite organizations
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.ac_unit_outlined), label: "icon2")
+                    icon: Icon(Icons.star), label: "Favorites")
               ],
               currentIndex: index,
               onTap: (value) {
                 index = value;
-                setState(() {}); // updates the index
+                setState(() {});
               }),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {},
-            child: const Icon(Icons.play_arrow),
+            onPressed: () {}, // shows registered matches
+            child: const Icon(Icons.flag),
             elevation: 0,
           ),
           floatingActionButtonLocation:

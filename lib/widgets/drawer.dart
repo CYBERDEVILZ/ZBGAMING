@@ -31,7 +31,7 @@ class MyDrawer extends StatelessWidget {
                               height: MediaQuery.of(context).size.height / 8),
                           ElevatedButton(
                             child: const Text("Login"),
-                            onPressed: () {},
+                            onPressed: () {}, // login navigation
                             style: ButtonStyle(
                                 elevation: MaterialStateProperty.all(0),
                                 fixedSize: MaterialStateProperty.all(
@@ -44,9 +44,13 @@ class MyDrawer extends StatelessWidget {
                               const Text("Don't have an account? "),
                               GestureDetector(
                                 onTap: () {},
-                                child: const Text(
-                                  "Create one",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                child: GestureDetector(
+                                  onTap: () {}, // signup navigation
+                                  child: const Text(
+                                    "Create one",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                               )
                             ],
