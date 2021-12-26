@@ -5,6 +5,13 @@ class CsgoTournaments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("CS GO TOURNAMENTS WILL APPEAR HERE"));
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          title: const Text("Upcoming Tournaments"),
+        ),
+      ),
+    );
   }
 }

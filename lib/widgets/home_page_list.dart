@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:zbgaming/utils/routes.dart';
 
 class HomePageList extends StatelessWidget {
   const HomePageList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // array containing multiple tiles
+    final List<Widget> list = [
+      Tile(
+          img: "assets/images/csgo.jpg",
+          title: "Counter Strike: Global Offensive",
+          ontap: () {
+            Navigator.pushNamed(context, AppRoutes.csgo);
+          }),
+      Tile(img: "assets/images/freefire.png", title: "Garena Free Fire", ontap: () {}),
+      Tile(img: "assets/images/pubg.png", title: "PUBG New State", ontap: () {}),
+      Tile(img: "assets/images/valo.jpg", title: "Valorant", ontap: () {}),
+    ];
+
     return ListView.builder(
       itemBuilder: (context, index) => list[index],
       itemCount: list.length,
@@ -62,11 +76,3 @@ class Tile extends StatelessWidget {
     );
   }
 }
-
-// array containing multiple tiles
-List<Widget> list = [
-  Tile(img: "assets/images/csgo.jpg", title: "Counter Strike: Global Offensive", ontap: () {}),
-  Tile(img: "assets/images/freefire.png", title: "Garena Free Fire", ontap: () {}),
-  Tile(img: "assets/images/pubg.png", title: "PUBG New State", ontap: () {}),
-  Tile(img: "assets/images/valo.jpg", title: "Valorant", ontap: () {}),
-];

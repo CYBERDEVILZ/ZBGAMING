@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
         bottom: false,
         child: Scaffold(
           appBar: AppBar(title: const Text("Games"), elevation: 0, centerTitle: true),
-          body: const HomePageList(),
+          body: const HomePageList(), // contains list of games
           drawer: const MyDrawer(),
           bottomNavigationBar: BottomNavigationBar(
               items: const [
