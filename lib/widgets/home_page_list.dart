@@ -14,9 +14,24 @@ class HomePageList extends StatelessWidget {
           ontap: () {
             Navigator.pushNamed(context, AppRoutes.csgo);
           }),
-      Tile(img: "assets/images/freefire.png", title: "Garena Free Fire", ontap: () {}),
-      Tile(img: "assets/images/pubg.png", title: "PUBG New State", ontap: () {}),
-      Tile(img: "assets/images/valo.jpg", title: "Valorant", ontap: () {}),
+      Tile(
+          img: "assets/images/freefire.png",
+          title: "Garena Free Fire",
+          ontap: () {
+            Navigator.pushNamed(context, AppRoutes.freefire);
+          }),
+      Tile(
+          img: "assets/images/pubg.png",
+          title: "PUBG New State",
+          ontap: () {
+            Navigator.pushNamed(context, AppRoutes.pubg);
+          }),
+      Tile(
+          img: "assets/images/valo.jpg",
+          title: "Valorant",
+          ontap: () {
+            Navigator.pushNamed(context, AppRoutes.valorant);
+          }),
     ];
 
     return ListView.builder(
