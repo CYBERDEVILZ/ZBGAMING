@@ -22,19 +22,28 @@ class MyDrawer extends StatelessWidget {
                     SizedBox(
                       height: 400,
                       width: double.infinity,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: const AssetImage("assets/images/csgo.jpg"), // image of account
-                              foregroundImage: context.watch<UserModel>().imageurl == null
-                                  ? const AssetImage("assets/images/csgo.jpg")
-                                  : const AssetImage("assets/images/valo.jpg"), // network image of user from database
-                              maxRadius: 40,
-                              minRadius: 40,
-                            ),
-                          ]),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: const AssetImage("assets/images/csgo.jpg"), // image of account
+                                foregroundImage: context.watch<UserModel>().imageurl == null
+                                    ? const AssetImage("assets/images/csgo.jpg")
+                                    : const AssetImage("assets/images/valo.jpg"), // network image of user from database
+                                maxRadius: 40,
+                                minRadius: 40,
+                              ),
+                              Text(
+                                context.watch<UserModel>().username!,
+                                style: const TextStyle(fontSize: 20),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            ]),
+                      ),
                     )
                   ],
                 )),
@@ -72,7 +81,9 @@ class MyDrawer extends StatelessWidget {
             Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: OutlinedButton(
-                  onPressed: () {}, // sign out user
+                  onPressed: () {
+                    context.read<UserModel>().signout();
+                  }, // sign out user
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text(
@@ -151,12 +162,6 @@ class MyLoginDrawer extends StatelessWidget {
                     )
                   ],
                 )),
-            ListTile(
-              onTap: () {}, // leads to my account
-              leading: const Icon(Icons.account_circle),
-              trailing: const Icon(Icons.arrow_right),
-              title: const Text("My Account"),
-            ),
             ListTile(
               onTap: () {}, // leads to Settings
               leading: const Icon(Icons.settings),
