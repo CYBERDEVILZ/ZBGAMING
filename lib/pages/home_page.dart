@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/widgets/drawer.dart';
 import 'package:zbgaming/widgets/home_page_list.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
           appBar: AppBar(title: const Text("Games"), elevation: 0, centerTitle: true),
           body: const HomePageList(), // contains list of games
-          drawer: const MyDrawer(),
+          drawer: context.watch<UserModel>().uid == null ? const MyLoginDrawer() : const MyDrawer(),
           bottomNavigationBar: BottomNavigationBar(
               items: const [
                 // games

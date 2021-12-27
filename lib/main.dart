@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
 import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/valorant.dart';
 import 'package:zbgaming/utils/routes.dart';
 
+import 'model/usermodel.dart';
 import 'pages/home_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [ChangeNotifierProvider(create: (_) => UserModel())], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
