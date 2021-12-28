@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zbgaming/widgets/tournament_builder.dart';
 
 class CsgoTournaments extends StatelessWidget {
   const CsgoTournaments({Key? key}) : super(key: key);
@@ -11,8 +12,14 @@ class CsgoTournaments extends StatelessWidget {
         const SlivAppBar(),
         SliverList(
             delegate: SliverChildListDelegate(<Widget>[
-          Container(color: Colors.green, height: 150),
-          Container(color: Colors.yellow, height: 150),
+          // add filters and other necessary things for easier access
+          Container(
+            height: 40,
+            color: Colors.green,
+            child: const Placeholder(),
+          ),
+          const TournamentBuilder(special: true, name: "Zbunker Catastrophe"),
+          const TournamentBuilder(special: false, name: "Pratheek's Pro League"),
           Container(color: Colors.red, height: 150),
           Container(color: Colors.purple, height: 150),
           Container(color: Colors.green, height: 150),
