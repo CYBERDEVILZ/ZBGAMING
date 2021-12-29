@@ -18,8 +18,22 @@ class CsgoTournaments extends StatelessWidget {
             color: Colors.green,
             child: const Placeholder(),
           ),
-          const TournamentBuilder(special: true, name: "Zbunker Catastrophe"),
-          const TournamentBuilder(special: false, name: "Pratheek's Pro League"),
+          const TournamentBuilder(
+            special: true,
+            name: "Zbunker Catastrophe",
+            team: true,
+            tournament: true,
+            skill: false,
+            bounty: true,
+          ),
+          const TournamentBuilder(
+            special: false,
+            name: "Pratheek's Pro League",
+            team: false,
+            tournament: false,
+            skill: true,
+            bounty: false,
+          ),
           Container(color: Colors.red, height: 150),
           Container(color: Colors.purple, height: 150),
           Container(color: Colors.green, height: 150),
@@ -52,7 +66,6 @@ class SlivAppBar extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      floating: true, // true, appbar appears when you scroll up
     );
   }
 }
