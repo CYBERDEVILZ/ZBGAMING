@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zbgaming/pages/contest_details.dart';
 
 class TournamentBuilder extends StatefulWidget {
   const TournamentBuilder(
@@ -29,6 +30,23 @@ class TournamentBuilder extends StatefulWidget {
 
 class _TournamentBuilderState extends State<TournamentBuilder> {
   bool _expanded = false;
+  void navigate() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ContestDetails(
+                bounty: widget.bounty,
+                name: widget.name,
+                paid: widget.paid,
+                regTeams: widget.regTeams,
+                skill: widget.skill,
+                special: widget.special,
+                team: widget.team,
+                totalTeams: widget.totalTeams,
+                tournament: widget.tournament,
+              )),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +75,9 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                   ),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {}, // navigates to tournament details page
+                      onTap: () {
+                        navigate();
+                      }, // navigates to tournament details page
                       child: Container(
                           height: 110,
                           width: MediaQuery.of(context).size.width - 20,
@@ -90,26 +110,26 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                       Padding(
                                         padding: const EdgeInsets.only(right: 8.0),
                                         child: widget.team
-                                            ? const Icon(Icons.people_alt, size: 15, color: Colors.purple)
-                                            : const Icon(Icons.person, size: 15, color: Colors.purple),
+                                            ? const Icon(Icons.people_alt, size: 20, color: Colors.purple)
+                                            : const Icon(Icons.person, size: 20, color: Colors.purple),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(right: 8.0),
                                         child: widget.tournament
-                                            ? Icon(Icons.account_tree_sharp, size: 15, color: Colors.blue[800])
-                                            : Icon(Icons.play_arrow, size: 15, color: Colors.blue[800]),
+                                            ? Icon(Icons.account_tree_sharp, size: 20, color: Colors.blue[800])
+                                            : Icon(Icons.play_arrow, size: 20, color: Colors.blue[800]),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(right: 8.0),
                                         child: widget.skill
-                                            ? const Icon(Icons.flash_on, size: 15, color: Colors.teal)
-                                            : const Icon(Icons.flash_off, size: 15, color: Colors.teal),
+                                            ? const Icon(Icons.flash_on, size: 20, color: Colors.teal)
+                                            : const Icon(Icons.flash_off, size: 20, color: Colors.teal),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(right: 8.0),
                                         child: widget.bounty
-                                            ? const Icon(Icons.attach_money_outlined, size: 15, color: Colors.red)
-                                            : const Icon(Icons.money_off, size: 15, color: Colors.red),
+                                            ? const Icon(Icons.attach_money_outlined, size: 20, color: Colors.red)
+                                            : const Icon(Icons.money_off, size: 20, color: Colors.red),
                                       ),
                                     ],
                                   ),
@@ -192,7 +212,9 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                   ),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {}, // navigates to respective tournament details page
+                      onTap: () {
+                        navigate();
+                      }, // navigates to respective tournament details page
                       child: Container(
                           height: 170,
                           width: MediaQuery.of(context).size.width - 20,
@@ -232,7 +254,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                         child: Row(
                                           children: widget.team
                                               ? [
-                                                  const Icon(Icons.people_alt, size: 15, color: Colors.purple),
+                                                  const Icon(Icons.people_alt, size: 20, color: Colors.purple),
                                                   const SizedBox(width: 5),
                                                   const Text("Team based",
                                                       style: TextStyle(
@@ -241,7 +263,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                                           color: Colors.purple))
                                                 ]
                                               : const [
-                                                  Icon(Icons.person, size: 15, color: Colors.purple),
+                                                  Icon(Icons.person, size: 20, color: Colors.purple),
                                                   SizedBox(width: 5),
                                                   Text("Solo based",
                                                       style: TextStyle(
@@ -256,7 +278,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                           child: Row(
                                             children: widget.tournament
                                                 ? [
-                                                    Icon(Icons.account_tree_sharp, size: 15, color: Colors.blue[800]),
+                                                    Icon(Icons.account_tree_sharp, size: 20, color: Colors.blue[800]),
                                                     const SizedBox(width: 5),
                                                     Text("Tournament",
                                                         style: TextStyle(
@@ -265,7 +287,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                                             color: Colors.blue[800]))
                                                   ]
                                                 : [
-                                                    Icon(Icons.play_arrow, size: 15, color: Colors.blue[800]),
+                                                    Icon(Icons.play_arrow, size: 20, color: Colors.blue[800]),
                                                     const SizedBox(width: 5),
                                                     Text("Single Match",
                                                         style: TextStyle(
@@ -279,7 +301,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                           child: Row(
                                             children: widget.skill
                                                 ? const [
-                                                    Icon(Icons.flash_on, size: 15, color: Colors.teal),
+                                                    Icon(Icons.flash_on, size: 20, color: Colors.teal),
                                                     SizedBox(width: 5),
                                                     Text("Min LVL Required",
                                                         style: TextStyle(
@@ -288,7 +310,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                                             color: Colors.teal))
                                                   ]
                                                 : const [
-                                                    Icon(Icons.flash_off, size: 15, color: Colors.teal),
+                                                    Icon(Icons.flash_off, size: 20, color: Colors.teal),
                                                     SizedBox(width: 5),
                                                     Text("No LVL Required",
                                                         style: TextStyle(
@@ -302,7 +324,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                           child: Row(
                                             children: widget.bounty
                                                 ? const [
-                                                    Icon(Icons.attach_money_outlined, size: 15, color: Colors.red),
+                                                    Icon(Icons.attach_money_outlined, size: 20, color: Colors.red),
                                                     SizedBox(width: 5),
                                                     Text("Rewards available",
                                                         style: TextStyle(
@@ -311,7 +333,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                                             color: Colors.red))
                                                   ]
                                                 : const [
-                                                    Icon(Icons.money_off, size: 15, color: Colors.red),
+                                                    Icon(Icons.money_off, size: 20, color: Colors.red),
                                                     SizedBox(width: 5),
                                                     Text("No Rewards",
                                                         style: TextStyle(
