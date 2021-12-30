@@ -9,7 +9,9 @@ class TournamentBuilder extends StatefulWidget {
       required this.tournament,
       required this.skill,
       required this.bounty,
-      required this.paid})
+      required this.paid,
+      required this.regTeams,
+      required this.totalTeams})
       : super(key: key);
   final bool special;
   final String name;
@@ -18,6 +20,8 @@ class TournamentBuilder extends StatefulWidget {
   final bool skill;
   final bool bounty;
   final bool paid;
+  final int regTeams;
+  final int totalTeams;
 
   @override
   State<TournamentBuilder> createState() => _TournamentBuilderState();
@@ -52,95 +56,96 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                     width: 10,
                   ),
                   Expanded(
-                    child: Container(
-                        height: 110,
-                        width: MediaQuery.of(context).size.width - 20,
-                        color: Colors.white, // card bg color
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10.0, right: 5, top: 5, bottom: 5),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      widget.name,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                      textScaleFactor: 1.4,
-                                    ),
-                                  ),
-                                  widget.paid
-                                      ? const Icon(
-                                          Icons.paid_outlined,
-                                          color: Colors.red,
-                                        )
-                                      : const Text("")
-                                ],
-                              ),
-                              Expanded(
-                                  child: SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                    child: GestureDetector(
+                      onTap: () {}, // navigates to tournament details page
+                      child: Container(
+                          height: 110,
+                          width: MediaQuery.of(context).size.width - 20,
+                          color: Colors.white, // card bg color
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10.0, right: 5, top: 5, bottom: 5),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
-                                      child: widget.team
-                                          ? const Icon(Icons.people_alt, size: 15, color: Colors.purple)
-                                          : const Icon(Icons.person, size: 15, color: Colors.purple),
+                                    Expanded(
+                                      child: Text(
+                                        widget.name,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                        textScaleFactor: 1.4,
+                                      ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
-                                      child: widget.tournament
-                                          ? Icon(Icons.account_tree_sharp, size: 15, color: Colors.blue[800])
-                                          : Icon(Icons.play_arrow, size: 15, color: Colors.blue[800]),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
-                                      child: widget.skill
-                                          ? const Icon(Icons.flash_on, size: 15, color: Colors.teal)
-                                          : const Icon(Icons.flash_off, size: 15, color: Colors.teal),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
-                                      child: widget.bounty
-                                          ? const Icon(Icons.attach_money_outlined, size: 15, color: Colors.red)
-                                          : const Icon(Icons.money_off, size: 15, color: Colors.red),
-                                    ),
+                                    widget.paid ? const Icon(Icons.paid_outlined, color: Colors.red) : const Text("")
                                   ],
                                 ),
-                              )),
-                              const Divider(
-                                height: 5,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "28, December, 2022",
-                                    textScaleFactor: 1.1,
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                Expanded(
+                                    child: SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: widget.team
+                                            ? const Icon(Icons.people_alt, size: 15, color: Colors.purple)
+                                            : const Icon(Icons.person, size: 15, color: Colors.purple),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: widget.tournament
+                                            ? Icon(Icons.account_tree_sharp, size: 15, color: Colors.blue[800])
+                                            : Icon(Icons.play_arrow, size: 15, color: Colors.blue[800]),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: widget.skill
+                                            ? const Icon(Icons.flash_on, size: 15, color: Colors.teal)
+                                            : const Icon(Icons.flash_off, size: 15, color: Colors.teal),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: widget.bounty
+                                            ? const Icon(Icons.attach_money_outlined, size: 15, color: Colors.red)
+                                            : const Icon(Icons.money_off, size: 15, color: Colors.red),
+                                      ),
+                                    ],
                                   ),
-                                  Row(children: const [
-                                    Icon(Icons.people_alt, size: 20),
+                                )),
+                                const Divider(
+                                  height: 5,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
                                     Text(
-                                      " 23/",
+                                      "28, December, 2022",
                                       textScaleFactor: 1.1,
-                                    ), // number of teams registered
-                                    Text(
-                                      "50",
-                                      textScaleFactor: 1.1, // total teams allowed
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    )
-                                  ]),
-                                ],
-                              )
-                            ],
-                          ),
-                        )),
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
+                                    ),
+                                    Row(children: [
+                                      Icon(Icons.people_alt, size: 20, color: Colors.black.withOpacity(0.5)),
+                                      Text(
+                                        " ${widget.regTeams}/",
+                                        textScaleFactor: 1.1,
+                                        style: TextStyle(color: Colors.black.withOpacity(0.5)),
+                                      ), // number of teams registered
+                                      Text(
+                                        "${widget.totalTeams}",
+                                        textScaleFactor: 1.1, // total teams allowed
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
+                                      )
+                                    ]),
+                                  ],
+                                )
+                              ],
+                            ),
+                          )),
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -186,160 +191,170 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                     width: 10,
                   ),
                   Expanded(
-                    child: Container(
-                        height: 170,
-                        width: MediaQuery.of(context).size.width - 20,
-                        color: Colors.white, // card bg color
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10.0, right: 5, top: 5, bottom: 5),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      widget.name,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                      textScaleFactor: 1.4,
-                                    ),
-                                  ),
-                                  widget.paid
-                                      ? const Icon(
-                                          Icons.paid_outlined,
-                                          color: Colors.red,
-                                        )
-                                      : const Text("")
-                                ],
-                              ),
-                              Expanded(
-                                  child: SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                    child: GestureDetector(
+                      onTap: () {}, // navigates to respective tournament details page
+                      child: Container(
+                          height: 170,
+                          width: MediaQuery.of(context).size.width - 20,
+                          color: Colors.white, // card bg color
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10.0, right: 5, top: 5, bottom: 5),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 5, top: 5),
-                                      child: Row(
-                                        children: widget.team
-                                            ? [
-                                                const Icon(Icons.people_alt, size: 15, color: Colors.purple),
-                                                const SizedBox(width: 5),
-                                                const Text("Team based",
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 12,
-                                                        color: Colors.purple))
-                                              ]
-                                            : const [
-                                                Icon(Icons.person, size: 15, color: Colors.purple),
-                                                SizedBox(width: 5),
-                                                Text("Solo based",
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 12,
-                                                        color: Colors.purple))
-                                              ],
+                                    Expanded(
+                                      child: Text(
+                                        widget.name,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                        textScaleFactor: 1.4,
                                       ),
                                     ),
-                                    Padding(
-                                        padding: const EdgeInsets.only(bottom: 5),
-                                        child: Row(
-                                          children: widget.tournament
-                                              ? [
-                                                  Icon(Icons.account_tree_sharp, size: 15, color: Colors.blue[800]),
-                                                  const SizedBox(width: 5),
-                                                  Text("Tournament",
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 12,
-                                                          color: Colors.blue[800]))
-                                                ]
-                                              : [
-                                                  Icon(Icons.play_arrow, size: 15, color: Colors.blue[800]),
-                                                  const SizedBox(width: 5),
-                                                  Text("Single Match",
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 12,
-                                                          color: Colors.blue[800]))
-                                                ],
-                                        )),
-                                    Padding(
-                                        padding: const EdgeInsets.only(bottom: 5),
-                                        child: Row(
-                                          children: widget.skill
-                                              ? const [
-                                                  Icon(Icons.flash_on, size: 15, color: Colors.teal),
-                                                  SizedBox(width: 5),
-                                                  Text("Min LVL Required",
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 12,
-                                                          color: Colors.teal))
-                                                ]
-                                              : const [
-                                                  Icon(Icons.flash_off, size: 15, color: Colors.teal),
-                                                  SizedBox(width: 5),
-                                                  Text("No LVL Required",
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 12,
-                                                          color: Colors.teal))
-                                                ],
-                                        )),
-                                    Padding(
-                                        padding: const EdgeInsets.only(bottom: 5),
-                                        child: Row(
-                                          children: widget.bounty
-                                              ? const [
-                                                  Icon(Icons.attach_money_outlined, size: 15, color: Colors.red),
-                                                  SizedBox(width: 5),
-                                                  Text("Rewards available",
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
-                                                ]
-                                              : const [
-                                                  Icon(Icons.money_off, size: 15, color: Colors.red),
-                                                  SizedBox(width: 5),
-                                                  Text("No Rewards",
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
-                                                ],
-                                        )),
+                                    widget.paid
+                                        ? const Icon(
+                                            Icons.paid_outlined,
+                                            color: Colors.red,
+                                          )
+                                        : const Text("")
                                   ],
                                 ),
-                              )),
-                              const Divider(
-                                height: 5,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "28, December, 2022",
-                                    textScaleFactor: 1.1,
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                Expanded(
+                                    child: SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 5, top: 5),
+                                        child: Row(
+                                          children: widget.team
+                                              ? [
+                                                  const Icon(Icons.people_alt, size: 15, color: Colors.purple),
+                                                  const SizedBox(width: 5),
+                                                  const Text("Team based",
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 12,
+                                                          color: Colors.purple))
+                                                ]
+                                              : const [
+                                                  Icon(Icons.person, size: 15, color: Colors.purple),
+                                                  SizedBox(width: 5),
+                                                  Text("Solo based",
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 12,
+                                                          color: Colors.purple))
+                                                ],
+                                        ),
+                                      ),
+                                      Padding(
+                                          padding: const EdgeInsets.only(bottom: 5),
+                                          child: Row(
+                                            children: widget.tournament
+                                                ? [
+                                                    Icon(Icons.account_tree_sharp, size: 15, color: Colors.blue[800]),
+                                                    const SizedBox(width: 5),
+                                                    Text("Tournament",
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 12,
+                                                            color: Colors.blue[800]))
+                                                  ]
+                                                : [
+                                                    Icon(Icons.play_arrow, size: 15, color: Colors.blue[800]),
+                                                    const SizedBox(width: 5),
+                                                    Text("Single Match",
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 12,
+                                                            color: Colors.blue[800]))
+                                                  ],
+                                          )),
+                                      Padding(
+                                          padding: const EdgeInsets.only(bottom: 5),
+                                          child: Row(
+                                            children: widget.skill
+                                                ? const [
+                                                    Icon(Icons.flash_on, size: 15, color: Colors.teal),
+                                                    SizedBox(width: 5),
+                                                    Text("Min LVL Required",
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 12,
+                                                            color: Colors.teal))
+                                                  ]
+                                                : const [
+                                                    Icon(Icons.flash_off, size: 15, color: Colors.teal),
+                                                    SizedBox(width: 5),
+                                                    Text("No LVL Required",
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 12,
+                                                            color: Colors.teal))
+                                                  ],
+                                          )),
+                                      Padding(
+                                          padding: const EdgeInsets.only(bottom: 5),
+                                          child: Row(
+                                            children: widget.bounty
+                                                ? const [
+                                                    Icon(Icons.attach_money_outlined, size: 15, color: Colors.red),
+                                                    SizedBox(width: 5),
+                                                    Text("Rewards available",
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 12,
+                                                            color: Colors.red))
+                                                  ]
+                                                : const [
+                                                    Icon(Icons.money_off, size: 15, color: Colors.red),
+                                                    SizedBox(width: 5),
+                                                    Text("No Rewards",
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 12,
+                                                            color: Colors.red))
+                                                  ],
+                                          )),
+                                    ],
                                   ),
-                                  Row(children: const [
-                                    Icon(Icons.people_alt, size: 20),
+                                )),
+                                const Divider(
+                                  height: 5,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
                                     Text(
-                                      " 23/",
+                                      "28, December, 2022",
                                       textScaleFactor: 1.1,
-                                    ), // number of teams registered
-                                    Text(
-                                      "50",
-                                      textScaleFactor: 1.1, // total teams allowed
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    )
-                                  ]),
-                                ],
-                              )
-                            ],
-                          ),
-                        )),
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
+                                    ),
+                                    Row(children: [
+                                      Icon(Icons.people_alt, size: 20, color: Colors.black.withOpacity(0.5)),
+                                      Text(
+                                        " ${widget.regTeams}/",
+                                        textScaleFactor: 1.1,
+                                        style: TextStyle(color: Colors.black.withOpacity(0.5)),
+                                      ), // number of teams registered
+                                      Text(
+                                        "${widget.totalTeams}",
+                                        textScaleFactor: 1.1, // total teams allowed
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
+                                      )
+                                    ]),
+                                  ],
+                                )
+                              ],
+                            ),
+                          )),
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
