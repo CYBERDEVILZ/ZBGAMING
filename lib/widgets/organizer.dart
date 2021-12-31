@@ -66,26 +66,40 @@ class OrganizerDetails extends StatelessWidget {
             const Divider(thickness: 2, indent: 20, endIndent: 20, height: 20),
 
             Container(
-                color: Colors.grey.shade300,
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  children: [
-                    Card(
-                        child: ListTile(
-                            leading: const Icon(Icons.star), title: const Text("Rating: "), trailing: Text("$rating"))),
-                    Card(
-                        child: ListTile(
-                            leading: const Icon(Icons.account_tree),
-                            title: const Text("Matches Held: "),
-                            trailing: Text("$matches"))),
-                    Card(
-                        child: ListTile(
-                            leading: const Icon(Icons.attach_money),
-                            title: const Text("Prizes Given: "),
-                            trailing: Text("\u20b9 $prizes")))
-                  ],
-                ),
-                width: MediaQuery.of(context).size.width)
+              width: MediaQuery.of(context).size.width,
+              color: Colors.grey.shade300,
+              padding: const EdgeInsets.all(5),
+              child: Column(
+                children: [
+                  Card(
+                      child: ListTile(
+                          leading: const Icon(Icons.star), title: const Text("Rating: "), trailing: Text("$rating"))),
+                  Card(
+                      child: ListTile(
+                          leading: const Icon(Icons.account_tree),
+                          title: const Text("Matches Held: "),
+                          trailing: Text("$matches"))),
+                  Card(
+                      child: ListTile(
+                          leading: const Icon(Icons.attach_money),
+                          title: const Text("Prizes Given: "),
+                          trailing: Text("\u20b9 $prizes")))
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () {}, // navigate to matches of organizer
+              child: const Text(
+                "Upcoming Matches",
+                textScaleFactor: 1.5,
+              ),
+              style: ButtonStyle(
+                  elevation: MaterialStateProperty.all(0),
+                  fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 50))),
+            )
           ],
         ));
   }

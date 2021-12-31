@@ -35,77 +35,82 @@ class ContestDetails extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: ListView(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(5),
-            height: 150,
-            width: MediaQuery.of(context).size.width,
-            child: Image.asset(
-              "assets/images/valo.jpg", // change the image to contest banner
-              fit: BoxFit.cover,
+      body: Scrollbar(
+        thickness: 10,
+        isAlwaysShown: true,
+        interactive: true,
+        child: ListView(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(5),
+              height: 150,
+              width: MediaQuery.of(context).size.width,
+              child: Image.asset(
+                "assets/images/valo.jpg", // change the image to contest banner
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
 
-          // contest name
-          Container(
-            padding: const EdgeInsets.all(5),
-            alignment: Alignment.center,
-            child: Text(
-              name,
-              textAlign: TextAlign.start,
-              textScaleFactor: 2,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            // contest name
+            Container(
+              padding: const EdgeInsets.all(5),
+              alignment: Alignment.center,
+              child: Text(
+                name,
+                textAlign: TextAlign.start,
+                textScaleFactor: 2,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // scroll view with tabs
-          Container(
-            margin: const EdgeInsets.all(5),
-            color: Colors.grey[200],
-            child: Column(
-              children: [
-                DefaultTabController(
-                  length: 2,
-                  child: Column(
-                    children: [
-                      const TabBar(
-                        tabs: [
-                          Tab(
-                            child: Text("Contest Details", style: TextStyle(color: Colors.black)),
-                          ),
-                          Tab(
-                            child: Text("About Organizer", style: TextStyle(color: Colors.black)),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                          height: 500,
-                          child: TabBarView(children: [
-                            SingleChildScrollView(child: contestDetails), // contest detail
-                            const SingleChildScrollView(
-                                child: SizedBox(
-                                    child: OrganizerDetails(
-                              imageurl: "imageurl",
-                              matches: 32,
-                              name: "Zbunker Tournaments",
-                              prizes: 320000,
-                              rating: 4.5,
-                            ))) // organizer detail
-                          ]))
-                    ],
-                  ),
-                )
-              ],
+            // scroll view with tabs
+            Container(
+              margin: const EdgeInsets.all(5),
+              color: Colors.grey[200],
+              child: Column(
+                children: [
+                  DefaultTabController(
+                    length: 2,
+                    child: Column(
+                      children: [
+                        const TabBar(
+                          tabs: [
+                            Tab(
+                              child: Text("Contest Details", style: TextStyle(color: Colors.black)),
+                            ),
+                            Tab(
+                              child: Text("About Organizer", style: TextStyle(color: Colors.black)),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                            height: 500,
+                            child: TabBarView(children: [
+                              SingleChildScrollView(child: contestDetails), // contest detail
+                              const SingleChildScrollView(
+                                  child: SizedBox(
+                                      child: OrganizerDetails(
+                                imageurl: "imageurl",
+                                matches: 32,
+                                name: "Zbunker Tournaments",
+                                prizes: 320000,
+                                rating: 4.5,
+                              ))) // organizer detail
+                            ]))
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 75,
-            child: Placeholder(),
-          ), // register button and number of teams
-        ],
+            const SizedBox(
+              height: 75,
+              child: Placeholder(),
+            ), // register button and number of teams
+          ],
+        ),
       ),
     );
   }
