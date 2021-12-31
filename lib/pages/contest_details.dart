@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zbgaming/widgets/organizer.dart';
 
 class ContestDetails extends StatelessWidget {
   const ContestDetails(
@@ -25,76 +26,86 @@ class ContestDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget contestDetails =
+        Container(padding: const EdgeInsets.all(10), child: const Text("contest details")); // contest details container
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Contest Details"),
         centerTitle: true,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Column(
-          children: [
-            // contest banner
-            Container(
-              height: 150,
-              width: MediaQuery.of(context).size.width,
-              color: Colors.green,
-              child: Image.asset(
-                "assets/images/valo.jpg", // change the image to contest banner
-                fit: BoxFit.cover,
-              ),
+      body: ListView(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5),
+            height: 150,
+            width: MediaQuery.of(context).size.width,
+            child: Image.asset(
+              "assets/images/valo.jpg", // change the image to contest banner
+              fit: BoxFit.cover,
             ),
+          ),
 
-            const SizedBox(height: 20),
-
-            // contest name
-            Text(
+          // contest name
+          Container(
+            padding: const EdgeInsets.all(5),
+            alignment: Alignment.center,
+            child: Text(
               name,
               textAlign: TextAlign.start,
               textScaleFactor: 2,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-            // scroll view with tabs
-            Expanded(
-                child: SingleChildScrollView(
-              child: Container(
-                color: Colors.grey[200],
-                height: 500,
-                child: Column(
-                  children: [
-                    DefaultTabController(
-                      length: 2,
-                      child: Column(
-                        children: [
-                          const TabBar(
-                            tabs: [
-                              Tab(
-                                child: Text("Contest Details", style: TextStyle(color: Colors.black)),
-                              ),
-                              Tab(
-                                child: Text("About Organizer", style: TextStyle(color: Colors.black)),
-                              )
-                            ],
+          // scroll view with tabs
+          Container(
+            margin: const EdgeInsets.all(5),
+            color: Colors.grey[200],
+            child: Column(
+              children: [
+                DefaultTabController(
+                  length: 2,
+                  child: Column(
+                    children: [
+                      const TabBar(
+                        tabs: [
+                          Tab(
+                            child: Text("Contest Details", style: TextStyle(color: Colors.black)),
                           ),
-                          SingleChildScrollView(
-                              child: Container(
-                                  padding: const EdgeInsets.all(5),
-                                  height: 50,
-                                  child: const TabBarView(children: [Text("yooo"), Text("hiii")])))
+                          Tab(
+                            child: Text("About Organizer", style: TextStyle(color: Colors.black)),
+                          )
                         ],
                       ),
-                    )
-                  ],
-                ),
-              ),
-            )),
-            Container(height: 50, color: Colors.red)
-          ],
-        ),
+                      SizedBox(
+                          height: 500,
+                          child: TabBarView(children: [
+                            SingleChildScrollView(child: contestDetails), // contest detail
+                            const SingleChildScrollView(
+                                child: SizedBox(
+                                    child: OrganizerDetails(
+                              imageurl: "imageurl",
+                              matches: 32,
+                              name: "Zbunker Tournaments",
+                              prizes: 320000,
+                              rating: 4.5,
+                            ))) // organizer detail
+                          ]))
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 75,
+            child: Placeholder(),
+          ), // register button and number of teams
+        ],
       ),
     );
   }
