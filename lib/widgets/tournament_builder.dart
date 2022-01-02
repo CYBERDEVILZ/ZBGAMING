@@ -352,7 +352,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "28, December, 2022",
+                                      "28 December, 2022",
                                       textScaleFactor: 1.1,
                                       style:
                                           TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),

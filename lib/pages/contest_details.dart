@@ -26,8 +26,109 @@ class ContestDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget contestDetails =
-        Container(padding: const EdgeInsets.all(10), child: const Text("contest details")); // contest details container
+    // contest details widget
+    Widget contestDetails = Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            Text(name, textAlign: TextAlign.start, textScaleFactor: 2),
+            const SizedBox(height: 5),
+            Row(children: [
+              // date of tournament
+              Text(
+                "28 December, 2022",
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
+              ),
+
+              const SizedBox(width: 20),
+
+              // teams registered
+              Row(
+                children: [
+                  Icon(Icons.people_alt, size: 20, color: Colors.black.withOpacity(0.5)),
+                  Text(
+                    " $regTeams/",
+                    textScaleFactor: 1.1,
+                    style: TextStyle(color: Colors.black.withOpacity(0.5)),
+                  ),
+                  Text(
+                    "$totalTeams",
+                    textScaleFactor: 1.1,
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
+                  )
+                ],
+              )
+            ]),
+
+            const SizedBox(height: 20),
+
+            // match format
+            Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+              Column(
+                children: team
+                    ? [
+                        const Icon(Icons.people_alt, size: 20, color: Colors.purple),
+                        const SizedBox(width: 5),
+                        const Text("Team based",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
+                      ]
+                    : const [
+                        Icon(Icons.person, size: 20, color: Colors.purple),
+                        SizedBox(width: 5),
+                        Text("Solo based",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
+                      ],
+              ),
+              Column(
+                children: tournament
+                    ? [
+                        Icon(Icons.account_tree_sharp, size: 20, color: Colors.blue[800]),
+                        const SizedBox(width: 5),
+                        Text("Tournament",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
+                      ]
+                    : [
+                        Icon(Icons.play_arrow, size: 20, color: Colors.blue[800]),
+                        const SizedBox(width: 5),
+                        Text("Single Match",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
+                      ],
+              ),
+              Column(
+                children: skill
+                    ? const [
+                        Icon(Icons.flash_on, size: 20, color: Colors.teal),
+                        SizedBox(width: 5),
+                        Text("Min LVL Required",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                      ]
+                    : const [
+                        Icon(Icons.flash_off, size: 20, color: Colors.teal),
+                        SizedBox(width: 5),
+                        Text("No LVL Required",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                      ],
+              ),
+            ]),
+
+            Column(
+              children: bounty
+                  ? const [
+                      Icon(Icons.attach_money_outlined, size: 20, color: Colors.red),
+                      SizedBox(width: 5),
+                      Text("Rewards available",
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
+                    ]
+                  : const [
+                      Icon(Icons.money_off, size: 20, color: Colors.red),
+                      SizedBox(width: 5),
+                      Text("No Rewards", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
+                    ],
+            ),
+          ],
+        ));
 
     return Scaffold(
       appBar: AppBar(
@@ -50,20 +151,6 @@ class ContestDetails extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-
-            // contest name
-            Container(
-              padding: const EdgeInsets.all(5),
-              alignment: Alignment.center,
-              child: Text(
-                name,
-                textAlign: TextAlign.start,
-                textScaleFactor: 2,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-
-            const SizedBox(height: 20),
 
             // scroll view with tabs
             Container(
@@ -90,6 +177,7 @@ class ContestDetails extends StatelessWidget {
                             child: TabBarView(children: [
                               SingleChildScrollView(child: contestDetails), // contest detail
                               const SingleChildScrollView(
+                                  // organizer details
                                   child: SizedBox(
                                       child: OrganizerDetails(
                                 imageurl: "imageurl",
@@ -97,7 +185,7 @@ class ContestDetails extends StatelessWidget {
                                 name: "Zbunker Tournaments",
                                 prizes: 320000,
                                 rating: 4.5,
-                              ))) // organizer detail
+                              )))
                             ]))
                       ],
                     ),
@@ -105,9 +193,11 @@ class ContestDetails extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(
+            Container(
+              decoration: const BoxDecoration(
+                  boxShadow: [BoxShadow(color: Colors.black, blurRadius: 7, blurStyle: BlurStyle.outer)]),
               height: 75,
-              child: Placeholder(),
+              child: const Placeholder(),
             ), // register button and number of teams
           ],
         ),
