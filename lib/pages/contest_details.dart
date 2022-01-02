@@ -65,67 +65,98 @@ class ContestDetails extends StatelessWidget {
             const SizedBox(height: 20),
 
             // match format
-            Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-              Column(
-                children: team
-                    ? [
-                        const Icon(Icons.people_alt, size: 20, color: Colors.purple),
-                        const SizedBox(width: 5),
-                        const Text("Team based",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
-                      ]
-                    : const [
-                        Icon(Icons.person, size: 20, color: Colors.purple),
-                        SizedBox(width: 5),
-                        Text("Solo based",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
-                      ],
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+                child: Column(
+                  children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      SizedBox(
+                        width: 100,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: team
+                              ? [
+                                  const Icon(Icons.people_alt, size: 25, color: Colors.purple),
+                                  const SizedBox(width: 5),
+                                  const Text("Team based\n",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
+                                ]
+                              : const [
+                                  Icon(Icons.person, size: 25, color: Colors.purple),
+                                  SizedBox(width: 5),
+                                  Text("Solo based\n",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
+                                ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: 100,
+                        child: Column(
+                          children: tournament
+                              ? [
+                                  Icon(Icons.account_tree_sharp, size: 25, color: Colors.blue[800]),
+                                  const SizedBox(width: 5),
+                                  Text("Tournament\n",
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
+                                ]
+                              : [
+                                  Icon(Icons.play_arrow, size: 25, color: Colors.blue[800]),
+                                  const SizedBox(width: 5),
+                                  Text("Single Match\n",
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
+                                ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: 100,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: skill
+                              ? const [
+                                  Icon(Icons.flash_on, size: 25, color: Colors.teal),
+                                  SizedBox(width: 5),
+                                  Text("Min LVL Required",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                ]
+                              : const [
+                                  Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                  SizedBox(width: 5),
+                                  Text("No LVL Required",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                ],
+                        ),
+                      ),
+                    ]),
+                    const SizedBox(height: 10),
+                    Align(
+                      child: Column(
+                        children: bounty
+                            ? const [
+                                Icon(Icons.attach_money_outlined, size: 25, color: Colors.red),
+                                SizedBox(width: 5),
+                                Text("Rewards available",
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
+                              ]
+                            : const [
+                                Icon(Icons.money_off, size: 25, color: Colors.red),
+                                SizedBox(width: 5),
+                                Text("No Rewards",
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
+                              ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Column(
-                children: tournament
-                    ? [
-                        Icon(Icons.account_tree_sharp, size: 20, color: Colors.blue[800]),
-                        const SizedBox(width: 5),
-                        Text("Tournament",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
-                      ]
-                    : [
-                        Icon(Icons.play_arrow, size: 20, color: Colors.blue[800]),
-                        const SizedBox(width: 5),
-                        Text("Single Match",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
-                      ],
-              ),
-              Column(
-                children: skill
-                    ? const [
-                        Icon(Icons.flash_on, size: 20, color: Colors.teal),
-                        SizedBox(width: 5),
-                        Text("Min LVL Required",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
-                      ]
-                    : const [
-                        Icon(Icons.flash_off, size: 20, color: Colors.teal),
-                        SizedBox(width: 5),
-                        Text("No LVL Required",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
-                      ],
-              ),
-            ]),
-
-            Column(
-              children: bounty
-                  ? const [
-                      Icon(Icons.attach_money_outlined, size: 20, color: Colors.red),
-                      SizedBox(width: 5),
-                      Text("Rewards available",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
-                    ]
-                  : const [
-                      Icon(Icons.money_off, size: 20, color: Colors.red),
-                      SizedBox(width: 5),
-                      Text("No Rewards", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
-                    ],
             ),
           ],
         ));
