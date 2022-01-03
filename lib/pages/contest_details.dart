@@ -33,7 +33,8 @@ class ContestDetails extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            Text(name, textAlign: TextAlign.start, textScaleFactor: 2),
+            Text(name,
+                textAlign: TextAlign.start, textScaleFactor: 2, style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 5),
             Row(children: [
               // date of tournament
@@ -62,12 +63,14 @@ class ContestDetails extends StatelessWidget {
               )
             ]),
 
-            const SizedBox(height: 20),
+            const Divider(height: 50),
 
             // match format
+            const Align(child: Text("Match Format", textScaleFactor: 1.5, style: TextStyle(color: Colors.black))),
             Card(
+              elevation: 0,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
                 child: Column(
                   children: [
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -157,6 +160,22 @@ class ContestDetails extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
+
+            const SizedBox(height: 30),
+
+            // rules
+            Row(
+              children: const [
+                Text("Rules", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
+                Expanded(
+                    child: Divider(
+                  indent: 5,
+                  endIndent: 5,
+                  thickness: 1,
+                  color: Colors.black,
+                ))
+              ],
             ),
           ],
         ));
