@@ -177,6 +177,34 @@ class ContestDetails extends StatelessWidget {
                 ))
               ],
             ),
+            Container(
+              padding: const EdgeInsets.all(5),
+              color: Colors.white,
+              width: MediaQuery.of(context).size.width,
+              child: const Text("Rules widget will come here..."),
+            ),
+
+            const SizedBox(height: 30),
+
+            // requirements
+            Row(
+              children: const [
+                Text("Requirements", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
+                Expanded(
+                    child: Divider(
+                  indent: 5,
+                  endIndent: 5,
+                  thickness: 1,
+                  color: Colors.black,
+                ))
+              ],
+            ),
+            Container(
+              padding: const EdgeInsets.all(5),
+              color: Colors.white,
+              width: MediaQuery.of(context).size.width,
+              child: const Text("Requirements come here..."),
+            ),
           ],
         ));
 
