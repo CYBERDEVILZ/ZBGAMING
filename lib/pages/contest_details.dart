@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zbgaming/widgets/organizer.dart';
+import 'package:zbgaming/widgets/organizer_card.dart';
 
 class ContestDetails extends StatelessWidget {
   const ContestDetails(
@@ -168,13 +169,7 @@ class ContestDetails extends StatelessWidget {
             Row(
               children: const [
                 Text("Rules", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
-                Expanded(
-                    child: Divider(
-                  indent: 5,
-                  endIndent: 5,
-                  thickness: 1,
-                  color: Colors.black,
-                ))
+                Expanded(child: Divider(indent: 5, endIndent: 5, thickness: 1))
               ],
             ),
             Container(
@@ -190,13 +185,7 @@ class ContestDetails extends StatelessWidget {
             Row(
               children: const [
                 Text("Requirements", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
-                Expanded(
-                    child: Divider(
-                  indent: 5,
-                  endIndent: 5,
-                  thickness: 1,
-                  color: Colors.black,
-                ))
+                Expanded(child: Divider(indent: 5, endIndent: 5, thickness: 1))
               ],
             ),
             Container(
@@ -214,71 +203,38 @@ class ContestDetails extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: Scrollbar(
-        thickness: 10,
-        isAlwaysShown: true,
-        interactive: true,
-        child: ListView(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(5),
-              height: 150,
-              width: MediaQuery.of(context).size.width,
-              child: Image.asset(
-                "assets/images/valo.jpg", // change the image to contest banner
-                fit: BoxFit.cover,
-              ),
+      body: ListView(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5),
+            height: 150,
+            width: MediaQuery.of(context).size.width,
+            child: Image.asset(
+              "assets/images/valo.jpg", // change the image to contest banner
+              fit: BoxFit.cover,
             ),
+          ),
 
-            // scroll view with tabs
-            Container(
-              margin: const EdgeInsets.all(5),
-              color: Colors.grey[200],
-              child: Column(
-                children: [
-                  DefaultTabController(
-                    length: 2,
-                    child: Column(
-                      children: [
-                        const TabBar(
-                          tabs: [
-                            Tab(
-                              child: Text("Contest Details", style: TextStyle(color: Colors.black)),
-                            ),
-                            Tab(
-                              child: Text("About Organizer", style: TextStyle(color: Colors.black)),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                            height: 500,
-                            child: TabBarView(children: [
-                              SingleChildScrollView(child: contestDetails), // contest detail
-                              const SingleChildScrollView(
-                                  // organizer details
-                                  child: SizedBox(
-                                      child: OrganizerDetails(
-                                imageurl: "imageurl",
-                                matches: 32,
-                                name: "Zbunker Tournaments",
-                                prizes: 320000,
-                                rating: 4.5,
-                              )))
-                            ]))
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                  boxShadow: [BoxShadow(color: Colors.black, blurRadius: 7, blurStyle: BlurStyle.outer)]),
-              height: 75,
-              child: const Placeholder(),
-            ), // register button and number of teams
-          ],
-        ),
+          // contest details
+          contestDetails,
+
+          // organizer details
+          const Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text("Organized By:", style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          const OrganizerCard(
+            imageurl: "assets/images/csgo.jpg",
+            rating: 4.0,
+            name: "Zbunker Matches and Tournaments",
+          ),
+
+          // register button and number of teams
+          const SizedBox(
+            height: 75,
+            child: Placeholder(),
+          ),
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zbgaming/widgets/star_builder.dart';
 
 class OrganizerDetails extends StatelessWidget {
   const OrganizerDetails(
@@ -18,29 +19,13 @@ class OrganizerDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // function for rating
-    Widget starBuilder(num star) {
-      int fullStars = star.floor();
-      num halfStars = star.toString()[2] == "0" ? 0 : 1;
-      List<Widget> stars = [];
-      for (int i = 0; i < fullStars; i++) {
-        stars.add(const Icon(Icons.star));
-      }
-      for (int i = 0; i < halfStars; i++) {
-        stars.add(const Icon(Icons.star_half));
-      }
-      return stars.isEmpty
-          ? Row(mainAxisAlignment: MainAxisAlignment.center, children: const [Text("No Rating", textScaleFactor: 1.5)])
-          : Row(mainAxisAlignment: MainAxisAlignment.center, children: [...stars]);
-    }
-
     return Container(
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            Stack(children: const [
-              CircleAvatar(radius: 70, foregroundImage: AssetImage("assets/images/pubg.png")), // network image
-              Icon(
+            Stack(children: [
+              CircleAvatar(radius: 70, foregroundImage: AssetImage(imageurl)), // network image
+              const Icon(
                 Icons.auto_awesome,
                 color: Colors.blue,
                 size: 30,
@@ -49,16 +34,16 @@ class OrganizerDetails extends StatelessWidget {
 
             const SizedBox(height: 5),
 
-            starBuilder(rating), // rating widget
+            StarBuilder(star: rating), // rating widget
 
             const SizedBox(height: 20),
 
             // tournament name
-            const Text(
-              "Zbunker Matches and Tournaments",
+            Text(
+              name,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
               textScaleFactor: 1.5,
               textAlign: TextAlign.center,
             ),
