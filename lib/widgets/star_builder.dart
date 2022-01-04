@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class StarBuilder extends StatelessWidget {
-  const StarBuilder({Key? key, required this.star}) : super(key: key);
+  const StarBuilder({Key? key, required this.star, required this.starColor}) : super(key: key);
 
   final num star;
+  final Color starColor;
 
   @override
   Widget build(BuildContext context) {
@@ -11,10 +12,10 @@ class StarBuilder extends StatelessWidget {
     num halfStars = star.toString()[2] == "0" ? 0 : 1;
     List<Widget> stars = [];
     for (int i = 0; i < fullStars; i++) {
-      stars.add(const Icon(Icons.star));
+      stars.add(Icon(Icons.star, color: starColor));
     }
     for (int i = 0; i < halfStars; i++) {
-      stars.add(const Icon(Icons.star_half));
+      stars.add(Icon(Icons.star_half, color: starColor));
     }
 
     return stars.isEmpty

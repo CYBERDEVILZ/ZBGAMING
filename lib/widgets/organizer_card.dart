@@ -9,14 +9,20 @@ class OrganizerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
-      elevation: 2,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: [Colors.blue, Colors.purple]),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           // network image
-          CircleAvatar(radius: 40, foregroundImage: AssetImage(imageurl)),
+          Stack(clipBehavior: Clip.none, children: [
+            const Positioned(bottom: -2, right: -2, child: CircleAvatar(radius: 42, backgroundColor: Colors.white)),
+            CircleAvatar(radius: 40, foregroundImage: AssetImage(imageurl))
+          ]),
 
           // tournament name and rating
           Expanded(
@@ -29,10 +35,15 @@ class OrganizerCard extends StatelessWidget {
                     name,
                     textAlign: TextAlign.center,
                     textScaleFactor: 1.2,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                   ),
+                  const SizedBox(height: 10),
                   SizedBox(
-                    child: FittedBox(child: StarBuilder(star: rating)),
+                    child: FittedBox(
+                        child: StarBuilder(
+                      star: rating,
+                      starColor: Colors.white,
+                    )),
                     width: 70,
                   )
                 ],
@@ -41,8 +52,12 @@ class OrganizerCard extends StatelessWidget {
           ),
 
           // add to fav
-          const Icon(
-            Icons.star_border,
+          GestureDetector(
+            onTap: () {}, // add or remove from fav func
+            child: const Icon(
+              Icons.star_border,
+              color: Colors.white,
+            ),
           )
         ]),
       ),

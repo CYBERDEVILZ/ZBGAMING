@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zbgaming/widgets/organizer.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
 
 class ContestDetails extends StatelessWidget {
@@ -29,7 +28,7 @@ class ContestDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     // contest details widget
     Widget contestDetails = Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -166,12 +165,7 @@ class ContestDetails extends StatelessWidget {
             const SizedBox(height: 30),
 
             // rules
-            Row(
-              children: const [
-                Text("Rules", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
-                Expanded(child: Divider(indent: 5, endIndent: 5, thickness: 1))
-              ],
-            ),
+            const Text("Rules", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
             Container(
               padding: const EdgeInsets.all(5),
               color: Colors.white,
@@ -182,18 +176,15 @@ class ContestDetails extends StatelessWidget {
             const SizedBox(height: 30),
 
             // requirements
-            Row(
-              children: const [
-                Text("Requirements", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
-                Expanded(child: Divider(indent: 5, endIndent: 5, thickness: 1))
-              ],
-            ),
+            const Text("Requirements", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
             Container(
               padding: const EdgeInsets.all(5),
               color: Colors.white,
               width: MediaQuery.of(context).size.width,
               child: const Text("Requirements come here..."),
             ),
+
+            const Divider(indent: 50, endIndent: 50, height: 50, thickness: 2, color: Colors.lightBlue),
           ],
         ));
 
@@ -220,8 +211,8 @@ class ContestDetails extends StatelessWidget {
 
           // organizer details
           const Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Text("Organized By:", style: TextStyle(fontWeight: FontWeight.bold)),
+            padding: EdgeInsets.only(left: 10.0, bottom: 5.0),
+            child: Text("Organized By:", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
           ),
           const OrganizerCard(
             imageurl: "assets/images/csgo.jpg",
@@ -230,9 +221,27 @@ class ContestDetails extends StatelessWidget {
           ),
 
           // register button and number of teams
-          const SizedBox(
+          Container(
             height: 75,
-            child: Placeholder(),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            decoration: const BoxDecoration(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Expanded(child: Text("Free/paid shit")),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: OutlinedButton(
+                    // register button
+                    onPressed: () {},
+                    child: const Text("Register", textScaleFactor: 1.3),
+                    style: ButtonStyle(
+                        fixedSize: MaterialStateProperty.all(const Size(150, 50)),
+                        side: MaterialStateProperty.all(const BorderSide(color: Colors.blue))),
+                  ),
+                )
+              ],
+            ),
           ),
         ],
       ),

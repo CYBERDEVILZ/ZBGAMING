@@ -34,7 +34,10 @@ class OrganizerDetails extends StatelessWidget {
 
             const SizedBox(height: 5),
 
-            StarBuilder(star: rating), // rating widget
+            StarBuilder(
+              star: rating,
+              starColor: Colors.black,
+            ), // rating widget
 
             const SizedBox(height: 20),
 
