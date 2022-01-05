@@ -33,12 +33,22 @@ class MyDrawer extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              CircleAvatar(
-                                backgroundImage: const AssetImage("assets/images/csgo.jpg"), // image of account
-                                foregroundImage: context.watch<UserModel>().imageurl == null
-                                    ? const AssetImage("assets/images/csgo.jpg")
-                                    : const AssetImage("assets/images/valo.jpg"), // network image of user from database
-                                radius: 40,
+                              Stack(
+                                children: [
+                                  CircleAvatar(backgroundColor: Colors.blue[600], radius: 42),
+                                  Positioned(
+                                    top: 2,
+                                    left: 2,
+                                    child: CircleAvatar(
+                                      backgroundImage: const AssetImage("assets/images/csgo.jpg"), // image of account
+                                      foregroundImage: context.watch<UserModel>().imageurl == null
+                                          ? const AssetImage("assets/images/csgo.jpg")
+                                          : const AssetImage(
+                                              "assets/images/valo.jpg"), // network image of user from database
+                                      radius: 40,
+                                    ),
+                                  )
+                                ],
                               ),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -88,9 +98,10 @@ class MyDrawer extends StatelessWidget {
             Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: OutlinedButton(
+                  // sign out user
                   onPressed: () {
                     context.read<UserModel>().signout();
-                  }, // sign out user
+                  },
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text(
@@ -119,6 +130,13 @@ class MyLoginDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // login function
+    loginUser() {
+      context.read<UserModel>().setuid("blahblah");
+      context.read<UserModel>().setimageurl("assets/images/zbunker-app-banner.png");
+      context.read<UserModel>().setusername("TestUser");
+    }
+
     return Drawer(
         elevation: 0,
         child: ListView(
@@ -128,7 +146,11 @@ class MyLoginDrawer extends StatelessWidget {
                 padding: const EdgeInsets.all(0),
                 child: Stack(
                   children: [
-                    Container(color: Colors.green, height: 400, child: const Placeholder() // zbgaming banner art
+                    SizedBox(
+                        height: 400,
+                        width: MediaQuery.of(context).size.width,
+                        child: Image.asset("assets/images/zbunker-app-banner.png",
+                            fit: BoxFit.cover) // zbgaming banner art
                         ),
                     Container(
                       color: Colors.red.withOpacity(0),
@@ -139,7 +161,9 @@ class MyLoginDrawer extends StatelessWidget {
                             const SizedBox(height: 89), // empty space above login button
                             ElevatedButton(
                               child: const Text("Login"),
-                              onPressed: () {}, // login navigation
+                              onPressed: () {
+                                loginUser();
+                              }, // login navigation
                               style: ButtonStyle(
                                   elevation: MaterialStateProperty.all(0),
                                   fixedSize: MaterialStateProperty.all(const Size(200, 30))),
@@ -151,13 +175,10 @@ class MyLoginDrawer extends StatelessWidget {
                                 children: [
                                   const Text("Don't have an account? "),
                                   GestureDetector(
-                                    onTap: () {},
-                                    child: GestureDetector(
-                                      onTap: () {}, // signup navigation
-                                      child: const Text(
-                                        "Create one",
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
+                                    onTap: () {}, // signup navigation
+                                    child: const Text(
+                                      "Create one",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
                                     ),
                                   )
                                 ],
