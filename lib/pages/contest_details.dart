@@ -35,7 +35,9 @@ class ContestDetails extends StatelessWidget {
             const SizedBox(height: 10),
             Text(name,
                 textAlign: TextAlign.start, textScaleFactor: 2, style: const TextStyle(fontWeight: FontWeight.bold)),
+
             const SizedBox(height: 5),
+
             Row(children: [
               // date of tournament
               Text(
@@ -164,6 +166,19 @@ class ContestDetails extends StatelessWidget {
 
             const SizedBox(height: 30),
 
+            // organizer details
+            const Padding(
+              padding: EdgeInsets.only(bottom: 5.0),
+              child: Text("Organized By:", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            ),
+            const OrganizerCard(
+              imageurl: "assets/images/csgo.jpg",
+              rating: 4.0,
+              name: "Zbunker Matches and Tournaments",
+            ),
+
+            const SizedBox(height: 30),
+
             // rules
             const Text("Rules", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
             Container(
@@ -209,35 +224,32 @@ class ContestDetails extends StatelessWidget {
           // contest details
           contestDetails,
 
-          // organizer details
-          const Padding(
-            padding: EdgeInsets.only(left: 10.0, bottom: 5.0),
-            child: Text("Organized By:", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-          ),
-          const OrganizerCard(
-            imageurl: "assets/images/csgo.jpg",
-            rating: 4.0,
-            name: "Zbunker Matches and Tournaments",
-          ),
-
           // register button and number of teams
           Container(
             height: 75,
             padding: const EdgeInsets.symmetric(horizontal: 15),
-            decoration: const BoxDecoration(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Expanded(child: Text("Free/paid shit")),
+                Expanded(
+                    child: Container(
+                  alignment: Alignment.center,
+                  child: const FittedBox(
+                    child: Text(
+                      "\u20b9 3000",
+                      style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                )),
                 Padding(
                   padding: const EdgeInsets.only(left: 15),
-                  child: OutlinedButton(
+                  child: ElevatedButton(
                     // register button
                     onPressed: () {},
                     child: const Text("Register", textScaleFactor: 1.3),
                     style: ButtonStyle(
                         fixedSize: MaterialStateProperty.all(const Size(150, 50)),
-                        side: MaterialStateProperty.all(const BorderSide(color: Colors.blue))),
+                        elevation: MaterialStateProperty.all(0)),
                   ),
                 )
               ],

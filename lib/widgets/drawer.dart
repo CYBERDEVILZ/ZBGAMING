@@ -18,7 +18,12 @@ class MyDrawer extends StatelessWidget {
                 padding: const EdgeInsets.all(0),
                 child: Stack(
                   children: [
-                    Container(color: Colors.green, height: 400, child: const Placeholder()), // zbunker banner art
+                    Container(
+                        color: Colors.white,
+                        height: 400,
+                        width: MediaQuery.of(context).size.width,
+                        child: Image.asset("assets/images/zbunker-app-banner.png",
+                            fit: BoxFit.fitWidth)), // zbunker banner art
                     SizedBox(
                       height: 400,
                       width: double.infinity,
@@ -33,14 +38,16 @@ class MyDrawer extends StatelessWidget {
                                 foregroundImage: context.watch<UserModel>().imageurl == null
                                     ? const AssetImage("assets/images/csgo.jpg")
                                     : const AssetImage("assets/images/valo.jpg"), // network image of user from database
-                                maxRadius: 40,
-                                minRadius: 40,
+                                radius: 40,
                               ),
-                              Text(
-                                context.watch<UserModel>().username!,
-                                style: const TextStyle(fontSize: 20),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 30),
+                                child: Text(
+                                  context.watch<UserModel>().username!,
+                                  style: const TextStyle(fontSize: 20),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               )
                             ]),
                       ),

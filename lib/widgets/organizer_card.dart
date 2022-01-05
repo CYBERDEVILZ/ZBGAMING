@@ -10,11 +10,10 @@ class OrganizerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Colors.blue, Colors.purple]),
-        borderRadius: BorderRadius.circular(10),
-      ),
+          image: const DecorationImage(image: AssetImage("assets/images/zbunker-app-banner.png"), fit: BoxFit.cover),
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.black),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -35,16 +34,15 @@ class OrganizerCard extends StatelessWidget {
                     name,
                     textAlign: TextAlign.center,
                     textScaleFactor: 1.2,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    child: FittedBox(
-                        child: StarBuilder(
-                      star: rating,
-                      starColor: Colors.white,
-                    )),
-                    width: 70,
+                  const StarBuilder(
+                    star: 4.5,
+                    starColor: Colors.white,
+                    size: 20,
                   )
                 ],
               ),
