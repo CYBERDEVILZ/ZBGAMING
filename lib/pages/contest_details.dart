@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
+import 'package:zbgaming/widgets/rules.dart';
 
 class ContestDetails extends StatelessWidget {
   const ContestDetails(
@@ -69,8 +70,11 @@ class ContestDetails extends StatelessWidget {
 
             // match format
             const Align(child: Text("Match Format", textScaleFactor: 1.5, style: TextStyle(color: Colors.black))),
-            Card(
-              elevation: 0,
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                bottom: BorderSide(color: Colors.grey.withOpacity(0.3), width: 2),
+              )),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
                 child: Column(
@@ -185,7 +189,7 @@ class ContestDetails extends StatelessWidget {
               padding: const EdgeInsets.all(5),
               color: Colors.white,
               width: MediaQuery.of(context).size.width,
-              child: const Text("Rules widget will come here..."),
+              child: const Rules(),
             ),
 
             const SizedBox(height: 30),
@@ -233,11 +237,16 @@ class ContestDetails extends StatelessWidget {
                 Expanded(
                     child: Container(
                   alignment: Alignment.center,
-                  child: const FittedBox(
-                    child: Text(
-                      "\u20b9 3000",
-                      style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
+                  child: FittedBox(
+                    child: paid
+                        ? const Text(
+                            "\u20b9 3000",
+                            style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+                          )
+                        : const Text(
+                            "FREE",
+                            style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+                          ),
                   ),
                 )),
                 Padding(

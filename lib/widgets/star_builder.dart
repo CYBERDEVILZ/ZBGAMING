@@ -28,7 +28,9 @@ class StarBuilder extends StatelessWidget {
     }
 
     return stars.isEmpty
-        ? Row(mainAxisAlignment: MainAxisAlignment.center, children: const [Text("No Rating", textScaleFactor: 1.5)])
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [Text("No Rating", style: TextStyle(color: starColor))])
         : Row(mainAxisAlignment: MainAxisAlignment.center, children: [...stars]);
   }
 }

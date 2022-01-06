@@ -39,8 +39,8 @@ class OrganizerCard extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   const SizedBox(height: 10),
-                  const StarBuilder(
-                    star: 4.5,
+                  StarBuilder(
+                    star: rating,
                     starColor: Colors.white,
                     size: 20,
                   )
