@@ -156,35 +156,55 @@ class MyLoginDrawer extends StatelessWidget {
                       color: Colors.red.withOpacity(0),
                       height: 400,
                       child: Center(
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 89), // empty space above login button
-                            ElevatedButton(
-                              child: const Text("Login"),
-                              onPressed: () {
-                                loginUser();
-                              }, // login navigation
-                              style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  fixedSize: MaterialStateProperty.all(const Size(200, 30))),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 5),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Stack(
                                 children: [
-                                  const Text("Don't have an account? "),
-                                  GestureDetector(
-                                    onTap: () {}, // signup navigation
-                                    child: const Text(
-                                      "Create one",
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                  CircleAvatar(backgroundColor: Colors.blue[600], radius: 42),
+                                  Positioned(
+                                    top: 2,
+                                    left: 2,
+                                    child: CircleAvatar(
+                                      backgroundImage: const AssetImage("assets/images/csgo.jpg"), // image of account
+                                      foregroundImage: context.watch<UserModel>().imageurl == null
+                                          ? const AssetImage("assets/images/csgo.jpg")
+                                          : const AssetImage(
+                                              "assets/images/valo.jpg"), // network image of user from database
+                                      radius: 40,
                                     ),
                                   )
                                 ],
+                              ), // empty space above login button
+                              ElevatedButton(
+                                child: const Text("Login"),
+                                onPressed: () {
+                                  loginUser();
+                                }, // login navigation
+                                style: ButtonStyle(
+                                    elevation: MaterialStateProperty.all(0),
+                                    fixedSize: MaterialStateProperty.all(const Size(200, 30))),
                               ),
-                            )
-                          ],
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text("Don't have an account? "),
+                                    GestureDetector(
+                                      onTap: () {}, // signup navigation
+                                      child: const Text(
+                                        "Create one",
+                                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     )
