@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
-import 'package:zbgaming/widgets/rules.dart';
+import 'package:zbgaming/widgets/rules_and_requirements.dart';
 
 class ContestDetails extends StatelessWidget {
   const ContestDetails(
@@ -195,13 +195,18 @@ class ContestDetails extends StatelessWidget {
             const SizedBox(height: 30),
 
             // requirements
-            const Text("Requirements", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
             Container(
-              padding: const EdgeInsets.all(5),
-              color: Colors.white,
-              width: MediaQuery.of(context).size.width,
-              child: const Text("Requirements come here..."),
-            ),
+                padding: const EdgeInsets.all(5),
+                color: const Color(0xFF333333),
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text("Requirements",
+                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white), textScaleFactor: 1.7),
+                      Requirements(),
+                    ])),
 
             const Divider(indent: 50, endIndent: 50, height: 50, thickness: 2, color: Colors.lightBlue),
           ],

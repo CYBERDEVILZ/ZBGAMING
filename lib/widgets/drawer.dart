@@ -149,7 +149,7 @@ class MyLoginDrawer extends StatelessWidget {
                     SizedBox(
                         height: 400,
                         width: MediaQuery.of(context).size.width,
-                        child: Image.asset("assets/images/zbunker-app-banner.png",
+                        child: Image.asset("assets/images/zbunker-app-banner-upsidedown.png",
                             fit: BoxFit.cover) // zbgaming banner art
                         ),
                     Container(
@@ -159,26 +159,9 @@ class MyLoginDrawer extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Stack(
-                                children: [
-                                  CircleAvatar(backgroundColor: Colors.blue[600], radius: 42),
-                                  Positioned(
-                                    top: 2,
-                                    left: 2,
-                                    child: CircleAvatar(
-                                      backgroundImage: const AssetImage("assets/images/csgo.jpg"), // image of account
-                                      foregroundImage: context.watch<UserModel>().imageurl == null
-                                          ? const AssetImage("assets/images/csgo.jpg")
-                                          : const AssetImage(
-                                              "assets/images/valo.jpg"), // network image of user from database
-                                      radius: 40,
-                                    ),
-                                  )
-                                ],
-                              ), // empty space above login button
                               ElevatedButton(
                                 child: const Text("Login"),
                                 onPressed: () {
@@ -188,20 +171,18 @@ class MyLoginDrawer extends StatelessWidget {
                                     elevation: MaterialStateProperty.all(0),
                                     fixedSize: MaterialStateProperty.all(const Size(200, 30))),
                               ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text("Don't have an account? "),
-                                    GestureDetector(
-                                      onTap: () {}, // signup navigation
-                                      child: const Text(
-                                        "Create one",
-                                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                                      ),
-                                    )
-                                  ],
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text("Don't have an account? "),
+                                  GestureDetector(
+                                    onTap: () {}, // signup navigation
+                                    child: const Text(
+                                      "Create one",
+                                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                    ),
+                                  )
+                                ],
                               )
                             ],
                           ),
