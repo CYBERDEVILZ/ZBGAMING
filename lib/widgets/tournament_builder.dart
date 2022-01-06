@@ -195,10 +195,11 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
           clipBehavior: Clip.antiAlias,
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
           decoration: BoxDecoration(
-            image: widget.special
-                ? const DecorationImage(image: AssetImage("assets/images/warningstripe.jpg"), fit: BoxFit.cover)
+            gradient: widget.special
+                ? const LinearGradient(
+                    colors: [Colors.blue, Colors.purple], begin: Alignment.topCenter, end: Alignment.bottomCenter)
                 : null,
-            color: widget.special ? Colors.transparent : Colors.grey, // special then bg image else grey color
+            color: widget.special ? Colors.white : Colors.grey, // special then bg image else grey color
             borderRadius: BorderRadius.circular(10),
           ),
           height: 170,

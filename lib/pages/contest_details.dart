@@ -211,12 +211,11 @@ class ContestDetails extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          Container(
-            padding: const EdgeInsets.all(5),
-            height: 150,
+          SizedBox(
+            height: 120,
             width: MediaQuery.of(context).size.width,
             child: Image.asset(
-              "assets/images/valo.jpg", // change the image to contest banner
+              "assets/images/zbunkerchannelart.png", // change the image to contest banner
               fit: BoxFit.cover,
             ),
           ),
