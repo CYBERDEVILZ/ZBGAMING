@@ -7,16 +7,23 @@ class Rules extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String?> rules = ["Log into your account", "Open Game", "Enter Code", "Begin the Match boii"];
+    List<String?> rules = [
+      "Log into your account and this is an example of multiline rule to test the resilience of my own bullet text widget heh",
+      "Open Game",
+      "Enter Code",
+      "Begin the Match boii"
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "How To Play",
+          "How To Join",
           style: TextStyle(fontWeight: FontWeight.bold),
           textScaleFactor: 1.4,
         ),
+
+        const SizedBox(height: 10),
 
         // rules hardcoded for all games
         ...rules

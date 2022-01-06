@@ -8,17 +8,22 @@ class BulletText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(width: 20),
-        const Icon(
-          Icons.circle,
-          size: 10,
+        Column(
+          children: const [
+            SizedBox(height: 5),
+            Icon(Icons.circle, size: 10),
+          ],
         ),
         const SizedBox(width: 10),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text(text)],
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [Text(text)],
+          ),
         )
       ],
     );
