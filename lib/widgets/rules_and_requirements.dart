@@ -80,51 +80,72 @@ class Requirements extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       const SizedBox(height: 10),
-      SizedBox(
-          height: 50,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(children: [
-              Column(children: [Expanded(child: Container(color: Colors.lightBlue, width: 5, child: const Text('')))]),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
+      Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Row(
+          children: [
+            Container(child: const Text(''), color: Colors.lightBlue, width: 5, height: 40),
+            Expanded(
+                child: Container(
+              margin: const EdgeInsets.only(left: 5),
+              alignment: Alignment.centerLeft,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 5),
                 child: Text(
                   "Login Required For Registration",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-            ]),
-          )),
-      SizedBox(
-          height: 50,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(children: [
-              Column(children: [Expanded(child: Container(color: Colors.cyan, width: 5, child: const Text('')))]),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  "In Game Unique Id Required",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ]),
-          )),
-      SizedBox(
-          height: 50,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(children: [
-              Column(children: [Expanded(child: Container(color: Colors.cyan[100], width: 5, child: const Text('')))]),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
+              height: 40,
+              color: const Color(0xFF222222),
+            ))
+          ],
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Row(
+          children: [
+            Container(child: const Text(''), color: Colors.cyan, width: 5, height: 40),
+            Expanded(
+                child: Container(
+              margin: const EdgeInsets.only(left: 5),
+              alignment: Alignment.centerLeft,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 5),
                 child: Text(
                   "User Must Be Verified",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-            ]),
-          )),
+              height: 40,
+              color: const Color(0xFF222222),
+            ))
+          ],
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+        child: Row(
+          children: [
+            Container(child: const Text(''), color: Colors.blue[200], width: 5, height: 40),
+            Expanded(
+                child: Container(
+              margin: const EdgeInsets.only(left: 5),
+              alignment: Alignment.centerLeft,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "In Game Unique Id Required",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              height: 40,
+              color: const Color(0xFF222222),
+            ))
+          ],
+        ),
+      ),
     ]);
   }
 }

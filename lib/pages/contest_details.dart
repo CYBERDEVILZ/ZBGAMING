@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zbgaming/widgets/custom_divider.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
 import 'package:zbgaming/widgets/rules_and_requirements.dart';
 
@@ -208,7 +209,7 @@ class ContestDetails extends StatelessWidget {
                       Requirements(),
                     ])),
 
-            const Divider(indent: 50, endIndent: 50, height: 50, thickness: 2, color: Colors.lightBlue),
+            const CustomDivider(indent: 0, height: 10, radius: false)
           ],
         ));
 
