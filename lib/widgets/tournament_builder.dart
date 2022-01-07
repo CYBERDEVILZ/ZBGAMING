@@ -201,7 +201,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                 ? const LinearGradient(
                     colors: [Colors.blue, Colors.purple], begin: Alignment.topCenter, end: Alignment.bottomCenter)
                 : null,
-            color: widget.special ? Colors.white : Colors.grey, // special then bg image else grey color
+            color: widget.special ? Colors.white : Colors.white,
             borderRadius: BorderRadius.circular(10),
           ),
           height: 170,

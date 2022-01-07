@@ -164,6 +164,36 @@ class ContestDetails extends StatelessWidget {
                               ],
                       ),
                     ),
+
+                    const SizedBox(height: 10),
+
+                    // prize
+                    paid
+                        ? Container(
+                            margin: const EdgeInsets.only(top: 5),
+                            padding: const EdgeInsets.all(8),
+                            width: MediaQuery.of(context).size.width,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(colors: [Colors.blue, Colors.purple]),
+                            ),
+                            child: Column(
+                              children: const [
+                                Text(
+                                  "Prize to be won",
+                                  style: TextStyle(color: Colors.white),
+                                  textScaleFactor: 1.3,
+                                ),
+                                FittedBox(
+                                  child: Text(
+                                    "\u20b9 Amount here nigga in string",
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                    textScaleFactor: 4,
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        : Container(),
                   ],
                 ),
               ),
