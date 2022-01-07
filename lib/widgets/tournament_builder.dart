@@ -52,6 +52,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
   Widget build(BuildContext context) {
     // collapsed card
     Widget collapsedTournamentCard = Material(
+      key: const Key("key_two"),
       color: Colors.grey[200], // canvas color
       child: Container(
           clipBehavior: Clip.antiAlias,
@@ -190,6 +191,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
 
     // expanded card
     Widget expandedTournamentCard = Material(
+      key: const Key("key_one"),
       color: Colors.grey[200], // canvas color
       child: Container(
           clipBehavior: Clip.antiAlias,
