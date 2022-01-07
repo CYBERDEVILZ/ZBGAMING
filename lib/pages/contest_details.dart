@@ -71,130 +71,132 @@ class ContestDetails extends StatelessWidget {
 
             // match format
             const Align(child: Text("Match Format", textScaleFactor: 1.5, style: TextStyle(color: Colors.black))),
-            Container(
-              decoration: BoxDecoration(
-                  border: Border(
-                bottom: BorderSide(color: Colors.grey.withOpacity(0.3), width: 2),
-              )),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
-                child: Column(
-                  children: [
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      SizedBox(
-                        width: 100,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: team
-                              ? [
-                                  const Icon(Icons.people_alt, size: 25, color: Colors.purple),
-                                  const SizedBox(width: 5),
-                                  const Text("Team based\n",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
-                                ]
-                              : const [
-                                  Icon(Icons.person, size: 25, color: Colors.purple),
-                                  SizedBox(width: 5),
-                                  Text("Solo based\n",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
-                                ],
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+              child: Container(
+                padding: const EdgeInsets.only(top: 3, left: 3, right: 3),
+                decoration: const BoxDecoration(color: Colors.blue),
+                child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.only(top: 5),
+                  child: Column(
+                    children: [
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        SizedBox(
+                          width: 100,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: team
+                                ? [
+                                    const Icon(Icons.people_alt, size: 25, color: Colors.purple),
+                                    const SizedBox(width: 5),
+                                    const Text("Team based\n",
+                                        textAlign: TextAlign.center,
+                                        style:
+                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
+                                  ]
+                                : const [
+                                    Icon(Icons.person, size: 25, color: Colors.purple),
+                                    SizedBox(width: 5),
+                                    Text("Solo based\n",
+                                        textAlign: TextAlign.center,
+                                        style:
+                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
+                                  ],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 100,
-                        child: Column(
-                          children: tournament
-                              ? [
-                                  Icon(Icons.account_tree_sharp, size: 25, color: Colors.blue[800]),
-                                  const SizedBox(width: 5),
-                                  Text("Tournament\n",
-                                      textAlign: TextAlign.center,
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
-                                ]
-                              : [
-                                  Icon(Icons.play_arrow, size: 25, color: Colors.blue[800]),
-                                  const SizedBox(width: 5),
-                                  Text("Single Match\n",
-                                      textAlign: TextAlign.center,
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
-                                ],
+                        SizedBox(
+                          width: 100,
+                          child: Column(
+                            children: tournament
+                                ? [
+                                    Icon(Icons.account_tree_sharp, size: 25, color: Colors.blue[800]),
+                                    const SizedBox(width: 5),
+                                    Text("Tournament\n",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
+                                  ]
+                                : [
+                                    Icon(Icons.play_arrow, size: 25, color: Colors.blue[800]),
+                                    const SizedBox(width: 5),
+                                    Text("Single Match\n",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
+                                  ],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 100,
+                        SizedBox(
+                          width: 100,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: skill
+                                ? const [
+                                    Icon(Icons.flash_on, size: 25, color: Colors.teal),
+                                    SizedBox(width: 5),
+                                    Text("Min LVL Required",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                  ]
+                                : const [
+                                    Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                    SizedBox(width: 5),
+                                    Text("No LVL Required",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                  ],
+                          ),
+                        ),
+                      ]),
+                      const SizedBox(height: 10),
+                      Align(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: skill
+                          children: bounty
                               ? const [
-                                  Icon(Icons.flash_on, size: 25, color: Colors.teal),
+                                  Icon(Icons.attach_money_outlined, size: 25, color: Colors.red),
                                   SizedBox(width: 5),
-                                  Text("Min LVL Required",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                  Text("Rewards available",
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
                                 ]
                               : const [
-                                  Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                  Icon(Icons.money_off, size: 25, color: Colors.red),
                                   SizedBox(width: 5),
-                                  Text("No LVL Required",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                  Text("No Rewards",
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
                                 ],
                         ),
                       ),
-                    ]),
-                    const SizedBox(height: 10),
-                    Align(
-                      child: Column(
-                        children: bounty
-                            ? const [
-                                Icon(Icons.attach_money_outlined, size: 25, color: Colors.red),
-                                SizedBox(width: 5),
-                                Text("Rewards available",
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
-                              ]
-                            : const [
-                                Icon(Icons.money_off, size: 25, color: Colors.red),
-                                SizedBox(width: 5),
-                                Text("No Rewards",
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
-                              ],
-                      ),
-                    ),
 
-                    const SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
-                    // prize
-                    paid
-                        ? Container(
-                            margin: const EdgeInsets.only(top: 5),
-                            padding: const EdgeInsets.all(8),
-                            width: MediaQuery.of(context).size.width,
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(colors: [Colors.blue, Colors.purple]),
-                            ),
-                            child: Column(
-                              children: const [
-                                Text(
-                                  "Prize to be won",
-                                  style: TextStyle(color: Colors.white),
-                                  textScaleFactor: 1.3,
-                                ),
-                                FittedBox(
-                                  child: Text(
-                                    "\u20b9 Amount here nigga in string",
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                    textScaleFactor: 4,
+                      // prize
+                      paid
+                          ? Container(
+                              padding: const EdgeInsets.all(3),
+                              width: MediaQuery.of(context).size.width,
+                              decoration: const BoxDecoration(color: Colors.blue),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Text(
+                                    "Winner gets",
+                                    style: TextStyle(color: Colors.white),
+                                    textScaleFactor: 1.3,
                                   ),
-                                )
-                              ],
-                            ),
-                          )
-                        : Container(),
-                  ],
+                                  FittedBox(
+                                    child: Text(
+                                      "\u20b9 100000",
+                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                      textScaleFactor: 4,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          : Container(),
+                    ],
+                  ),
                 ),
               ),
             ),
