@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
 import 'package:zbgaming/model/usermodel.dart';
+import 'package:zbgaming/utils/routes.dart';
 
 // drawer after login
 class MyDrawer extends StatelessWidget {
@@ -146,10 +147,8 @@ class MyLoginDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // login function
-    loginUser() {
-      context.read<UserModel>().setuid("blahblah");
-      context.read<UserModel>().setimageurl("assets/images/zbunker-app-banner.png");
-      context.read<UserModel>().setusername("TestUser");
+    loginUser() async {
+      await Navigator.pushNamed(context, AppRoutes.login);
     }
 
     return Drawer(
@@ -181,7 +180,7 @@ class MyLoginDrawer extends StatelessWidget {
                                 child: const Text("Login"),
                                 onPressed: () {
                                   loginUser();
-                                }, // login navigation
+                                },
                                 style: ButtonStyle(
                                     elevation: MaterialStateProperty.all(0),
                                     fixedSize: MaterialStateProperty.all(const Size(200, 30))),

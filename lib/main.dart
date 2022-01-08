@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
+import 'package:zbgaming/pages/login.dart';
 import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/valorant.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // home: const HomePage(),
       home: const HomePage(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",
@@ -33,6 +35,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.valorant: (context) => const ValorantTournaments(),
         AppRoutes.pubg: (context) => const PubgTournaments(),
         AppRoutes.organizer: (context) => const Organizer(),
+        AppRoutes.login: (context) => const Login()
       },
     );
   }
