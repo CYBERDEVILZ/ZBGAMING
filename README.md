@@ -1,16 +1,5 @@
 # zbgaming
 
-A new Flutter project.
+ZBunker gaming evolved with only one motive: To make India a Super Gaming Hub. Gone are the days when studies only matter. This is the modern India, modern people, modern lifestyle and modern belief. Gaming is not a boon, it requires immense amount of psychomotor skills, patience, skills, determination and the right set of mentality. It's not just a sport, its a way of being.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ZBgaming is an application to host matches and tournaments to find the right talents who can raise the bar for the next generation of gamers. Win tournaments, earn prizes and survive the leaderboard!
