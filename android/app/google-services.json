@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "12575084471",
+    "project_id": "zbgaming-v1",
+    "storage_bucket": "zbgaming-v1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12575084471:android:1ce847d0838524de0ee232",
+        "android_client_info": {
+          "package_name": "com.example.zbgaming"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "12575084471-se9qd097komlnc7u0qbfqbfohv6mpq03.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zbgaming",
+            "certificate_hash": "cc47bc43730c03f15064b857e4623358ac921bd1"
+          }
+        },
+        {
+          "client_id": "12575084471-ckci6anmipu0l237iuk2e11h71rkdj6b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApP0fP9W-HngWhu-qtEqJtzHE4EHMTaFw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "12575084471-ckci6anmipu0l237iuk2e11h71rkdj6b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

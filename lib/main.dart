@@ -7,10 +7,14 @@ import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/valorant.dart';
 import 'package:zbgaming/utils/routes.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 import 'model/usermodel.dart';
 import 'pages/home_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MultiProvider(providers: [ChangeNotifierProvider(create: (_) => UserModel())], child: const MyApp()));
 }
 
