@@ -15,3 +15,4 @@ ZBgaming is an application to host matches and tournaments to find the right tal
 - [ ] Define page for Organizer
 - [ ] Validator's page
 - [ ] Automatic transfer of money
+- [ ] Use Realtime database for updation and registration things
