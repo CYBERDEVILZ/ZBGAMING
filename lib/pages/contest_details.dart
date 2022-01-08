@@ -74,7 +74,7 @@ class ContestDetails extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
               child: Container(
-                padding: const EdgeInsets.only(top: 3, left: 3, right: 3),
+                padding: const EdgeInsets.only(top: 3, left: 3, right: 3, bottom: 3),
                 decoration: const BoxDecoration(color: Colors.blue),
                 child: Container(
                   color: Colors.white,
@@ -173,6 +173,7 @@ class ContestDetails extends StatelessWidget {
                       // prize
                       paid
                           ? Container(
+                              height: 90,
                               padding: const EdgeInsets.all(3),
                               width: MediaQuery.of(context).size.width,
                               decoration: const BoxDecoration(color: Colors.blue),
@@ -184,11 +185,13 @@ class ContestDetails extends StatelessWidget {
                                     style: TextStyle(color: Colors.white),
                                     textScaleFactor: 1.3,
                                   ),
-                                  FittedBox(
-                                    child: Text(
-                                      "\u20b9 100000",
-                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                      textScaleFactor: 4,
+                                  Expanded(
+                                    child: FittedBox(
+                                      child: Text(
+                                        "\u20b9 1.3 Lacs",
+                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                        textScaleFactor: 4,
+                                      ),
                                     ),
                                   )
                                 ],

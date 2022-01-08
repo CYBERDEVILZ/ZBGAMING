@@ -66,33 +66,48 @@ class MyDrawer extends StatelessWidget {
                 )),
             ListTile(
               onTap: () {}, // leads to registered matches
-              leading: const Icon(Icons.flag),
-              trailing: const Icon(Icons.arrow_right),
-              title: const Text("Registered Matches"),
+              leading: const Icon(Icons.flag, color: Colors.black),
+              trailing: const Icon(Icons.arrow_right, color: Colors.black),
+              title: const Text(
+                "Registered Matches",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ListTile(
               onTap: () {}, // leads to favorites
-              leading: const Icon(Icons.star),
-              trailing: const Icon(Icons.arrow_right),
-              title: const Text("Favorites"),
+              leading: const Icon(Icons.star, color: Colors.black),
+              trailing: const Icon(Icons.arrow_right, color: Colors.black),
+              title: const Text(
+                "Favorites",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ListTile(
               onTap: () {}, // leads to match history
-              leading: const Icon(Icons.history),
-              trailing: const Icon(Icons.arrow_right),
-              title: const Text("History"),
+              leading: const Icon(Icons.history, color: Colors.black),
+              trailing: const Icon(Icons.arrow_right, color: Colors.black),
+              title: const Text(
+                "History",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ListTile(
               onTap: () {}, // leads to my account
-              leading: const Icon(Icons.account_circle),
-              trailing: const Icon(Icons.arrow_right),
-              title: const Text("My Account"),
+              leading: const Icon(Icons.account_circle, color: Colors.black),
+              trailing: const Icon(Icons.arrow_right, color: Colors.black),
+              title: const Text(
+                "My Account",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ListTile(
               onTap: () {}, // leads to Settings
-              leading: const Icon(Icons.settings),
-              trailing: const Icon(Icons.arrow_right),
-              title: const Text("Settings"),
+              leading: const Icon(Icons.settings, color: Colors.black),
+              trailing: const Icon(Icons.arrow_right, color: Colors.black),
+              title: const Text(
+                "Settings",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             const SizedBox(height: 15),
             Padding(
@@ -193,9 +208,9 @@ class MyLoginDrawer extends StatelessWidget {
                 )),
             ListTile(
               onTap: () {}, // leads to Settings
-              leading: const Icon(Icons.settings),
-              trailing: const Icon(Icons.arrow_right),
-              title: const Text("Settings"),
+              leading: const Icon(Icons.settings, color: Colors.black),
+              trailing: const Icon(Icons.arrow_right, color: Colors.black),
+              title: const Text("Settings", style: TextStyle(color: Colors.black)),
             ),
             const SizedBox(height: 15),
             Container(
