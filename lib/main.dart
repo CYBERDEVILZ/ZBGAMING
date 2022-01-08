@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
+import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/valorant.dart';
 import 'package:zbgaming/utils/routes.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.freefire: (context) => const FreeFireTournaments(),
         AppRoutes.valorant: (context) => const ValorantTournaments(),
         AppRoutes.pubg: (context) => const PubgTournaments(),
+        AppRoutes.organizer: (context) => const Organizer(),
       },
     );
   }

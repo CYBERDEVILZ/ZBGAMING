@@ -5,6 +5,12 @@ class Organizer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(child: Container());
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Dashboard"),
+        elevation: 0,
+        centerTitle: true,
+      ),
+    );
   }
 }
