@@ -32,7 +32,6 @@ class _LoginState extends State<Login> {
       if (_formKey.currentState!.validate()) {
         FirebaseAuth auth = FirebaseAuth.instance;
         await auth.signInWithEmailAndPassword(email: email.text, password: passwd.text).then((value) {
-          // context.read<UserModel>().setuid(auth.currentUser!.uid);
           Navigator.pop(context);
         }).catchError((onError) => /* Write code for error */ null);
       }
