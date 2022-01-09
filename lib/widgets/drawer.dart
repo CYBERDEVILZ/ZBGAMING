@@ -194,7 +194,9 @@ class MyLoginDrawer extends StatelessWidget {
                                 children: [
                                   const Text("Don't have an account? "),
                                   GestureDetector(
-                                    onTap: () {}, // signup navigation
+                                    onTap: () {
+                                      Navigator.pushNamed(context, AppRoutes.signup);
+                                    }, // signup navigation
                                     child: const Text(
                                       "Create one",
                                       style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:zbgaming/utils/routes.dart';
 
 // Notes for me.
 // How to validate a user?
@@ -161,7 +162,9 @@ class _LoginState extends State<Login> {
                     ),
                     GestureDetector(
                       // signup navigation
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.signup);
+                      },
                       child: const Text(
                         "Create one",
                         style: TextStyle(

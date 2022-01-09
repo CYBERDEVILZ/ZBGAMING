@@ -5,6 +5,7 @@ import 'package:zbgaming/pages/freefire.dart';
 import 'package:zbgaming/pages/login.dart';
 import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/pages/pubg.dart';
+import 'package:zbgaming/pages/signup.dart';
 import 'package:zbgaming/pages/valorant.dart';
 import 'package:zbgaming/utils/routes.dart';
 
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
         AppRoutes.valorant: (context) => const ValorantTournaments(),
         AppRoutes.pubg: (context) => const PubgTournaments(),
         AppRoutes.organizer: (context) => const Organizer(),
-        AppRoutes.login: (context) => const Login()
+        AppRoutes.login: (context) => const Login(),
+        AppRoutes.signup: (context) => SignUp(),
       },
     );
   }
