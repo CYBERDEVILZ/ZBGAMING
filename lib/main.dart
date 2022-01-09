@@ -37,7 +37,8 @@ class MyApp extends StatelessWidget {
         AppRoutes.pubg: (context) => const PubgTournaments(),
         AppRoutes.organizer: (context) => const Organizer(),
         AppRoutes.login: (context) => const Login(),
-        AppRoutes.signup: (context) => SignUp(),
+        AppRoutes.home: (context) => const HomePage(),
+        AppRoutes.signup: (context) => const SignUp(),
       },
     );
   }

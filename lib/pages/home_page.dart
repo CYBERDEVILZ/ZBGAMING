@@ -25,10 +25,10 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.authStateChanges().listen((User? event) {
       if (event?.uid == null) {
         isLogged = false;
-        setState(() {});
+        if (mounted) setState(() {});
       } else if (event?.uid != null) {
         isLogged = true;
-        setState(() {});
+        if (mounted) setState(() {});
       }
     });
   }

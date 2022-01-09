@@ -90,6 +90,15 @@ class _LoginState extends State<Login> {
     // --------------- Return is Here --------------- //
     return SafeArea(
       child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          bottomSheet: Container(
+              color: Colors.white,
+              height: 100,
+              width: MediaQuery.of(context).size.width,
+              child: Image.asset(
+                "assets/images/zbunker-app-banner.png",
+                fit: BoxFit.fitWidth,
+              )),
           backgroundColor: Colors.white,
           body: SingleChildScrollView(
               child: Form(
@@ -105,14 +114,14 @@ class _LoginState extends State<Login> {
                       child: Image.asset(
                         "assets/images/zglitch.gif",
                         fit: BoxFit.contain,
-                        color: Colors.blue,
+                        color: Colors.blue[700],
                       )),
-                  Positioned.fill(
+                  const Positioned.fill(
                       bottom: 10,
                       child: Align(
                         child: Text(
                           "Got Skills? Get Rewarded.",
-                          style: TextStyle(color: Colors.blue[600], fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
                         alignment: Alignment.bottomCenter,
                       )),
@@ -173,13 +182,6 @@ class _LoginState extends State<Login> {
                     )
                   ],
                 ),
-
-                const SizedBox(height: 20),
-
-                Align(
-                    child: Image.asset("assets/images/zbunker-app-banner.png"),
-                    alignment: Alignment.bottomCenter,
-                    heightFactor: 0.8)
               ],
             ),
           ))),

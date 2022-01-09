@@ -7,4 +7,5 @@ class AppRoutes {
   static String login = "/login";
   static String signup = "/signup";
   static String organizer = "/organizer";
+  static String home = "/home";
 }

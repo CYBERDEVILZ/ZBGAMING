@@ -199,7 +199,10 @@ class MyLoginDrawer extends StatelessWidget {
                                     }, // signup navigation
                                     child: const Text(
                                       "Create one",
-                                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline),
                                     ),
                                   )
                                 ],
