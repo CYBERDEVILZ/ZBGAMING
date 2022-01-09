@@ -168,6 +168,12 @@ class _SignUpState extends State<SignUp> {
                   )
                 ]),
 
+                Divider(
+                  color: Colors.blue,
+                  indent: MediaQuery.of(context).size.width / 2 - 40,
+                  thickness: 2,
+                ),
+
                 const SizedBox(height: 20),
 
                 // username
