@@ -151,9 +151,21 @@ class _SignUpState extends State<SignUp> {
                     height: 200,
                     decoration: const BoxDecoration(
                         image: DecorationImage(
-                            image: AssetImage("assets/images/zbunker-app-banner-upsidedown.png"),
-                            fit: BoxFit.fitWidth)),
+                            image: AssetImage("assets/images/zbunker-app-banner-upsidedown.png"), fit: BoxFit.cover)),
                   ),
+
+                  const Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          "Join The League.",
+                          style: TextStyle(color: Colors.blue, fontSize: 30),
+                        ),
+                      ),
+                    ),
+                  )
                 ]),
 
                 const SizedBox(height: 20),
