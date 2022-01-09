@@ -6,8 +6,8 @@ import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/utils/routes.dart';
 
 // drawer after login
-class MyDrawer extends StatelessWidget {
-  const MyDrawer({Key? key}) : super(key: key);
+class AfterLoginDrawer extends StatelessWidget {
+  const AfterLoginDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +20,12 @@ class MyDrawer extends StatelessWidget {
                 padding: const EdgeInsets.all(0),
                 child: Stack(
                   children: [
+                    // zbunker element straight
                     Container(
                         color: Colors.white,
                         height: 400,
                         width: MediaQuery.of(context).size.width,
-                        child: Image.asset("assets/images/zbunker-app-banner.png",
-                            fit: BoxFit.fitWidth)), // zbunker banner art
+                        child: Image.asset("assets/images/zbunker-app-banner.png", fit: BoxFit.fitWidth)),
                     SizedBox(
                       height: 400,
                       width: double.infinity,
@@ -145,8 +145,8 @@ class MyDrawer extends StatelessWidget {
 }
 
 // drawer before login
-class MyLoginDrawer extends StatelessWidget {
-  const MyLoginDrawer({Key? key}) : super(key: key);
+class BeforeLoginDrawer extends StatelessWidget {
+  const BeforeLoginDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -164,12 +164,13 @@ class MyLoginDrawer extends StatelessWidget {
                 padding: const EdgeInsets.all(0),
                 child: Stack(
                   children: [
+                    // zbunker element upside down
                     SizedBox(
-                        height: 400,
-                        width: MediaQuery.of(context).size.width,
-                        child: Image.asset("assets/images/zbunker-app-banner-upsidedown.png",
-                            fit: BoxFit.cover) // zbgaming banner art
-                        ),
+                      height: 400,
+                      width: MediaQuery.of(context).size.width,
+                      child: Image.asset("assets/images/zbunker-app-banner-upsidedown.png", fit: BoxFit.cover),
+                    ),
+
                     Container(
                       color: Colors.red.withOpacity(0),
                       height: 400,

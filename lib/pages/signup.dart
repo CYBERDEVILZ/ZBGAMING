@@ -174,7 +174,7 @@ class _SignUpState extends State<SignUp> {
                   thickness: 2,
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
                 // username
                 Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: username),
