@@ -41,7 +41,7 @@ class _LoginState extends State<Login> {
     }
 
     // Email Entry
-    Widget emailEntry = TextFormField(
+    TextFormField emailEntry = TextFormField(
       controller: email,
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
@@ -64,7 +64,7 @@ class _LoginState extends State<Login> {
     );
 
     // Password Entry
-    Widget passwdEntry = TextFormField(
+    TextFormField passwdEntry = TextFormField(
       controller: passwd,
       obscureText: true,
       textInputAction: TextInputAction.done,
