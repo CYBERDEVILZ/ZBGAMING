@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class UserModel with ChangeNotifier {
-  String? _uid = "sldkjf";
-  String? _imageurl = "lskdjf";
-  String? _username = "testAccount";
+  String? _uid;
+  String? _imageurl;
+  String? _username;
 
   String? get uid => _uid;
   String? get imageurl => _imageurl;

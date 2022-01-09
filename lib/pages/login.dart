@@ -31,10 +31,10 @@ class _LoginState extends State<Login> {
       setState(() {});
       if (_formKey.currentState!.validate()) {
         FirebaseAuth auth = FirebaseAuth.instance;
-        await auth
-            .signInWithEmailAndPassword(email: email.text, password: passwd.text)
-            .then((value) => {/* Write code for success */})
-            .catchError((onError) => {/* Write code for error */});
+        await auth.signInWithEmailAndPassword(email: email.text, password: passwd.text).then((value) {
+          // context.read<UserModel>().setuid(auth.currentUser!.uid);
+          Navigator.pop(context);
+        }).catchError((onError) => /* Write code for error */ null);
       }
       isLoading = false;
       setState(() {});
@@ -96,6 +96,14 @@ class _LoginState extends State<Login> {
             "Login To Fight",
             style: TextStyle(),
             textScaleFactor: 2,
+          ),
+
+          const SizedBox(height: 5),
+
+          const Text(
+            "The Most Competitive Gaming Platform Ever",
+            style: TextStyle(),
+            textScaleFactor: 0.9,
           ),
 
           const SizedBox(height: 10),

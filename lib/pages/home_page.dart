@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/widgets/drawer.dart';
 import 'package:zbgaming/widgets/home_page_list.dart';
+
+// ignore: unused_import
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,6 +15,24 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int index = 0; // index for bottom nav bar
+  bool isLogged = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // subscribe to userchanges
+    FirebaseAuth.instance.authStateChanges().listen((User? event) {
+      if (event?.uid == null) {
+        isLogged = false;
+        setState(() {});
+      } else if (event?.uid != null) {
+        isLogged = true;
+        setState(() {});
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -20,7 +40,7 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
           appBar: AppBar(title: const Text("Games"), elevation: 0, centerTitle: true),
           body: const HomePageList(), // contains list of games
-          drawer: context.watch<UserModel>().uid == null ? const MyLoginDrawer() : const MyDrawer(),
+          drawer: isLogged ? const MyDrawer() : const MyLoginDrawer(),
           bottomNavigationBar: BottomNavigationBar(
               items: const [
                 // games

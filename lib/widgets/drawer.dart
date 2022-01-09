@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
@@ -54,7 +55,9 @@ class MyDrawer extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 30),
                                 child: Text(
-                                  context.watch<UserModel>().username!,
+                                  context.watch<UserModel>().username == null
+                                      ? "null"
+                                      : context.watch<UserModel>().username!,
                                   style: const TextStyle(fontSize: 20),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -115,8 +118,9 @@ class MyDrawer extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: OutlinedButton(
                   // sign out user
-                  onPressed: () {
+                  onPressed: () async {
                     context.read<UserModel>().signout();
+                    await FirebaseAuth.instance.signOut();
                   },
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
