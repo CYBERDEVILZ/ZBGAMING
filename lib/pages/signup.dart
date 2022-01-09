@@ -170,7 +170,7 @@ class _SignUpState extends State<SignUp> {
 
                 Divider(
                   color: Colors.blue,
-                  indent: MediaQuery.of(context).size.width / 2 - 40,
+                  indent: MediaQuery.of(context).size.width / 2 - 30,
                   thickness: 2,
                 ),
 
