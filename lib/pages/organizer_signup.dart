@@ -30,6 +30,8 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
   // form key
   final formKey = GlobalKey<FormState>();
 
+  bool checkBoxValue = false;
+
   @override
   Widget build(BuildContext context) {
     // submit data to firestore
@@ -38,7 +40,6 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
         "username": usernameController.text,
         "email": emailController.text,
         "imageurl": null,
-        "organizer": true
       }).then((value) async {
         // add data to usermodel to reduce number of reads to firestore
         context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
@@ -179,7 +180,7 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        "Join The League.",
+                        "Create Amazing Tournaments.",
                         style: TextStyle(color: Colors.blue, fontSize: 30),
                       ),
                     ),
@@ -207,15 +208,32 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
               // confirm password
               Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: confirmPassword),
 
-              const SizedBox(height: 20),
-
               // checkbox required
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Checkbox(
+                    value: checkBoxValue,
+                    onChanged: (value) {
+                      checkBoxValue = !checkBoxValue;
+                      setState(() {});
+                    }),
+                const Text("I have read and accepted the "),
+                GestureDetector(
+                    onTap: () {},
+                    child: const Text(
+                      "Policy",
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                    ))
+              ]),
+
+              const SizedBox(height: 20),
 
               // submit button
               ElevatedButton(
-                onPressed: () {
-                  validate();
-                },
+                onPressed: checkBoxValue
+                    ? () {
+                        validate();
+                      }
+                    : null,
                 child: isLoading
                     ? const CircularProgressIndicator(
                         color: Colors.white,

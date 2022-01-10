@@ -37,7 +37,6 @@ class _SignUpState extends State<SignUp> {
         "username": usernameController.text,
         "email": emailController.text,
         "imageurl": null,
-        "organizer": false
       }).then((value) async {
         // add data to usermodel to reduce number of reads to firestore
         context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
