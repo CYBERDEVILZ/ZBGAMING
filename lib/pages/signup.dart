@@ -33,8 +33,12 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     // submit data to firestore
     Future<void> submitData() async {
-      await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).set(
-          {"username": usernameController.text, "email": emailController.text, "imageurl": null}).then((value) async {
+      await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).set({
+        "username": usernameController.text,
+        "email": emailController.text,
+        "imageurl": null,
+        "organizer": false
+      }).then((value) async {
         // add data to usermodel to reduce number of reads to firestore
         context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
         context.read<UserModel>().setusername(usernameController.text);
