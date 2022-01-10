@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
@@ -23,13 +24,20 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     // subscribe to userchanges
-    FirebaseAuth.instance.authStateChanges().listen((User? event) {
+    FirebaseAuth.instance.authStateChanges().listen((User? event) async {
       if (event?.uid == null) {
         isLogged = false;
         if (mounted) context.read<UserModel>().signout();
         if (mounted) setState(() {});
       } else if (event?.uid != null) {
+        var data =
+            await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).get();
+        context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+        context.read<UserModel>().setusername(data["username"]);
+        context.read<UserModel>().setemail(data["email"]);
+        context.read<UserModel>().setimageurl(data["imageurl"]);
         isLogged = true;
+
         if (mounted) setState(() {});
       }
     });
