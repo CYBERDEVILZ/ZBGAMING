@@ -103,103 +103,101 @@ class _LoginState extends State<Login> {
     );
 
     // --------------- Return is Here --------------- //
-    return SafeArea(
-      child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          bottomSheet: Container(
-              color: Colors.white,
-              height: 100,
-              width: MediaQuery.of(context).size.width,
-              child: Image.asset(
-                "assets/images/zbunker-app-banner.png",
-                fit: BoxFit.fitWidth,
-              )),
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-              child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                const SizedBox(height: 50),
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        bottomSheet: Container(
+            color: Colors.white,
+            height: 100,
+            width: MediaQuery.of(context).size.width,
+            child: Image.asset(
+              "assets/images/zbunker-app-banner.png",
+              fit: BoxFit.fitWidth,
+            )),
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+            child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              const SizedBox(height: 50),
 
-                // image for login
-                Stack(children: [
-                  SizedBox(
-                      height: 150,
-                      child: Image.asset(
-                        "assets/images/zglitch.gif",
-                        fit: BoxFit.contain,
-                        color: Colors.blue[700],
-                      )),
-                  const Positioned.fill(
-                      bottom: 10,
-                      child: Align(
-                        child: Text(
-                          "Got Skills? Get Rewarded.",
-                          style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-                        ),
-                        alignment: Alignment.bottomCenter,
-                      )),
-                ]),
-
-                const SizedBox(height: 20),
-
-                // Email Entry
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: emailEntry),
-
-                // Password Entry
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: passwdEntry),
-
-                const SizedBox(height: 40),
-
-                // Login Button
-                ElevatedButton(
-                  onPressed: () {
-                    validate();
-                  },
-                  child: isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          "Login",
-                          style: TextStyle(fontSize: 15, color: Colors.white),
-                        ),
-                  style: ButtonStyle(
-                      elevation: MaterialStateProperty.all(0),
-                      fixedSize: MaterialStateProperty.all(const Size(150, 50)),
-                      backgroundColor: MaterialStateProperty.all(Colors.blue)),
-                ),
-
-                const SizedBox(height: 30),
-
-                // forgot password feature
-                const Text("Forgot Password", style: TextStyle(color: Colors.blue)),
-
-                const SizedBox(height: 5),
-
-                // signup feature
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Don't have an account? ",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    GestureDetector(
-                      // signup navigation
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.signup);
-                      },
-                      child: const Text(
-                        "Create one",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.blue, decoration: TextDecoration.underline),
+              // image for login
+              Stack(children: [
+                SizedBox(
+                    height: 150,
+                    child: Image.asset(
+                      "assets/images/zglitch.gif",
+                      fit: BoxFit.contain,
+                      color: Colors.blue[700],
+                    )),
+                const Positioned.fill(
+                    bottom: 10,
+                    child: Align(
+                      child: Text(
+                        "Got Skills? Get Rewarded.",
+                        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ))),
-    );
+                      alignment: Alignment.bottomCenter,
+                    )),
+              ]),
+
+              const SizedBox(height: 20),
+
+              // Email Entry
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: emailEntry),
+
+              // Password Entry
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: passwdEntry),
+
+              const SizedBox(height: 40),
+
+              // Login Button
+              ElevatedButton(
+                onPressed: () {
+                  validate();
+                },
+                child: isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        "Login",
+                        style: TextStyle(fontSize: 15, color: Colors.white),
+                      ),
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(0),
+                    fixedSize: MaterialStateProperty.all(const Size(150, 50)),
+                    backgroundColor: MaterialStateProperty.all(Colors.blue)),
+              ),
+
+              const SizedBox(height: 30),
+
+              // forgot password feature
+              const Text("Forgot Password", style: TextStyle(color: Colors.blue)),
+
+              const SizedBox(height: 5),
+
+              // signup feature
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Don't have an account? ",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  GestureDetector(
+                    // signup navigation
+                    onTap: () {
+                      Navigator.pushNamed(context, AppRoutes.signup);
+                    },
+                    child: const Text(
+                      "Create one",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.blue, decoration: TextDecoration.underline),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        )));
   }
 }

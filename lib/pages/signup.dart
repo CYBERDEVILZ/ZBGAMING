@@ -8,6 +8,7 @@ import 'package:provider/src/provider.dart';
 
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/home_page.dart';
+import 'package:zbgaming/utils/routes.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -152,74 +153,86 @@ class _SignUpState extends State<SignUp> {
     );
 
     // --------------- Return is Here --------------- //
-    return SafeArea(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                Stack(children: [
-                  // image for signup
-                  Container(
-                    height: 200,
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage("assets/images/zbunker-app-banner-upsidedown.png"), fit: BoxFit.cover)),
-                  ),
-
-                  const Positioned.fill(
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          "Join The League.",
-                          style: TextStyle(color: Colors.blue, fontSize: 30),
-                        ),
-                      ),
-                    ),
-                  )
-                ]),
-
-                Divider(
-                  color: Colors.blue,
-                  indent: MediaQuery.of(context).size.width / 2 - 30,
-                  thickness: 2,
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Form(
+          key: formKey,
+          child: Column(
+            children: [
+              Stack(children: [
+                // image for signup
+                Container(
+                  height: 200,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/zbunker-app-banner-upsidedown.png"), fit: BoxFit.cover)),
                 ),
 
-                const SizedBox(height: 10),
-
-                // username
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: username),
-
-                // email
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: email),
-
-                // password
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: password),
-
-                // confirm password
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: confirmPassword),
-
-                const SizedBox(height: 20),
-
-                // submit button
-                ElevatedButton(
-                  onPressed: () {
-                    validate();
-                  },
-                  child: isLoading
-                      ? const CircularProgressIndicator(
-                          color: Colors.white,
-                        )
-                      : const Text("Sign Up"),
-                  style: ButtonStyle(
-                      elevation: MaterialStateProperty.all(0),
-                      fixedSize: MaterialStateProperty.all(const Size(150, 50))),
+                const Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        "Join The League.",
+                        style: TextStyle(color: Colors.blue, fontSize: 30),
+                      ),
+                    ),
+                  ),
                 )
-              ],
-            ),
+              ]),
+
+              Divider(
+                color: Colors.blue,
+                indent: MediaQuery.of(context).size.width / 2 - 30,
+                thickness: 2,
+              ),
+
+              const SizedBox(height: 10),
+
+              // username
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: username),
+
+              // email
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: email),
+
+              // password
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: password),
+
+              // confirm password
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: confirmPassword),
+
+              const SizedBox(height: 20),
+
+              // submit button
+              ElevatedButton(
+                onPressed: () {
+                  validate();
+                },
+                child: isLoading
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : const Text("Sign Up"),
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(0), fixedSize: MaterialStateProperty.all(const Size(150, 50))),
+              ),
+
+              const SizedBox(height: 20),
+
+              // organizer signup link
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                    child: const Text(
+                      ">>> Sign Up for Organizers",
+                      style: TextStyle(decoration: TextDecoration.underline),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.organizerSignUp);
+                    }),
+              )
+            ],
           ),
         ),
       ),

@@ -8,4 +8,5 @@ class AppRoutes {
   static String signup = "/signup";
   static String organizer = "/organizer";
   static String home = "/home";
+  static String organizerSignUp = "/organizer-signup";
 }

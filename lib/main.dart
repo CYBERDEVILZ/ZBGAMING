@@ -4,6 +4,7 @@ import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
 import 'package:zbgaming/pages/login.dart';
 import 'package:zbgaming/pages/organizer.dart';
+import 'package:zbgaming/pages/organizer_signup.dart';
 import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/signup.dart';
 import 'package:zbgaming/pages/valorant.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.login: (context) => const Login(),
         AppRoutes.home: (context) => const HomePage(),
         AppRoutes.signup: (context) => const SignUp(),
+        AppRoutes.organizerSignUp: (context) => const OrganizerSignUp(),
       },
     );
   }

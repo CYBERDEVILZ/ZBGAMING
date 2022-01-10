@@ -27,8 +27,8 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.authStateChanges().listen((User? event) async {
       if (event?.uid == null) {
         isLogged = false;
-        if (mounted) context.read<UserModel>().signout();
         if (mounted) setState(() {});
+        if (mounted) context.read<UserModel>().signout();
       } else if (event?.uid != null) {
         var data =
             await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).get();
