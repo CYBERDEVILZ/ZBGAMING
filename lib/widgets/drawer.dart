@@ -35,23 +35,35 @@ class AfterLoginDrawer extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Stack(
-                                children: [
-                                  CircleAvatar(backgroundColor: Colors.blue[600], radius: 42),
-                                  Positioned(
-                                    top: 2,
-                                    left: 2,
-                                    child: CircleAvatar(
-                                      backgroundImage: const AssetImage("assets/images/csgo.jpg"), // image of account
-                                      foregroundImage: context.watch<UserModel>().imageurl == null
-                                          ? const AssetImage("assets/images/csgo.jpg")
-                                          : const AssetImage(
-                                              "assets/images/valo.jpg"), // network image of user from database
-                                      radius: 40,
-                                    ),
-                                  )
-                                ],
-                              ),
+                              !(context.watch<UserModel>().imageurl == null)
+                                  ? Stack(
+                                      children: [
+                                        CircleAvatar(backgroundColor: Colors.cyan[700], radius: 45),
+                                        Positioned(
+                                          top: 5,
+                                          left: 5,
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.cyan[700],
+                                            child: const CircularProgressIndicator(
+                                              color: Colors.white,
+                                            ),
+                                            foregroundImage: NetworkImage(context.watch<UserModel>().imageurl!),
+                                            radius: 40,
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  : CircleAvatar(
+                                      child: const FittedBox(
+                                        fit: BoxFit.cover,
+                                        child: Icon(
+                                          Icons.account_circle,
+                                          color: Colors.white,
+                                          size: 100,
+                                        ),
+                                      ),
+                                      backgroundColor: Colors.cyan[700],
+                                      radius: 45),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 30),
                                 child: Text(

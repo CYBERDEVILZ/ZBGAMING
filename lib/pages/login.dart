@@ -1,5 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+// ignore: implementation_imports
+import 'package:provider/src/provider.dart';
+
+import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/utils/routes.dart';
 
 // Notes for me.
@@ -32,7 +39,15 @@ class _LoginState extends State<Login> {
       setState(() {});
       if (_formKey.currentState!.validate()) {
         FirebaseAuth auth = FirebaseAuth.instance;
-        await auth.signInWithEmailAndPassword(email: email.text, password: passwd.text).then((value) {
+        await auth.signInWithEmailAndPassword(email: email.text, password: passwd.text).then((value) async {
+          var data = await FirebaseFirestore.instance.collection("userinfo").doc(auth.currentUser!.uid).get();
+          context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+          context.read<UserModel>().setusername(data["username"]);
+          context.read<UserModel>().setemail(data["email"]);
+          context.read<UserModel>().setimageurl(data["imageurl"]);
+          await Fluttertoast.showToast(
+              msg: "Login successful!", backgroundColor: Colors.blue[700], textColor: Colors.white);
+          await Future.delayed(const Duration(seconds: 1));
           Navigator.pop(context);
         }).catchError((onError) => /* Write code for error */ null);
       }

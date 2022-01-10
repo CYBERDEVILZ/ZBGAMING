@@ -1,6 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+// ignore: implementation_imports
+import 'package:provider/src/provider.dart';
+
+import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/home_page.dart';
 
 class SignUp extends StatefulWidget {
@@ -26,10 +32,18 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     // submit data to firestore
     Future<void> submitData() async {
-      await FirebaseFirestore.instance
-          .collection("userinfo")
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .set({"username": usernameController.text, "email": emailController.text, "imageurl": null});
+      await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).set(
+          {"username": usernameController.text, "email": emailController.text, "imageurl": null}).then((value) async {
+        // add data to usermodel to reduce number of reads to firestore
+        context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+        context.read<UserModel>().setusername(usernameController.text);
+        context.read<UserModel>().setimageurl(null);
+        context.read<UserModel>().setemail(emailController.text);
+
+        // show toast if successful
+        await Fluttertoast.showToast(
+            msg: "Registration successful!", backgroundColor: Colors.blue[700], textColor: Colors.white);
+      });
     }
 
     // validation

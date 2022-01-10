@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/widgets/drawer.dart';
 import 'package:zbgaming/widgets/home_page_list.dart';
 
@@ -25,6 +26,7 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.authStateChanges().listen((User? event) {
       if (event?.uid == null) {
         isLogged = false;
+        if (mounted) context.read<UserModel>().signout();
         if (mounted) setState(() {});
       } else if (event?.uid != null) {
         isLogged = true;

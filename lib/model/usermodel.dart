@@ -4,10 +4,17 @@ class UserModel with ChangeNotifier {
   String? _uid;
   String? _imageurl;
   String? _username;
+  String? _email;
 
   String? get uid => _uid;
   String? get imageurl => _imageurl;
   String? get username => _username;
+  String? get email => _email;
+
+  void setemail(String? email) {
+    _email = email;
+    notifyListeners();
+  }
 
   void setuid(String? id) {
     _uid = id;
