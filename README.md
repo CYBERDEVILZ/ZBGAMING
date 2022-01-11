@@ -16,3 +16,5 @@ ZBgaming is an application to host matches and tournaments to find the right tal
 - [ ] Validator's page
 - [ ] Automatic transfer of money
 - [ ] Use Realtime database for updation and registration things
+- [ ] Create a backend server to perform authorization to database (scaling)
+- [ ] Upgrade to MONGODB or any other nosql database (scaling)
