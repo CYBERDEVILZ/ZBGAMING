@@ -37,7 +37,7 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
     // validation
     void validate() async {
       isLoading = true;
-      setState(() {});
+      if (mounted) setState(() {});
       if (_formKey.currentState!.validate()) {
         FirebaseAuth auth = FirebaseAuth.instance;
         await auth.signInWithEmailAndPassword(email: email.text, password: passwd.text).then((value) async {
@@ -54,7 +54,7 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
         }).catchError((onError) => /* Write code for error */ null);
       }
       isLoading = false;
-      setState(() {});
+      if (mounted) setState(() {});
     }
 
     // Email Entry
@@ -188,7 +188,7 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
                   GestureDetector(
                     // signup navigation
                     onTap: () {
-                      Navigator.pushNamed(context, AppRoutes.signup);
+                      Navigator.pushNamed(context, AppRoutes.organizerSignUp);
                     },
                     child: const Text(
                       "Create one",

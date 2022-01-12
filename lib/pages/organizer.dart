@@ -17,6 +17,18 @@ class Organizer extends StatefulWidget {
 }
 
 class _OrganizerState extends State<Organizer> {
+  bool isLoading = true;
+
+  // loading matches
+  loadMatches() async {
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -24,10 +36,15 @@ class _OrganizerState extends State<Organizer> {
     // check for authentication
     FirebaseAuth.instance.authStateChanges().listen((event) {
       if (event?.uid == null) {
-        Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (context) => const OrganizerLogin()), (route) => false);
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+              context, MaterialPageRoute(builder: (context) => const OrganizerLogin()), (route) => false);
+        }
       }
     });
+
+    // load upcoming matches
+    loadMatches();
   }
 
   @override
@@ -190,6 +207,13 @@ class _OrganizerState extends State<Organizer> {
             )
           ],
         ),
+
+        // body here
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator(color: Colors.blue))
+            : const Center(child: Text("Upcoming Matches here..")),
+
+        // floating action button
         floatingActionButton: FloatingActionButton(
           // add matches page
           onPressed: () {},
