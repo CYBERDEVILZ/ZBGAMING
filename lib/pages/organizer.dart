@@ -1,5 +1,6 @@
 // THIS IS FOR TESTING PURPOSE ONLY! DONT ADD IT TO PRODUCTION ENVIRONMENT
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
 import 'package:zbgaming/model/usermodel.dart';
+import 'package:zbgaming/pages/add_matches.dart';
 import 'package:zbgaming/pages/organizer_login.dart';
 
 class Organizer extends StatefulWidget {
@@ -22,6 +24,9 @@ class _OrganizerState extends State<Organizer> {
   // loading matches
   loadMatches() async {
     await Future.delayed(const Duration(seconds: 1));
+
+    // store the retrieved data in a list
+
     if (mounted) {
       setState(() {
         isLoading = false;
@@ -34,12 +39,19 @@ class _OrganizerState extends State<Organizer> {
     super.initState();
 
     // check for authentication
-    FirebaseAuth.instance.authStateChanges().listen((event) {
+    FirebaseAuth.instance.authStateChanges().listen((event) async {
       if (event?.uid == null) {
         if (mounted) {
           Navigator.pushAndRemoveUntil(
               context, MaterialPageRoute(builder: (context) => const OrganizerLogin()), (route) => false);
         }
+      } else if (event?.uid != null) {
+        var data =
+            await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).get();
+        context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+        context.read<UserModel>().setusername(data["username"]);
+        context.read<UserModel>().setemail(data["email"]);
+        context.read<UserModel>().setimageurl(data["imageurl"]);
       }
     });
 
@@ -211,12 +223,20 @@ class _OrganizerState extends State<Organizer> {
         // body here
         body: isLoading
             ? const Center(child: CircularProgressIndicator(color: Colors.blue))
-            : const Center(child: Text("Upcoming Matches here..")),
+            : const Center(
+                child: Text("Upcoming Matches here"),
+              ),
 
         // floating action button
         floatingActionButton: FloatingActionButton(
           // add matches page
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddMatches(),
+                ));
+          },
           child: const Icon(Icons.add),
         ),
         drawer: organizerDrawer,
