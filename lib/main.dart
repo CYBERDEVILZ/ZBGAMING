@@ -21,7 +21,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserModel()),
-    ChangeNotifierProvider(create: (_) => DateProvider())
+    ChangeNotifierProvider(create: (_) => DetailProvider())
   ], child: const MyApp()));
 }
 
