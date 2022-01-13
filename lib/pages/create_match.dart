@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/src/provider.dart';
 
 class CreateMatch extends StatefulWidget {
   const CreateMatch({Key? key, required this.matchType}) : super(key: key);
@@ -12,33 +14,16 @@ class CreateMatch extends StatefulWidget {
 class _CreateMatchState extends State<CreateMatch> {
   final _formKey = GlobalKey<FormState>();
 
-  final DateTime selectedDate = DateTime.now();
+  DateTime? initvalue;
 
-  String dateFiller = "Pick a Date";
+  void validate() {
+    if (_formKey.currentState!.validate()) {
+      print("done!");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    String currentYear = selectedDate.toString().split("-")[0];
-    String currentMonth = selectedDate.toString().split("-")[1];
-    String currentDay = selectedDate.toString().split("-")[2].split(" ")[0];
-    String matchStartDay = (int.parse(currentDay) + 2).toString();
-    DateTime matchTime = DateTime.parse(currentYear + currentMonth + matchStartDay);
-
-    // select date function
-    // void selectDate() async {
-    //   DateTime? pickedDate = await showDatePicker(
-    //     context: context,
-    //     initialDate: matchTime,
-    //     firstDate: matchTime,
-    //     lastDate: DateTime(2100),
-    //   );
-    //   if (pickedDate != null) {
-    //     matchTime = pickedDate;
-    //   }
-    //   dateFiller = matchTime.toString();
-    //   setState(() {});
-    // }
-
     // Text Controllers
     TextEditingController matchNameController = TextEditingController();
 
@@ -53,13 +38,7 @@ class _CreateMatchState extends State<CreateMatch> {
       validator: (value) => value!.isEmpty ? "This field cannot be empty" : null,
     );
 
-    // Date Picker
-    InputDatePickerFormField pickDate = InputDatePickerFormField(firstDate: matchTime, lastDate: DateTime(2100));
-
     // Dropdowns
-    DropdownButtonFormField solo = DropdownButtonFormField(
-        items: const [DropdownMenuItem(child: Text("yo")), DropdownMenuItem(child: Text("hello"))],
-        onChanged: (value) {});
 
     // --------------- Return is Here --------------- //
     return SafeArea(
@@ -77,14 +56,74 @@ class _CreateMatchState extends State<CreateMatch> {
                     // match name
                     Padding(padding: const EdgeInsets.all(10.0), child: matchName),
 
-                    // check boxes
+                    // dropdowns
 
                     // select date
-                    Padding(padding: const EdgeInsets.all(10.0), child: pickDate),
-                    solo,
+                    const Padding(padding: EdgeInsets.all(10.0), child: PickDate()),
+
+                    // submit button
+                    ElevatedButton(
+                        onPressed: () {
+                          validate();
+                        },
+                        child: const Text("Submit"))
                   ],
                 ))),
       ),
     );
+  }
+}
+
+// Pick Date Widget
+class PickDate extends StatelessWidget {
+  const PickDate({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final DateTime selectedDate = DateTime.now();
+
+    String currentYear = selectedDate.toString().split("-")[0];
+    String currentMonth = selectedDate.toString().split("-")[1];
+    String currentDay = selectedDate.toString().split("-")[2].split(" ")[0];
+    String matchStartDay = (int.parse(currentDay) + 2).toString();
+    DateTime matchTime = DateTime.parse(currentYear + currentMonth + matchStartDay);
+
+    // select date function
+    void selectDate() async {
+      DateTime? pickedDate = await showDatePicker(
+          context: context, initialDate: matchTime, firstDate: matchTime, lastDate: DateTime(2100));
+      context.read<DateProvider>().setDate(pickedDate);
+    }
+
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+      Expanded(
+        child: InputDatePickerFormField(
+          firstDate: matchTime,
+          lastDate: DateTime(2100),
+          fieldLabelText: "Enter Date or Pick from Calendar",
+          errorFormatText: "Invalid Date Format (mm/dd/yyyy)",
+          errorInvalidText: "Schedule matches atleast 2 days from now",
+          initialDate: context.watch<DateProvider>().initvalue,
+        ),
+      ),
+      const SizedBox(width: 20),
+      GestureDetector(
+          onTap: () {
+            selectDate();
+          },
+          child: const Icon(Icons.calendar_today))
+    ]);
+  }
+}
+
+// Date Provider
+class DateProvider with ChangeNotifier {
+  DateTime? _initvalue;
+
+  DateTime? get initvalue => _initvalue;
+
+  void setDate(DateTime? value) {
+    _initvalue = value;
+    notifyListeners();
   }
 }

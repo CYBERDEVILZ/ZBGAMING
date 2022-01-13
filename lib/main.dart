@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:zbgaming/pages/create_match.dart';
 import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
 import 'package:zbgaming/pages/login.dart';
@@ -18,7 +19,10 @@ import 'pages/home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MultiProvider(providers: [ChangeNotifierProvider(create: (_) => UserModel())], child: const MyApp()));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => UserModel()),
+    ChangeNotifierProvider(create: (_) => DateProvider())
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
