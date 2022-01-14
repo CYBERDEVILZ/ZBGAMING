@@ -1,39 +1,85 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
 
 class CreateMatch extends StatefulWidget {
-  const CreateMatch({Key? key, required this.matchType}) : super(key: key);
+  const CreateMatch({Key? key, required this.matchType, required this.eligible}) : super(key: key);
 
   final String matchType;
+  final bool eligible;
 
   @override
-  State<CreateMatch> createState() => _CreateMatchState();
+  // ignore: no_logic_in_create_state
+  State<CreateMatch> createState() => _CreateMatchState(matchType, eligible);
 }
 
 class _CreateMatchState extends State<CreateMatch> {
+  _CreateMatchState(this.matchType, this.eligible);
+
+  final String matchType;
+  final bool eligible;
+
   final _formKey = GlobalKey<FormState>();
+  DateTime? date;
+  bool isLoading = false;
 
-  DateTime? initvalue;
+  TextEditingController matchNameController = TextEditingController();
 
-  void validate() {
+  void validate() async {
     if (_formKey.currentState!.validate()) {
-      print("done!");
+      isLoading = true;
+      setState(() {});
+      // get values from form
+      String organizerName = matchNameController.text;
+      bool solo = context.read<DetailProvider>()._dropdownvalue1 == "Solo" ? true : false;
+      bool match = context.read<DetailProvider>()._dropdownvalue2 == "Match" ? true : false;
+      int skill = context.read<DetailProvider>()._dropdownvalue3 == "No Skill Level Required"
+          ? 0
+          : context.read<DetailProvider>()._dropdownvalue3 == "Intermediate and above"
+              ? 1
+              : context.read<DetailProvider>()._dropdownvalue3 == "Only Professionals"
+                  ? 2
+                  : -1;
+      int fee = context.read<DetailProvider>()._dropdownvalue4 == "Free"
+          ? 0
+          : context.read<DetailProvider>()._dropdownvalue4 == "\u20b9 100"
+              ? 1
+              : context.read<DetailProvider>()._dropdownvalue4 == "\u20b9 500"
+                  ? 2
+                  : context.read<DetailProvider>()._dropdownvalue4 == "\u20b9 1000"
+                      ? 3
+                      : context.read<DetailProvider>()._dropdownvalue4 == "\u20b9 5000"
+                          ? 4
+                          : -1;
+      DateTime datepicked = context.read<DetailProvider>().date!;
+
+      // send data to cloud firestore
+      await FirebaseFirestore.instance
+          .collection("organizerTournaments")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection(matchType)
+          .doc()
+          .set({"name": organizerName, "solo": solo, "match": match, "skill": skill, "fee": fee, "date": datepicked})
+          .then((value) => Fluttertoast.showToast(msg: "Registration Successfull!"))
+          .catchError((onError) => Fluttertoast.showToast(msg: "Something went wrong!"));
     }
+    isLoading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    // Text Controllers
-    TextEditingController matchNameController = TextEditingController();
-
     // Tournament Entry
     TextFormField matchName = TextFormField(
       controller: matchNameController,
       decoration: const InputDecoration(
         labelText: "Tournament Name",
+        hintText: "Make Sure It's Awesome!",
         border: OutlineInputBorder(),
         prefixIcon: Icon(Icons.align_horizontal_left),
       ),
@@ -55,35 +101,80 @@ class _CreateMatchState extends State<CreateMatch> {
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
                     children: [
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 40),
+
                       // match name
                       matchName,
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
 
                       // dropdowns
+
+                      // solo or team
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                            child: const Text("Select Player Type",
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                            margin: const EdgeInsets.only(bottom: 10)),
+                      ),
                       const DropDownSolo(),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 40),
+
+                      // Match or tournament
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                            child: const Text("Select Match Type",
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                            margin: const EdgeInsets.only(bottom: 10)),
+                      ),
                       const DropDownMatch(),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 40),
+
+                      // Skill level or not
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                            child: const Text("Select Minimum Skill Level",
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                            margin: const EdgeInsets.only(bottom: 10)),
+                      ),
                       const DropDownSkill(),
 
-                      const SizedBox(height: 20),
-                      const DropDownReward(),
+                      const SizedBox(height: 40),
 
-                      const SizedBox(height: 20),
+                      // Match or tournament
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                            child: const Text("Registration Fee",
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                            margin: const EdgeInsets.only(bottom: 10)),
+                      ),
+                      DropDownReward(
+                        isEligible: eligible,
+                      ),
+
+                      const SizedBox(height: 50),
 
                       // select date
                       const PickDate(),
 
+                      const SizedBox(height: 20),
+
                       // submit button
                       ElevatedButton(
-                          onPressed: () {
-                            validate();
-                          },
-                          child: const Text("Submit"))
+                        onPressed: () {
+                          validate();
+                        },
+                        child: isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text("Submit"),
+                        style: ButtonStyle(
+                            elevation: MaterialStateProperty.all(0),
+                            fixedSize: MaterialStateProperty.all(const Size(150, 50))),
+                      )
                     ],
                   ),
                 ))),
@@ -121,7 +212,7 @@ class PickDate extends StatelessWidget {
           fieldLabelText: "Enter Date or Pick from Calendar",
           errorFormatText: "Invalid Date Format (mm/dd/yyyy)",
           errorInvalidText: "Schedule matches atleast 2 days from now",
-          initialDate: context.watch<DetailProvider>().initvalue,
+          initialDate: context.watch<DetailProvider>().date,
         ),
       ),
       const SizedBox(width: 20),
@@ -136,20 +227,20 @@ class PickDate extends StatelessWidget {
 
 // Details Provider
 class DetailProvider with ChangeNotifier {
-  DateTime? _initvalue;
+  DateTime? _date;
   String _dropdownvalue1 = "Solo";
   String _dropdownvalue2 = "Match";
   String _dropdownvalue3 = "No Skill Level Required";
-  String _dropdownvalue4 = "Rewards Available";
+  String _dropdownvalue4 = "Free";
 
-  DateTime? get initvalue => _initvalue;
+  DateTime? get date => _date;
   String get dropdownvalue1 => _dropdownvalue1;
   String get dropdownvalue2 => _dropdownvalue2;
   String get dropdownvalue3 => _dropdownvalue3;
   String get dropdownvalue4 => _dropdownvalue4;
 
   void setDate(DateTime? value) {
-    _initvalue = value;
+    _date = value;
     notifyListeners();
   }
 
@@ -175,7 +266,6 @@ class DetailProvider with ChangeNotifier {
 }
 
 // DropDown Providers
-
 class DropDownSolo extends StatelessWidget {
   const DropDownSolo({Key? key}) : super(key: key);
 
@@ -192,6 +282,9 @@ class DropDownSolo extends StatelessWidget {
         context.read<DetailProvider>().setdropdownvalue1(value!);
       },
       value: context.read<DetailProvider>().dropdownvalue1,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+      ),
     );
   }
 }
@@ -212,6 +305,7 @@ class DropDownMatch extends StatelessWidget {
         context.read<DetailProvider>().setdropdownvalue2(value!);
       },
       value: context.read<DetailProvider>().dropdownvalue2,
+      decoration: const InputDecoration(border: OutlineInputBorder()),
     );
   }
 }
@@ -222,7 +316,7 @@ class DropDownSkill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      items: <String>["Skill Level Required", "No Skill Level Required"]
+      items: <String>["No Skill Level Required", "Intermediate and above", "Only Professionals"]
           .map<DropdownMenuItem<String>>((String e) => DropdownMenuItem<String>(
                 child: Text(e),
                 value: e,
@@ -232,17 +326,20 @@ class DropDownSkill extends StatelessWidget {
         context.read<DetailProvider>().setdropdownvalue3(value!);
       },
       value: context.read<DetailProvider>().dropdownvalue3,
+      decoration: const InputDecoration(border: OutlineInputBorder()),
     );
   }
 }
 
 class DropDownReward extends StatelessWidget {
-  const DropDownReward({Key? key}) : super(key: key);
+  const DropDownReward({Key? key, required this.isEligible}) : super(key: key);
+
+  final bool isEligible;
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      items: <String>["Rewards Available", "Rewards Not Available"]
+      items: <String>["Free", "\u20b9 100", "\u20b9 500", "\u20b9 1000", "\u20b9 5000"]
           .map<DropdownMenuItem<String>>((String e) => DropdownMenuItem<String>(
                 child: Text(e),
                 value: e,
@@ -252,6 +349,12 @@ class DropDownReward extends StatelessWidget {
         context.read<DetailProvider>().setdropdownvalue4(value!);
       },
       value: context.read<DetailProvider>().dropdownvalue4,
+      decoration: const InputDecoration(border: OutlineInputBorder()),
+      validator: (value) {
+        if (!isEligible && (value.toString() == "\u20b9 1000" || value.toString() == "\u20b9 5000")) {
+          return "You don't have required Organizer level";
+        }
+      },
     );
   }
 }

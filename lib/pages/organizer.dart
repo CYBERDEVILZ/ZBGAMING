@@ -46,12 +46,14 @@ class _OrganizerState extends State<Organizer> {
               context, MaterialPageRoute(builder: (context) => const OrganizerLogin()), (route) => false);
         }
       } else if (event?.uid != null) {
-        var data =
-            await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).get();
-        context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-        context.read<UserModel>().setusername(data["username"]);
-        context.read<UserModel>().setemail(data["email"]);
-        context.read<UserModel>().setimageurl(data["imageurl"]);
+        if (mounted) {
+          var data =
+              await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).get();
+          context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+          context.read<UserModel>().setusername(data["username"]);
+          context.read<UserModel>().setemail(data["email"]);
+          context.read<UserModel>().setimageurl(data["imageurl"]);
+        }
       }
     });
 

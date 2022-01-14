@@ -30,11 +30,50 @@ class TournamentList extends StatelessWidget {
           img: "assets/images/csgo.jpg",
           title: "Counter Strike: Global Offensive",
           ontap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateMatch(matchType: "csgo")));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CreateMatch(
+                          matchType: "csgo",
+                          eligible: false,
+                        )));
           }),
-      Tile(img: "assets/images/freefire.png", title: "Garena Free Fire", ontap: () {}),
-      Tile(img: "assets/images/pubg.png", title: "PUBG New State", ontap: () {}),
-      Tile(img: "assets/images/valo.jpg", title: "Valorant", ontap: () {}),
+      Tile(
+          img: "assets/images/freefire.png",
+          title: "Garena Free Fire",
+          ontap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CreateMatch(
+                          matchType: "freefire",
+                          eligible: false,
+                        )));
+          }),
+      Tile(
+          img: "assets/images/pubg.png",
+          title: "PUBG New State",
+          ontap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CreateMatch(
+                          matchType: "pubg",
+                          eligible: false,
+                        )));
+          }),
+      Tile(
+          img: "assets/images/valo.jpg",
+          title: "Valorant",
+          ontap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CreateMatch(
+                          matchType: "valo",
+                          eligible: false,
+                        )));
+          }),
     ];
 
     return ListView.builder(
