@@ -13,6 +13,7 @@ import 'package:zbgaming/utils/routes.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
+import 'model/organizermodel.dart';
 import 'model/usermodel.dart';
 import 'pages/home_page.dart';
 
@@ -21,6 +22,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserModel()),
+    ChangeNotifierProvider(create: (_) => OrganizerModel()),
     ChangeNotifierProvider(create: (_) => DetailProvider())
   ], child: const MyApp()));
 }
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // home: const HomePage(),
-      home: const Organizer(),
+      home: const HomePage(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",
       routes: {

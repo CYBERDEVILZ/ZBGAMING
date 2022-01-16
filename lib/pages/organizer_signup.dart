@@ -8,7 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
 
-import 'package:zbgaming/model/usermodel.dart';
+import 'package:zbgaming/model/organizermodel.dart';
 import 'package:zbgaming/pages/organizer.dart';
 
 class OrganizerSignUp extends StatefulWidget {
@@ -36,16 +36,16 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
   Widget build(BuildContext context) {
     // submit data to firestore
     Future<void> submitData() async {
-      await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).set({
+      await FirebaseFirestore.instance.collection("organizer").doc(FirebaseAuth.instance.currentUser!.uid).set({
         "username": usernameController.text,
         "email": emailController.text,
         "imageurl": null,
       }).then((value) async {
         // add data to usermodel to reduce number of reads to firestore
-        context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-        context.read<UserModel>().setusername(usernameController.text);
-        context.read<UserModel>().setimageurl(null);
-        context.read<UserModel>().setemail(emailController.text);
+        context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+        context.read<OrganizerModel>().setusername(usernameController.text);
+        context.read<OrganizerModel>().setimageurl(null);
+        context.read<OrganizerModel>().setemail(emailController.text);
 
         // show toast if successful
         await Fluttertoast.showToast(
@@ -62,10 +62,11 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
             .createUserWithEmailAndPassword(email: emailController.text, password: passwdController.text)
             .then((value) async {
           await submitData();
-        }).catchError((onError) => null);
-
-        Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (context) => const Organizer()), (route) => false);
+          Navigator.pushAndRemoveUntil(
+              context, MaterialPageRoute(builder: (context) => const Organizer()), (route) => false);
+        }).catchError((onError) {
+          Fluttertoast.showToast(msg: "Something Went Wrong");
+        });
       }
       isLoading = false;
       if (mounted) setState(() {});

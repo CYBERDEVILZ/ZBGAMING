@@ -11,8 +11,8 @@ class ContestDetails extends StatelessWidget {
       required this.team,
       required this.tournament,
       required this.skill,
-      required this.bounty,
-      required this.paid,
+      required this.date,
+      required this.rewards,
       required this.regTeams,
       required this.totalTeams})
       : super(key: key);
@@ -20,14 +20,33 @@ class ContestDetails extends StatelessWidget {
   final String name;
   final bool team;
   final bool tournament;
-  final bool skill;
-  final bool bounty;
-  final bool paid;
+  final int skill;
+  final DateTime date;
+  final int rewards;
   final int regTeams;
   final int totalTeams;
 
   @override
   Widget build(BuildContext context) {
+    final fee = (rewards == 1)
+        ? 100
+        : (rewards == 2)
+            ? 500
+            : (rewards == 3)
+                ? 1000
+                : (rewards == 4)
+                    ? 5000
+                    : null;
+    final amount = (rewards == 1)
+        ? "2,400"
+        : (rewards == 2)
+            ? "12,000"
+            : (rewards == 3)
+                ? "24,000"
+                : (rewards == 4)
+                    ? "1.2 Lacs"
+                    : null;
+
     // contest details widget
     Widget contestDetails = Padding(
         padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
@@ -43,7 +62,7 @@ class ContestDetails extends StatelessWidget {
             Row(children: [
               // date of tournament
               Text(
-                "28 December, 2022",
+                "${date.day} ${date.month == 1 ? 'January' : date.month == 2 ? 'February' : date.month == 3 ? 'March' : date.month == 4 ? 'April' : date.month == 5 ? 'May' : date.month == 6 ? 'June' : date.month == 7 ? 'July' : date.month == 8 ? 'August' : date.month == 9 ? 'September' : date.month == 10 ? 'October' : date.month == 11 ? 'November' : date.month == 12 ? 'December' : null}, ${date.year}",
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
               ),
 
@@ -131,28 +150,47 @@ class ContestDetails extends StatelessWidget {
                           width: 100,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            children: skill
+                            children: skill == 0
                                 ? const [
                                     Icon(Icons.flash_on, size: 25, color: Colors.teal),
-                                    SizedBox(width: 5),
-                                    Text("Min LVL Required",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
-                                  ]
-                                : const [
-                                    Icon(Icons.flash_off, size: 25, color: Colors.teal),
                                     SizedBox(width: 5),
                                     Text("No LVL Required",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
-                                  ],
+                                  ]
+                                : skill == 1
+                                    ? const [
+                                        Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                        SizedBox(width: 5),
+                                        Text("10 and above",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                      ]
+                                    : skill == 2
+                                        ? const [
+                                            Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                            SizedBox(width: 5),
+                                            Text("Pro tag required",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                          ]
+                                        : const [
+                                            Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                            SizedBox(width: 5),
+                                            Text("error occurred",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                          ],
                           ),
                         ),
                       ]),
                       const SizedBox(height: 10),
                       Align(
                         child: Column(
-                          children: bounty
+                          children: rewards != 0
                               ? const [
                                   Icon(Icons.attach_money_outlined, size: 25, color: Colors.red),
                                   SizedBox(width: 5),
@@ -171,7 +209,7 @@ class ContestDetails extends StatelessWidget {
                       const SizedBox(height: 10),
 
                       // prize
-                      paid
+                      rewards != 0
                           ? Container(
                               height: 90,
                               padding: const EdgeInsets.all(3),
@@ -179,8 +217,8 @@ class ContestDetails extends StatelessWidget {
                               decoration: const BoxDecoration(color: Colors.blue),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text(
+                                children: [
+                                  const Text(
                                     "Winner gets",
                                     style: TextStyle(color: Colors.white),
                                     textScaleFactor: 1.3,
@@ -188,8 +226,8 @@ class ContestDetails extends StatelessWidget {
                                   Expanded(
                                     child: FittedBox(
                                       child: Text(
-                                        "\u20b9 1.3 Lacs",
-                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                        "\u20b9 $amount or more",
+                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                         textScaleFactor: 4,
                                       ),
                                     ),
@@ -279,10 +317,10 @@ class ContestDetails extends StatelessWidget {
                     child: Container(
                   alignment: Alignment.center,
                   child: FittedBox(
-                    child: paid
-                        ? const Text(
-                            "\u20b9 3000",
-                            style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+                    child: rewards != 0
+                        ? Text(
+                            "\u20b9 $fee",
+                            style: const TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
                           )
                         : const Text(
                             "FREE",

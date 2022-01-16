@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
+import 'package:zbgaming/model/organizermodel.dart';
 
-import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/add_matches.dart';
 import 'package:zbgaming/pages/organizer_login.dart';
 
@@ -21,17 +21,64 @@ class Organizer extends StatefulWidget {
 class _OrganizerState extends State<Organizer> {
   bool isLoading = true;
 
+  List csgoTourney = [];
+  List freefireTourney = [];
+  List pubgTourney = [];
+  List valoTourney = [];
+
   // loading matches
   loadMatches() async {
     await Future.delayed(const Duration(seconds: 1));
 
     // store the retrieved data in a list
+    csgoTourney = await FirebaseFirestore.instance
+        .collection("organizerTournaments")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("csgo")
+        .orderBy("date")
+        .get()
+        .then((value) => value.docs)
+        .catchError((onError) {});
+
+    freefireTourney = await FirebaseFirestore.instance
+        .collection("organizerTournaments")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("freefire")
+        .orderBy("date")
+        .get()
+        .then((value) => value.docs)
+        .catchError((onError) {});
+
+    valoTourney = await FirebaseFirestore.instance
+        .collection("organizerTournaments")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("valo")
+        .orderBy("date")
+        .get()
+        .then((value) => value.docs)
+        .catchError((onError) {});
+
+    pubgTourney = await FirebaseFirestore.instance
+        .collection("organizerTournaments")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("pubg")
+        .orderBy("date")
+        .get()
+        .then((value) => value.docs)
+        .catchError((onError) {});
+
+    unpackData();
 
     if (mounted) {
       setState(() {
         isLoading = false;
       });
     }
+  }
+
+  // unpacking data
+  void unpackData() {
+    
   }
 
   @override
@@ -47,12 +94,14 @@ class _OrganizerState extends State<Organizer> {
         }
       } else if (event?.uid != null) {
         if (mounted) {
-          var data =
-              await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).get();
-          context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-          context.read<UserModel>().setusername(data["username"]);
-          context.read<UserModel>().setemail(data["email"]);
-          context.read<UserModel>().setimageurl(data["imageurl"]);
+          var data = await FirebaseFirestore.instance
+              .collection("organizer")
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .get();
+          context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+          context.read<OrganizerModel>().setusername(data["username"]);
+          context.read<OrganizerModel>().setemail(data["email"]);
+          context.read<OrganizerModel>().setimageurl(data["imageurl"]);
         }
       }
     });
@@ -87,7 +136,7 @@ class _OrganizerState extends State<Organizer> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          !(context.watch<UserModel>().imageurl == null)
+                          !(context.watch<OrganizerModel>().imageurl == null)
                               ? Stack(
                                   children: [
                                     CircleAvatar(backgroundColor: Colors.cyan[700], radius: 45),
@@ -99,7 +148,7 @@ class _OrganizerState extends State<Organizer> {
                                         child: const CircularProgressIndicator(
                                           color: Colors.white,
                                         ),
-                                        foregroundImage: NetworkImage(context.watch<UserModel>().imageurl!),
+                                        foregroundImage: NetworkImage(context.watch<OrganizerModel>().imageurl!),
                                         radius: 40,
                                       ),
                                     )
@@ -119,9 +168,9 @@ class _OrganizerState extends State<Organizer> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 30),
                             child: Text(
-                              context.watch<UserModel>().username == null
+                              context.watch<OrganizerModel>().username == null
                                   ? "null"
-                                  : context.watch<UserModel>().username!,
+                                  : context.watch<OrganizerModel>().username!,
                               style: const TextStyle(fontSize: 20),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -183,7 +232,7 @@ class _OrganizerState extends State<Organizer> {
             child: OutlinedButton(
               // sign out user
               onPressed: () async {
-                context.read<UserModel>().signout();
+                context.read<OrganizerModel>().signout();
                 await FirebaseAuth.instance.signOut();
               },
               child: const Padding(

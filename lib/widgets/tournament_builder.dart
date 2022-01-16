@@ -9,18 +9,18 @@ class TournamentBuilder extends StatefulWidget {
       required this.team,
       required this.tournament,
       required this.skill,
-      required this.bounty,
-      required this.paid,
+      required this.rewards,
       required this.regTeams,
-      required this.totalTeams})
+      required this.totalTeams,
+      required this.date})
       : super(key: key);
   final bool special;
   final String name;
+  final DateTime date;
   final bool team;
   final bool tournament;
-  final bool skill;
-  final bool bounty;
-  final bool paid;
+  final int skill;
+  final int rewards;
   final int regTeams;
   final int totalTeams;
 
@@ -35,9 +35,9 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
       context,
       MaterialPageRoute(
           builder: (context) => ContestDetails(
-                bounty: widget.bounty,
+                date: widget.date,
                 name: widget.name,
-                paid: widget.paid,
+                rewards: widget.rewards,
                 regTeams: widget.regTeams,
                 skill: widget.skill,
                 special: widget.special,
@@ -99,7 +99,9 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                         textScaleFactor: 1.4,
                                       ),
                                     ),
-                                    widget.paid ? const Icon(Icons.paid_outlined, color: Colors.red) : const Text("")
+                                    widget.rewards != 0
+                                        ? const Icon(Icons.paid_outlined, color: Colors.red)
+                                        : const Text("")
                                   ],
                                 ),
                                 Expanded(
@@ -123,13 +125,13 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(right: 8.0),
-                                        child: widget.skill
+                                        child: widget.skill != 0
                                             ? const Icon(Icons.flash_on, size: 20, color: Colors.teal)
                                             : const Icon(Icons.flash_off, size: 20, color: Colors.teal),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(right: 8.0),
-                                        child: widget.bounty
+                                        child: widget.rewards != 0
                                             ? const Icon(Icons.attach_money_outlined, size: 20, color: Colors.red)
                                             : const Icon(Icons.money_off, size: 20, color: Colors.red),
                                       ),
@@ -143,7 +145,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "28, December, 2022",
+                                      "${widget.date.day} ${widget.date.month == 1 ? 'January' : widget.date.month == 2 ? 'February' : widget.date.month == 3 ? 'March' : widget.date.month == 4 ? 'April' : widget.date.month == 5 ? 'May' : widget.date.month == 6 ? 'June' : widget.date.month == 7 ? 'July' : widget.date.month == 8 ? 'August' : widget.date.month == 9 ? 'September' : widget.date.month == 10 ? 'October' : widget.date.month == 11 ? 'November' : widget.date.month == 12 ? 'December' : null}, ${widget.date.year}",
                                       textScaleFactor: 1.1,
                                       style:
                                           TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
@@ -238,7 +240,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                         textScaleFactor: 1.4,
                                       ),
                                     ),
-                                    widget.paid
+                                    widget.rewards != 0
                                         ? const Icon(
                                             Icons.paid_outlined,
                                             color: Colors.red,
@@ -303,7 +305,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                       Padding(
                                           padding: const EdgeInsets.only(bottom: 5),
                                           child: Row(
-                                            children: widget.skill
+                                            children: widget.skill != 0
                                                 ? const [
                                                     Icon(Icons.flash_on, size: 20, color: Colors.teal),
                                                     SizedBox(width: 5),
@@ -326,7 +328,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                       Padding(
                                           padding: const EdgeInsets.only(bottom: 5),
                                           child: Row(
-                                            children: widget.bounty
+                                            children: widget.rewards != 0
                                                 ? const [
                                                     Icon(Icons.attach_money_outlined, size: 20, color: Colors.red),
                                                     SizedBox(width: 5),

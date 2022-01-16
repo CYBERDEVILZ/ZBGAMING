@@ -5,8 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
+import 'package:zbgaming/model/organizermodel.dart';
 
-import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/utils/routes.dart';
 
@@ -41,11 +41,11 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
       if (_formKey.currentState!.validate()) {
         FirebaseAuth auth = FirebaseAuth.instance;
         await auth.signInWithEmailAndPassword(email: email.text, password: passwd.text).then((value) async {
-          var data = await FirebaseFirestore.instance.collection("userinfo").doc(auth.currentUser!.uid).get();
-          context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-          context.read<UserModel>().setusername(data["username"]);
-          context.read<UserModel>().setemail(data["email"]);
-          context.read<UserModel>().setimageurl(data["imageurl"]);
+          var data = await FirebaseFirestore.instance.collection("organizer").doc(auth.currentUser!.uid).get();
+          context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+          context.read<OrganizerModel>().setusername(data["username"]);
+          context.read<OrganizerModel>().setemail(data["email"]);
+          context.read<OrganizerModel>().setimageurl(data["imageurl"]);
           await Fluttertoast.showToast(
               msg: "Login successful!", backgroundColor: Colors.blue[700], textColor: Colors.white);
           await Future.delayed(const Duration(seconds: 1));

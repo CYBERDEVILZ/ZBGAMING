@@ -18,3 +18,29 @@ ZBgaming is an application to host matches and tournaments to find the right tal
 - [ ] Use Realtime database for updation and registration things
 - [ ] Create a backend server to perform authorization to database (scaling)
 - [ ] Upgrade to MONGODB or any other nosql database (scaling)
+- [ ] Custom Tournament card
+
+## PRICE DISTRIBUTION
+
+P = Player, O = Organizer, U = Us
+P = 30%, O = 10%, O = 60%
+
+### Tier 4 = 100 (POOL: 8000)
+P = >=2400
+U = >=800
+O = >=4800
+
+### Tier 3 = 500 (POOL: 40,000)
+P = >=12,000
+U = >=4000
+O = >=24,000
+
+### Tier 2 = 1000 (POOL: 80,000)
+P = >=24,000
+U = >=8000
+O = >=48,000
+
+### Tier 1 = 5000 (POOL: 4,00,000)
+P = >=1,20,000
+U = >=40,000
+O = >=2,40,000
