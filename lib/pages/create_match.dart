@@ -60,11 +60,18 @@ class _CreateMatchState extends State<CreateMatch> {
 
       // send data to cloud firestore
       await FirebaseFirestore.instance
-          .collection("organizerTournaments")
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection(matchType)
+          .collection("csgo")
           .doc()
-          .set({"name": organizerName, "solo": solo, "match": match, "skill": skill, "fee": fee, "date": datepicked})
+          .set({
+            "special": false,
+            "name": organizerName,
+            "solo": solo,
+            "match": match,
+            "skill": skill,
+            "fee": fee,
+            "date": datepicked,
+            "uid": FirebaseAuth.instance.currentUser!.uid
+          })
           .then((value) => Fluttertoast.showToast(msg: "Registration Successfull!"))
           .catchError((onError) => Fluttertoast.showToast(msg: "Something went wrong!"));
     }

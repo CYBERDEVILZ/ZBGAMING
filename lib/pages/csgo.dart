@@ -21,6 +21,7 @@ class _CsgoTournamentsState extends State<CsgoTournaments> {
 
     // define a function to fetch data automatically from database
     Future<void> functionToInitialize() async {
+      // var organizers = await FirebaseFirestore.instance.collection("organizerTournaments").doc("csgo").get();
       await Future.delayed(const Duration(seconds: 1));
       isLoading = false;
       setState(() {});

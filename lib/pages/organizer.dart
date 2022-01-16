@@ -19,67 +19,23 @@ class Organizer extends StatefulWidget {
 }
 
 class _OrganizerState extends State<Organizer> {
-  bool isLoading = true;
-
-  List csgoTourney = [];
-  List freefireTourney = [];
-  List pubgTourney = [];
-  List valoTourney = [];
-
-  // loading matches
-  loadMatches() async {
-    await Future.delayed(const Duration(seconds: 1));
-
-    // store the retrieved data in a list
-    csgoTourney = await FirebaseFirestore.instance
-        .collection("organizerTournaments")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("csgo")
-        .orderBy("date")
-        .get()
-        .then((value) => value.docs)
-        .catchError((onError) {});
-
-    freefireTourney = await FirebaseFirestore.instance
-        .collection("organizerTournaments")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("freefire")
-        .orderBy("date")
-        .get()
-        .then((value) => value.docs)
-        .catchError((onError) {});
-
-    valoTourney = await FirebaseFirestore.instance
-        .collection("organizerTournaments")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("valo")
-        .orderBy("date")
-        .get()
-        .then((value) => value.docs)
-        .catchError((onError) {});
-
-    pubgTourney = await FirebaseFirestore.instance
-        .collection("organizerTournaments")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("pubg")
-        .orderBy("date")
-        .get()
-        .then((value) => value.docs)
-        .catchError((onError) {});
-
-    unpackData();
-
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  // unpacking data
-  void unpackData() {
-    
-  }
+  // streams to subscribe
+  Stream<QuerySnapshot> csgoStream = FirebaseFirestore.instance
+      .collection("csgo")
+      .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .snapshots();
+  Stream<QuerySnapshot> valoStream = FirebaseFirestore.instance
+      .collection("valo")
+      .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .snapshots();
+  Stream<QuerySnapshot> pubgStream = FirebaseFirestore.instance
+      .collection("pubg")
+      .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .snapshots();
+  Stream<QuerySnapshot> freefireStream = FirebaseFirestore.instance
+      .collection("freefire")
+      .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .snapshots();
 
   @override
   void initState() {
@@ -105,9 +61,6 @@ class _OrganizerState extends State<Organizer> {
         }
       }
     });
-
-    // load upcoming matches
-    loadMatches();
   }
 
   @override
@@ -272,11 +225,34 @@ class _OrganizerState extends State<Organizer> {
         ),
 
         // body here
-        body: isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.blue))
-            : const Center(
-                child: Text("Upcoming Matches here"),
-              ),
+        body: Center(
+            child: StreamBuilder<QuerySnapshot>(
+          stream: csgoStream,
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return const Text("error loading data");
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            }
+            return ListView(
+                children: snapshot.data!.docs
+                    .map((DocumentSnapshot e) => Card(
+                          child: ListTile(
+
+                              // csgo match
+                              leading: const Text("csgo"),
+                              title: Text(e["name"]),
+                              subtitle: Text(e["date"].toDate().toString().substring(0, 11)),
+                              trailing: ElevatedButton(
+                                // write code for starting the match
+                                child: const Text("start"),
+                                onPressed: () {},
+                              )),
+                        ))
+                    .toList());
+          },
+        )),
 
         // floating action button
         floatingActionButton: FloatingActionButton(

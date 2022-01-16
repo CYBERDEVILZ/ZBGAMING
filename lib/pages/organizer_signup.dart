@@ -40,6 +40,7 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
         "username": usernameController.text,
         "email": emailController.text,
         "imageurl": null,
+        "special": false, // UTTER NONSENSE HERE! USE BACKEND AUTHORIZATION
       }).then((value) async {
         // add data to usermodel to reduce number of reads to firestore
         context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
