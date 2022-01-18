@@ -22,18 +22,22 @@ class _OrganizerState extends State<Organizer> {
   // streams to subscribe
   Stream<QuerySnapshot> csgoStream = FirebaseFirestore.instance
       .collection("csgo")
+      .orderBy("date")
       .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
       .snapshots();
   Stream<QuerySnapshot> valoStream = FirebaseFirestore.instance
       .collection("valo")
+      .orderBy("date")
       .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
       .snapshots();
   Stream<QuerySnapshot> pubgStream = FirebaseFirestore.instance
       .collection("pubg")
+      .orderBy("date")
       .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
       .snapshots();
   Stream<QuerySnapshot> freefireStream = FirebaseFirestore.instance
       .collection("freefire")
+      .orderBy("date")
       .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
       .snapshots();
 
@@ -224,35 +228,193 @@ class _OrganizerState extends State<Organizer> {
           ],
         ),
 
-        // body here
-        body: Center(
-            child: StreamBuilder<QuerySnapshot>(
-          stream: csgoStream,
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return const Text("error loading data");
-            }
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            return ListView(
-                children: snapshot.data!.docs
-                    .map((DocumentSnapshot e) => Card(
-                          child: ListTile(
+        // upcoming matches
+        body: ListView(children: [
+          // CSGO
+          Align(
+              child: Container(
+            child: const Text(
+              "CS:GO",
+              style: TextStyle(fontSize: 20),
+            ),
+            margin: const EdgeInsets.only(top: 5),
+          )),
 
-                              // csgo match
-                              leading: const Text("csgo"),
-                              title: Text(e["name"]),
-                              subtitle: Text(e["date"].toDate().toString().substring(0, 11)),
-                              trailing: ElevatedButton(
-                                // write code for starting the match
-                                child: const Text("start"),
-                                onPressed: () {},
-                              )),
-                        ))
-                    .toList());
-          },
-        )),
+          // stream builder
+          StreamBuilder<QuerySnapshot>(
+            stream: csgoStream,
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return const Text("An error occurred");
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
+              }
+              return Container(
+                margin: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 20),
+                child: Column(
+                    children: snapshot.data!.docs.isEmpty
+                        ? const [Text("No matches found")]
+                        : snapshot.data!.docs
+                            .map((DocumentSnapshot e) => Card(
+                                  child: ListTile(
+                                      leading: const Text("csgo"),
+                                      title: Text(e["name"]),
+                                      subtitle: Text(e["date"].toDate().toString().substring(0, 11)),
+                                      trailing: ElevatedButton(
+                                        // write code for starting the match
+                                        child: const Text("start"),
+                                        onPressed: () {},
+                                      )),
+                                ))
+                            .toList()),
+              );
+            },
+          ),
+
+          const Divider(
+            height: 20,
+            endIndent: 30,
+            indent: 30,
+            thickness: 1.3,
+          ),
+
+          // FREE FIRE
+          Align(
+              child: Container(
+            child: const Text(
+              "Garena Free Fire",
+              style: TextStyle(fontSize: 20),
+            ),
+            margin: const EdgeInsets.only(top: 5),
+          )),
+          StreamBuilder<QuerySnapshot>(
+            stream: freefireStream,
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return const Text("An error occurred");
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
+              }
+              return Container(
+                margin: const EdgeInsets.only(top: 5),
+                child: Column(
+                    children: snapshot.data!.docs.isEmpty
+                        ? const [Text("No matches found")]
+                        : snapshot.data!.docs
+                            .map((DocumentSnapshot e) => Card(
+                                  child: ListTile(
+                                      leading: const Text("csgo"),
+                                      title: Text(e["name"]),
+                                      subtitle: Text(e["date"].toDate().toString().substring(0, 11)),
+                                      trailing: ElevatedButton(
+                                        // write code for starting the match
+                                        child: const Text("start"),
+                                        onPressed: () {},
+                                      )),
+                                ))
+                            .toList()),
+              );
+            },
+          ),
+
+          const Divider(
+            height: 20,
+            endIndent: 30,
+            indent: 30,
+            thickness: 1.3,
+          ),
+
+          // PUBG
+          Align(
+              child: Container(
+            child: const Text(
+              "Player Unknown Battlegrounds",
+              style: TextStyle(fontSize: 20),
+            ),
+            margin: const EdgeInsets.only(top: 5),
+          )),
+          StreamBuilder<QuerySnapshot>(
+            stream: pubgStream,
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return const Text("An error occurred");
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
+              }
+              return Container(
+                margin: const EdgeInsets.only(top: 5),
+                child: Column(
+                    children: snapshot.data!.docs.isEmpty
+                        ? const [Text("No matches found")]
+                        : snapshot.data!.docs
+                            .map((DocumentSnapshot e) => Card(
+                                  child: ListTile(
+                                      leading: const Text("csgo"),
+                                      title: Text(e["name"]),
+                                      subtitle: Text(e["date"].toDate().toString().substring(0, 11)),
+                                      trailing: ElevatedButton(
+                                        // write code for starting the match
+                                        child: const Text("start"),
+                                        onPressed: () {},
+                                      )),
+                                ))
+                            .toList()),
+              );
+            },
+          ),
+
+          const Divider(
+            height: 20,
+            endIndent: 30,
+            indent: 30,
+            thickness: 1.3,
+          ),
+
+          // VALO
+          Align(
+              child: Container(
+            child: const Text(
+              "Valorant",
+              style: TextStyle(fontSize: 20),
+            ),
+            margin: const EdgeInsets.only(top: 5),
+          )),
+
+          // stream builder
+          StreamBuilder<QuerySnapshot>(
+            stream: valoStream,
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return const Text("An error occurred");
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
+              }
+              return Container(
+                margin: const EdgeInsets.only(top: 5),
+                child: Column(
+                    children: snapshot.data!.docs.isEmpty
+                        ? const [Text("No matches found")]
+                        : snapshot.data!.docs
+                            .map((DocumentSnapshot e) => Card(
+                                  child: ListTile(
+                                      leading: const Text("csgo"),
+                                      title: Text(e["name"]),
+                                      subtitle: Text(e["date"].toDate().toString().substring(0, 11)),
+                                      trailing: ElevatedButton(
+                                        // write code for starting the match
+                                        child: const Text("start"),
+                                        onPressed: () {},
+                                      )),
+                                ))
+                            .toList()),
+              );
+            },
+          ),
+        ]),
 
         // floating action button
         floatingActionButton: FloatingActionButton(
