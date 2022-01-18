@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
 import 'package:zbgaming/widgets/tournament_builder.dart';
@@ -10,73 +11,44 @@ class PubgTournaments extends StatefulWidget {
 }
 
 class _PubgTournamentsState extends State<PubgTournaments> {
-  bool isLoading = true;
-
-  // fetch value from database and pass this to tournamentBuilder
-  List tournamentDetails = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    // define a function to fetch data automatically from database
-    Future<void> functionToInitialize() async {
-      await Future.delayed(const Duration(seconds: 1));
-      isLoading = false;
-      setState(() {});
-    }
-
-    functionToInitialize();
-  }
+  // stream for tournament details ordered by date
+  Stream<QuerySnapshot> tournamentDetails = FirebaseFirestore.instance.collection("pubg").orderBy("date").snapshots();
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: Colors.grey[200],
       child: CustomScrollView(
-        slivers: isLoading
-            ? <Widget>[
-                const SlivAppBar(),
-                SliverList(
-                    delegate: SliverChildListDelegate(<Widget>[
-                  Container(
-                    child: const FittedBox(child: CircularProgressIndicator()),
-                    color: Colors.white,
-                    width: 50,
-                    height: 50,
-                    padding: const EdgeInsets.all(10),
-                  )
-                ]))
-              ]
-            : <Widget>[
-                const SlivAppBar(),
-                SliverList(
-                    delegate: SliverChildListDelegate(<Widget>[
-                  const CustomDivider(indent: 0, height: 5, radius: false),
-                  TournamentBuilder(
-                    date: DateTime.now(),
-                    special: true,
-                    name: "Zbunker Catastrophe",
-                    team: true,
-                    tournament: true,
-                    skill: 0,
-                    rewards: 4,
-                    regTeams: 34,
-                    totalTeams: 50,
-                  ),
-                  TournamentBuilder(
-                    date: DateTime.now(),
-                    special: false,
-                    name: "Pratheek's Pro League",
-                    team: true,
-                    tournament: true,
-                    skill: 1,
-                    rewards: 3,
-                    regTeams: 34,
-                    totalTeams: 50,
-                  ),
-                ]))
-              ],
+        slivers: <Widget>[
+          const SlivAppBar(),
+          const SliverToBoxAdapter(child: CustomDivider(indent: 0, height: 5, radius: false)),
+
+          // matches
+          StreamBuilder(
+              stream: tournamentDetails,
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return const SliverToBoxAdapter(child: Text("error occurred"));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SliverToBoxAdapter(
+                      child: SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator())));
+                }
+                return SliverList(
+                    delegate: SliverChildListDelegate(snapshot.data!.docs
+                        .map((DocumentSnapshot e) => TournamentBuilder(
+                            special: e["special"],
+                            name: e["name"],
+                            team: e["solo"],
+                            tournament: e["match"],
+                            skill: e["skill"],
+                            rewards: e["fee"],
+                            regTeams: e["reg"],
+                            totalTeams: 100,
+                            date: e["date"].toDate()))
+                        .toList()));
+              })
+        ],
       ),
     );
   }
@@ -92,7 +64,7 @@ class SlivAppBar extends StatelessWidget {
       elevation: 0,
       expandedHeight: 200, // height of expanded app bar
       title: const Text(
-        "PUBG New State",
+        "PUBG: New State",
       ),
       centerTitle: true,
       // space for image in appbar
