@@ -60,7 +60,7 @@ class _CreateMatchState extends State<CreateMatch> {
 
       // send data to cloud firestore
       await FirebaseFirestore.instance
-          .collection("csgo")
+          .collection(matchType)
           .doc()
           .set({
             "special": false,

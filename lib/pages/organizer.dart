@@ -272,13 +272,6 @@ class _OrganizerState extends State<Organizer> {
             },
           ),
 
-          const Divider(
-            height: 20,
-            endIndent: 30,
-            indent: 30,
-            thickness: 1.3,
-          ),
-
           // FREE FIRE
           Align(
               child: Container(
@@ -298,14 +291,14 @@ class _OrganizerState extends State<Organizer> {
                 return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
               }
               return Container(
-                margin: const EdgeInsets.only(top: 5),
+                margin: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 20),
                 child: Column(
                     children: snapshot.data!.docs.isEmpty
                         ? const [Text("No matches found")]
                         : snapshot.data!.docs
                             .map((DocumentSnapshot e) => Card(
                                   child: ListTile(
-                                      leading: const Text("csgo"),
+                                      leading: const Text("freefire"),
                                       title: Text(e["name"]),
                                       subtitle: Text(e["date"].toDate().toString().substring(0, 11)),
                                       trailing: ElevatedButton(
@@ -317,13 +310,6 @@ class _OrganizerState extends State<Organizer> {
                             .toList()),
               );
             },
-          ),
-
-          const Divider(
-            height: 20,
-            endIndent: 30,
-            indent: 30,
-            thickness: 1.3,
           ),
 
           // PUBG
@@ -345,14 +331,14 @@ class _OrganizerState extends State<Organizer> {
                 return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
               }
               return Container(
-                margin: const EdgeInsets.only(top: 5),
+                margin: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 20),
                 child: Column(
                     children: snapshot.data!.docs.isEmpty
                         ? const [Text("No matches found")]
                         : snapshot.data!.docs
                             .map((DocumentSnapshot e) => Card(
                                   child: ListTile(
-                                      leading: const Text("csgo"),
+                                      leading: const Text("pubg"),
                                       title: Text(e["name"]),
                                       subtitle: Text(e["date"].toDate().toString().substring(0, 11)),
                                       trailing: ElevatedButton(
@@ -364,13 +350,6 @@ class _OrganizerState extends State<Organizer> {
                             .toList()),
               );
             },
-          ),
-
-          const Divider(
-            height: 20,
-            endIndent: 30,
-            indent: 30,
-            thickness: 1.3,
           ),
 
           // VALO
@@ -394,14 +373,14 @@ class _OrganizerState extends State<Organizer> {
                 return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
               }
               return Container(
-                margin: const EdgeInsets.only(top: 5),
+                margin: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 20),
                 child: Column(
                     children: snapshot.data!.docs.isEmpty
                         ? const [Text("No matches found")]
                         : snapshot.data!.docs
                             .map((DocumentSnapshot e) => Card(
                                   child: ListTile(
-                                      leading: const Text("csgo"),
+                                      leading: const Text("valo"),
                                       title: Text(e["name"]),
                                       subtitle: Text(e["date"].toDate().toString().substring(0, 11)),
                                       trailing: ElevatedButton(
@@ -416,8 +395,15 @@ class _OrganizerState extends State<Organizer> {
           ),
         ]),
 
+        bottomNavigationBar: BottomNavigationBar(items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: "haha"),
+          BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: "hoh")
+        ]),
+
         // floating action button
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
+          elevation: 0,
           // add matches page
           onPressed: () {
             Navigator.push(
