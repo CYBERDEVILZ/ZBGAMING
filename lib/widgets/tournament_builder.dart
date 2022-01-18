@@ -53,7 +53,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
     // collapsed card
     Widget collapsedTournamentCard = Material(
       key: const Key("key_two"),
-      color: Colors.grey[200],
+      color: Colors.grey[200], // canvas color
       child: Container(
           clipBehavior: Clip.antiAlias,
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
