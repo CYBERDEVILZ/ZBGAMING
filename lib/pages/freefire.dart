@@ -38,15 +38,18 @@ class _FreeFireTournamentsState extends State<FreeFireTournaments> {
                 return SliverList(
                     delegate: SliverChildListDelegate(snapshot.data!.docs
                         .map((DocumentSnapshot e) => TournamentBuilder(
-                            special: e["special"],
-                            name: e["name"],
-                            team: e["solo"],
-                            tournament: e["match"],
-                            skill: e["skill"],
-                            rewards: e["fee"],
-                            regTeams: e["reg"],
-                            totalTeams: 100,
-                            date: e["date"].toDate()))
+                              special: e["special"],
+                              name: e["name"],
+                              team: e["solo"],
+                              tournament: e["match"],
+                              skill: e["skill"],
+                              rewards: e["fee"],
+                              regTeams: e["reg"],
+                              totalTeams: 100,
+                              date: e["date"].toDate(),
+                              uid: e.id,
+                              matchType: "freefire",
+                            ))
                         .toList()));
               })
         ],

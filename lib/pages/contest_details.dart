@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
 import 'package:zbgaming/widgets/rules_and_requirements.dart';
 
-class ContestDetails extends StatelessWidget {
+class ContestDetails extends StatefulWidget {
   const ContestDetails(
       {Key? key,
       required this.special,
@@ -14,7 +17,9 @@ class ContestDetails extends StatelessWidget {
       required this.date,
       required this.rewards,
       required this.regTeams,
-      required this.totalTeams})
+      required this.totalTeams,
+      required this.uid,
+      required this.matchType})
       : super(key: key);
   final bool special;
   final String name;
@@ -25,25 +30,34 @@ class ContestDetails extends StatelessWidget {
   final int rewards;
   final int regTeams;
   final int totalTeams;
+  final String uid;
+  final String matchType;
+
+  @override
+  State<ContestDetails> createState() => _ContestDetailsState();
+}
+
+class _ContestDetailsState extends State<ContestDetails> {
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    final fee = (rewards == 1)
+    final fee = (widget.rewards == 1)
         ? 100
-        : (rewards == 2)
+        : (widget.rewards == 2)
             ? 500
-            : (rewards == 3)
+            : (widget.rewards == 3)
                 ? 1000
-                : (rewards == 4)
+                : (widget.rewards == 4)
                     ? 5000
                     : null;
-    final amount = (rewards == 1)
+    final amount = (widget.rewards == 1)
         ? "2,400"
-        : (rewards == 2)
+        : (widget.rewards == 2)
             ? "12,000"
-            : (rewards == 3)
+            : (widget.rewards == 3)
                 ? "24,000"
-                : (rewards == 4)
+                : (widget.rewards == 4)
                     ? "1.2 Lacs"
                     : null;
 
@@ -54,7 +68,7 @@ class ContestDetails extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            Text(name,
+            Text(widget.name,
                 textAlign: TextAlign.start, textScaleFactor: 2, style: const TextStyle(fontWeight: FontWeight.bold)),
 
             const SizedBox(height: 5),
@@ -62,7 +76,7 @@ class ContestDetails extends StatelessWidget {
             Row(children: [
               // date of tournament
               Text(
-                "${date.day} ${date.month == 1 ? 'January' : date.month == 2 ? 'February' : date.month == 3 ? 'March' : date.month == 4 ? 'April' : date.month == 5 ? 'May' : date.month == 6 ? 'June' : date.month == 7 ? 'July' : date.month == 8 ? 'August' : date.month == 9 ? 'September' : date.month == 10 ? 'October' : date.month == 11 ? 'November' : date.month == 12 ? 'December' : null}, ${date.year}",
+                "${widget.date.day} ${widget.date.month == 1 ? 'January' : widget.date.month == 2 ? 'February' : widget.date.month == 3 ? 'March' : widget.date.month == 4 ? 'April' : widget.date.month == 5 ? 'May' : widget.date.month == 6 ? 'June' : widget.date.month == 7 ? 'July' : widget.date.month == 8 ? 'August' : widget.date.month == 9 ? 'September' : widget.date.month == 10 ? 'October' : widget.date.month == 11 ? 'November' : widget.date.month == 12 ? 'December' : null}, ${widget.date.year}",
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
               ),
 
@@ -73,12 +87,12 @@ class ContestDetails extends StatelessWidget {
                 children: [
                   Icon(Icons.people_alt, size: 20, color: Colors.black.withOpacity(0.5)),
                   Text(
-                    " $regTeams/",
+                    " ${widget.regTeams}/",
                     textScaleFactor: 1.1,
                     style: TextStyle(color: Colors.black.withOpacity(0.5)),
                   ),
                   Text(
-                    "$totalTeams",
+                    "${widget.totalTeams}",
                     textScaleFactor: 1.1,
                     style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
                   )
@@ -105,7 +119,7 @@ class ContestDetails extends StatelessWidget {
                           width: 100,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            children: team
+                            children: widget.team
                                 ? [
                                     const Icon(Icons.people_alt, size: 25, color: Colors.purple),
                                     const SizedBox(width: 5),
@@ -127,7 +141,7 @@ class ContestDetails extends StatelessWidget {
                         SizedBox(
                           width: 100,
                           child: Column(
-                            children: tournament
+                            children: widget.tournament
                                 ? [
                                     Icon(Icons.account_tree_sharp, size: 25, color: Colors.blue[800]),
                                     const SizedBox(width: 5),
@@ -150,7 +164,7 @@ class ContestDetails extends StatelessWidget {
                           width: 100,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            children: skill == 0
+                            children: widget.skill == 0
                                 ? const [
                                     Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                     SizedBox(width: 5),
@@ -158,7 +172,7 @@ class ContestDetails extends StatelessWidget {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
                                   ]
-                                : skill == 1
+                                : widget.skill == 1
                                     ? const [
                                         Icon(Icons.flash_off, size: 25, color: Colors.teal),
                                         SizedBox(width: 5),
@@ -167,7 +181,7 @@ class ContestDetails extends StatelessWidget {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
                                       ]
-                                    : skill == 2
+                                    : widget.skill == 2
                                         ? const [
                                             Icon(Icons.flash_off, size: 25, color: Colors.teal),
                                             SizedBox(width: 5),
@@ -190,7 +204,7 @@ class ContestDetails extends StatelessWidget {
                       const SizedBox(height: 10),
                       Align(
                         child: Column(
-                          children: rewards != 0
+                          children: widget.rewards != 0
                               ? const [
                                   Icon(Icons.attach_money_outlined, size: 25, color: Colors.red),
                                   SizedBox(width: 5),
@@ -209,7 +223,7 @@ class ContestDetails extends StatelessWidget {
                       const SizedBox(height: 10),
 
                       // prize
-                      rewards != 0
+                      widget.rewards != 0
                           ? Container(
                               height: 90,
                               padding: const EdgeInsets.all(3),
@@ -286,6 +300,54 @@ class ContestDetails extends StatelessWidget {
           ],
         ));
 
+    // add match to history
+    Future<void> addToHistory() async {
+      var uid = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance
+          .collection("userinfo")
+          .doc(uid)
+          .collection("registered")
+          .doc(widget.uid)
+          .set({"name": widget.name, "date": widget.date, "matchType": widget.matchType, "uid": widget.uid});
+    }
+
+    // register button function
+    void register() async {
+      isLoading = true;
+      setState(() {});
+
+      //check the auth status
+      if (FirebaseAuth.instance.currentUser?.uid == null) {
+        Fluttertoast.showToast(msg: "Please login to register");
+      }
+
+      // if signed in,
+      else {
+        // if free register then and there
+        if (widget.rewards == 0) {
+          if (widget.regTeams < widget.totalTeams) {
+            await FirebaseFirestore.instance
+                .collection(widget.matchType)
+                .doc(widget.uid)
+                .update({"reg": widget.regTeams + 1}).then((value) async {
+              await addToHistory();
+              Fluttertoast.showToast(msg: "Registration successful");
+            }).catchError((onError) {
+              Fluttertoast.showToast(msg: "An error occurred");
+            });
+          }
+        }
+
+        // else take to payments page
+        else {
+          await Fluttertoast.showToast(msg: "Take to payment page");
+        }
+      }
+      isLoading = false;
+      setState(() {});
+    }
+
+// --------------- Return is Here --------------- //
     return Scaffold(
       appBar: AppBar(
         title: const Text("Contest Details"),
@@ -317,7 +379,7 @@ class ContestDetails extends StatelessWidget {
                     child: Container(
                   alignment: Alignment.center,
                   child: FittedBox(
-                    child: rewards != 0
+                    child: widget.rewards != 0
                         ? Text(
                             "\u20b9 $fee",
                             style: const TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
@@ -332,8 +394,16 @@ class ContestDetails extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 15),
                   child: ElevatedButton(
                     // register button
-                    onPressed: () {},
-                    child: const Text("Register", textScaleFactor: 1.3),
+                    onPressed: widget.regTeams == widget.totalTeams
+                        ? null
+                        : () {
+                            register();
+                          },
+                    child: isLoading
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text("Register", textScaleFactor: 1.3),
                     style: ButtonStyle(
                         fixedSize: MaterialStateProperty.all(const Size(150, 50)),
                         elevation: MaterialStateProperty.all(0)),

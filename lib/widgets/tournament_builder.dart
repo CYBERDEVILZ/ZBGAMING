@@ -12,7 +12,9 @@ class TournamentBuilder extends StatefulWidget {
       required this.rewards,
       required this.regTeams,
       required this.totalTeams,
-      required this.date})
+      required this.date,
+      required this.uid,
+      required this.matchType})
       : super(key: key);
   final bool special;
   final String name;
@@ -23,6 +25,8 @@ class TournamentBuilder extends StatefulWidget {
   final int rewards;
   final int regTeams;
   final int totalTeams;
+  final String uid;
+  final String matchType;
 
   @override
   State<TournamentBuilder> createState() => _TournamentBuilderState();
@@ -35,16 +39,17 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
       context,
       MaterialPageRoute(
           builder: (context) => ContestDetails(
-                date: widget.date,
-                name: widget.name,
-                rewards: widget.rewards,
-                regTeams: widget.regTeams,
-                skill: widget.skill,
-                special: widget.special,
-                team: widget.team,
-                totalTeams: widget.totalTeams,
-                tournament: widget.tournament,
-              )),
+              date: widget.date,
+              name: widget.name,
+              rewards: widget.rewards,
+              regTeams: widget.regTeams,
+              skill: widget.skill,
+              special: widget.special,
+              team: widget.team,
+              totalTeams: widget.totalTeams,
+              tournament: widget.tournament,
+              uid: widget.uid,
+              matchType: widget.matchType)),
     );
   }
 
