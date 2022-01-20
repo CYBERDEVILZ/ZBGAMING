@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:zbgaming/widgets/Date_to_string.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
 import 'package:zbgaming/widgets/rules_and_requirements.dart';
@@ -39,6 +40,7 @@ class ContestDetails extends StatefulWidget {
 
 class _ContestDetailsState extends State<ContestDetails> {
   bool isLoading = false;
+  DateToString dateString = DateToString();
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +78,7 @@ class _ContestDetailsState extends State<ContestDetails> {
             Row(children: [
               // date of tournament
               Text(
-                "${widget.date.day} ${widget.date.month == 1 ? 'January' : widget.date.month == 2 ? 'February' : widget.date.month == 3 ? 'March' : widget.date.month == 4 ? 'April' : widget.date.month == 5 ? 'May' : widget.date.month == 6 ? 'June' : widget.date.month == 7 ? 'July' : widget.date.month == 8 ? 'August' : widget.date.month == 9 ? 'September' : widget.date.month == 10 ? 'October' : widget.date.month == 11 ? 'November' : widget.date.month == 12 ? 'December' : null}, ${widget.date.year}",
+                dateString.dateToString(widget.date),
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
               ),
 

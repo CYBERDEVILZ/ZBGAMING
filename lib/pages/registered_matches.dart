@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/widgets/Date_to_string.dart';
 
 class RegisteredMatches extends StatelessWidget {
@@ -64,6 +66,33 @@ class _BuildTilesState extends State<BuildTiles> {
 
   @override
   Widget build(BuildContext context) {
+    void fetchAndNavigate(QueryDocumentSnapshot data) async {
+      // matchType
+      String matchType = data["matchType"];
+
+      // fetch data about tournament and navigate
+      await FirebaseFirestore.instance.collection(matchType).doc(data["uid"]).get().then((value) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ContestDetails(
+                    special: value["special"],
+                    name: value["name"],
+                    team: value["solo"],
+                    tournament: value["match"],
+                    skill: value["skill"],
+                    date: value["date"].toDate(),
+                    rewards: value["fee"],
+                    regTeams: value["reg"],
+                    totalTeams: 100,
+                    uid: value["uid"],
+                    matchType: matchType)));
+      }).catchError((onError) {
+        Fluttertoast.showToast(msg: "An error occurred");
+      });
+    }
+
+    // --------------- Return is Here --------------- //
     return isLoading
         ? const Center(child: CircularProgressIndicator())
         : ListView.builder(
@@ -72,6 +101,14 @@ class _BuildTilesState extends State<BuildTiles> {
                   leading: Text(data[index]["matchType"]),
                   title: Text(data[index]["name"]),
                   subtitle: Text(dateObject.dateToString(data[index]["date"].toDate())),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.open_in_new, color: Colors.blue),
+
+                    // fetch data and navigate to contest details
+                    onPressed: () {
+                      fetchAndNavigate(data[index]);
+                    },
+                  ),
                 ));
   }
 }
