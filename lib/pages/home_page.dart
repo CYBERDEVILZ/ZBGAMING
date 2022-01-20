@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
+import 'package:zbgaming/pages/registered_matches.dart';
 import 'package:zbgaming/widgets/drawer.dart';
 import 'package:zbgaming/widgets/home_page_list.dart';
 
@@ -66,7 +67,9 @@ class _HomePageState extends State<HomePage> {
                 setState(() {});
               }),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {}, // shows registered matches
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisteredMatches()));
+            }, // shows registered matches
             child: const Icon(Icons.flag),
             elevation: 0,
           ),
