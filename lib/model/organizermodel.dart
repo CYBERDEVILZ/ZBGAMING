@@ -5,14 +5,21 @@ class OrganizerModel with ChangeNotifier {
   String? _imageurl;
   String? _username;
   String? _email;
+  String? _bannerurl;
 
   String? get uid => _uid;
   String? get imageurl => _imageurl;
   String? get username => _username;
   String? get email => _email;
+  String? get bannerurl => _bannerurl;
 
   void setemail(String? email) {
     _email = email;
+    notifyListeners();
+  }
+
+  void setbannerurl(String? bannerurl) {
+    _bannerurl = email;
     notifyListeners();
   }
 
