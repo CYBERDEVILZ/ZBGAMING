@@ -9,6 +9,7 @@ import 'package:provider/src/provider.dart';
 import 'package:zbgaming/model/organizermodel.dart';
 
 import 'package:zbgaming/pages/add_matches.dart';
+import 'package:zbgaming/pages/organizer_account.dart';
 import 'package:zbgaming/pages/organizer_login.dart';
 
 class Organizer extends StatefulWidget {
@@ -20,7 +21,6 @@ class Organizer extends StatefulWidget {
 
 class _OrganizerState extends State<Organizer> {
   // streams to subscribe
-
   Stream<QuerySnapshot> csgoStream = FirebaseFirestore.instance
       .collection("csgo")
       .orderBy("date")
@@ -149,7 +149,9 @@ class _OrganizerState extends State<Organizer> {
           ),
         ),
         ListTile(
-          onTap: () {}, // leads to my account
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const OrganizerAccount()));
+          }, // leads to my account
           leading: const Icon(Icons.account_circle, color: Colors.black),
           trailing: const Icon(Icons.arrow_right, color: Colors.black),
           title: const Text(
