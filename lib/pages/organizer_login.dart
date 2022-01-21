@@ -33,6 +33,17 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
   final TextEditingController passwd = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+
+    FirebaseAuth.instance.authStateChanges().listen((User? event) {
+      if (event?.uid != null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const Organizer()));
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     // validation
     void validate() async {

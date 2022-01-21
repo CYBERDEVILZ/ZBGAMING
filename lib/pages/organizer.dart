@@ -20,6 +20,7 @@ class Organizer extends StatefulWidget {
 
 class _OrganizerState extends State<Organizer> {
   // streams to subscribe
+
   Stream<QuerySnapshot> csgoStream = FirebaseFirestore.instance
       .collection("csgo")
       .orderBy("date")
