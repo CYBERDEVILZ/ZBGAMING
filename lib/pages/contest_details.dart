@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/widgets/Date_to_string.dart';
@@ -358,14 +359,7 @@ class _ContestDetailsState extends State<ContestDetails> {
       ),
       body: ListView(
         children: [
-          SizedBox(
-            height: 120,
-            width: MediaQuery.of(context).size.width,
-            child: Image.asset(
-              "assets/images/zbunkerchannelart.png", // change the image to contest banner
-              fit: BoxFit.cover,
-            ),
-          ),
+          const BannerImage(),
 
           // contest details
           contestDetails,
@@ -416,6 +410,47 @@ class _ContestDetailsState extends State<ContestDetails> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// banner image
+class BannerImage extends StatefulWidget {
+  const BannerImage({Key? key}) : super(key: key);
+
+  @override
+  State<BannerImage> createState() => _BannerImageState();
+}
+
+class _BannerImageState extends State<BannerImage> {
+  String? imageurl;
+
+  // download and use banner
+  void downloadBanner() async {
+    Reference storage =
+        FirebaseStorage.instance.ref("zbgaming/organizers/images/yOyxI8FKjkfeOrkcDyI6Fb6QrNA3/freefire.png");
+    imageurl = await storage.getDownloadURL();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    downloadBanner();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 120,
+      width: MediaQuery.of(context).size.width,
+      child: imageurl != null
+          ? Image.network(
+              imageurl!, // change the image to contest banner
+              fit: BoxFit.cover,
+            )
+          : Image.asset("assets/images/csgo.jpg", fit: BoxFit.cover),
     );
   }
 }

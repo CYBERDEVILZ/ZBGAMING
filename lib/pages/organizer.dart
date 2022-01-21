@@ -139,29 +139,11 @@ class _OrganizerState extends State<Organizer> {
               ],
             )),
         ListTile(
-          onTap: () {}, // leads to registered matches
-          leading: const Icon(Icons.flag, color: Colors.black),
-          trailing: const Icon(Icons.arrow_right, color: Colors.black),
-          title: const Text(
-            "Registered Matches",
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-        ListTile(
-          onTap: () {}, // leads to favorites
-          leading: const Icon(Icons.star, color: Colors.black),
-          trailing: const Icon(Icons.arrow_right, color: Colors.black),
-          title: const Text(
-            "Favorites",
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-        ListTile(
-          onTap: () {}, // leads to match history
+          onTap: () {}, // leads to matches organized
           leading: const Icon(Icons.history, color: Colors.black),
           trailing: const Icon(Icons.arrow_right, color: Colors.black),
           title: const Text(
-            "History",
+            "Matches Organized",
             style: TextStyle(color: Colors.black),
           ),
         ),

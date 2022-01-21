@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/widgets/Date_to_string.dart';
+import 'package:zbgaming/widgets/not_signed_in.dart';
 
 class RegisteredMatches extends StatelessWidget {
   RegisteredMatches({Key? key}) : super(key: key);
@@ -11,7 +12,7 @@ class RegisteredMatches extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // widget to show when user is not signed in
-  final Widget notSignedIn = const Text("Not Signed In");
+  final Widget notSignedIn = const NotSignedIn();
 
   @override
   Widget build(BuildContext context) {
