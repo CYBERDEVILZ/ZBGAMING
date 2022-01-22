@@ -14,11 +14,14 @@ class PreviewPane extends StatelessWidget {
     final String? imageurl = context.watch<OrganizerModel>().imageurl;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Preview")),
+      appBar: AppBar(
+        title: const Text("Preview"),
+        elevation: 0,
+      ),
       body: ListView(
         children: [
           SizedBox(
-            height: 120,
+            height: MediaQuery.of(context).size.height / 6,
             width: MediaQuery.of(context).size.width,
             child: imageurl != null
                 ? Image.network(

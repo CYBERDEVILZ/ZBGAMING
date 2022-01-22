@@ -357,58 +357,60 @@ class _ContestDetailsState extends State<ContestDetails> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: ListView(
-        children: [
-          const BannerImage(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const BannerImage(),
 
-          // contest details
-          contestDetails,
+            // contest details
+            contestDetails,
 
-          // register button and number of teams
-          Container(
-            height: 75,
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: Container(
-                  alignment: Alignment.center,
-                  child: FittedBox(
-                    child: widget.rewards != 0
-                        ? Text(
-                            "\u20b9 $fee",
-                            style: const TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
-                          )
-                        : const Text(
-                            "FREE",
-                            style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
-                          ),
-                  ),
-                )),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: ElevatedButton(
-                    // register button
-                    onPressed: widget.regTeams == widget.totalTeams
-                        ? null
-                        : () {
-                            register();
-                          },
-                    child: isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : const Text("Register", textScaleFactor: 1.3),
-                    style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all(const Size(150, 50)),
-                        elevation: MaterialStateProperty.all(0)),
-                  ),
-                )
-              ],
+            // register button and number of teams
+            Container(
+              height: 75,
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      child: Container(
+                    alignment: Alignment.center,
+                    child: FittedBox(
+                      child: widget.rewards != 0
+                          ? Text(
+                              "\u20b9 $fee",
+                              style: const TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+                            )
+                          : const Text(
+                              "FREE",
+                              style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+                            ),
+                    ),
+                  )),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15),
+                    child: ElevatedButton(
+                      // register button
+                      onPressed: widget.regTeams == widget.totalTeams
+                          ? null
+                          : () {
+                              register();
+                            },
+                      child: isLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : const Text("Register", textScaleFactor: 1.3),
+                      style: ButtonStyle(
+                          fixedSize: MaterialStateProperty.all(const Size(150, 50)),
+                          elevation: MaterialStateProperty.all(0)),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -443,7 +445,7 @@ class _BannerImageState extends State<BannerImage> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 120,
+      height: MediaQuery.of(context).size.height / 6,
       width: MediaQuery.of(context).size.width,
       child: imageurl != null
           ? Image.network(
