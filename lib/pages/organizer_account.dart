@@ -38,7 +38,7 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
             await FirebaseFirestore.instance
                 .collection("organizer")
                 .doc(FirebaseAuth.instance.currentUser!.uid)
-                .update({"iamgeurl": imageurl});
+                .update({"imageurl": imageurl});
             context.read<OrganizerModel>().setimageurl(imageurl);
           }
           if (p0.state == TaskState.error) {
@@ -64,22 +64,28 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                   child: Stack(children: [
                     // image
                     context.watch<OrganizerModel>().imageurl == null
-                        ? const CircleAvatar(
+                        ? CircleAvatar(
                             backgroundColor: Colors.blue,
                             radius: 70,
                             child: FittedBox(
-                              child: Icon(
-                                Icons.account_circle,
-                                color: Colors.white,
-                                size: 180,
-                              ),
+                              child: isLoading
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : const Icon(
+                                      Icons.account_circle,
+                                      color: Colors.white,
+                                      size: 180,
+                                    ),
                               fit: BoxFit.cover,
                             ),
                           )
                         : CircleAvatar(
                             backgroundColor: Colors.blue,
                             radius: 70,
-                            foregroundImage: NetworkImage(context.watch<OrganizerModel>().imageurl!)),
+                            backgroundImage: NetworkImage(context.watch<OrganizerModel>().imageurl!),
+                            child: isLoading ? const CircularProgressIndicator() : null,
+                          ),
 
                     // edit button
                     Positioned(
