@@ -63,6 +63,11 @@ class _OrganizerState extends State<Organizer> {
           context.read<OrganizerModel>().setusername(data["username"]);
           context.read<OrganizerModel>().setemail(data["email"]);
           context.read<OrganizerModel>().setimageurl(data["imageurl"]);
+          try {
+            context.read<OrganizerModel>().setbannerurl(data["bannerurl"]);
+          } catch (e) {
+            context.read<OrganizerModel>().setbannerurl(null);
+          }
         }
       }
     });

@@ -11,7 +11,7 @@ class PreviewPane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String? imageurl = context.watch<OrganizerModel>().imageurl;
+    final String? bannerurl = context.watch<OrganizerModel>().bannerurl;
 
     return Scaffold(
       appBar: AppBar(
@@ -23,9 +23,9 @@ class PreviewPane extends StatelessWidget {
           SizedBox(
             height: MediaQuery.of(context).size.height / 6,
             width: MediaQuery.of(context).size.width,
-            child: imageurl != null
+            child: bannerurl != null
                 ? Image.network(
-                    imageurl, // change the image to contest banner
+                    bannerurl, // change the image to contest banner
                     fit: BoxFit.cover,
                   )
                 : Image.asset("assets/images/csgo.jpg", fit: BoxFit.cover),

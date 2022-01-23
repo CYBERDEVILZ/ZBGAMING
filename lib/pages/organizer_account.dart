@@ -20,9 +20,35 @@ class OrganizerAccount extends StatefulWidget {
 }
 
 class _OrganizerAccountState extends State<OrganizerAccount> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
-    void updateImage() async {}
+    void updateImage() async {
+      XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        isLoading = true;
+        setState(() {});
+        await FirebaseStorage.instance
+            .ref("zbgaming/organizers/images/${FirebaseAuth.instance.currentUser!.uid}/profile.jpg")
+            .putFile(File(image.path))
+            .then((p0) async {
+          if (p0.state == TaskState.success) {
+            String imageurl = await p0.ref.getDownloadURL();
+            Fluttertoast.showToast(msg: "Uploaded Successfully");
+            await FirebaseFirestore.instance
+                .collection("organizer")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .update({"iamgeurl": imageurl});
+            context.read<OrganizerModel>().setimageurl(imageurl);
+          }
+          if (p0.state == TaskState.error) {
+            Fluttertoast.showToast(msg: "Some error occurred");
+          }
+        });
+      }
+      isLoading = false;
+      setState(() {});
+    }
 
     // --------------- Return is Here --------------- //
     return SafeArea(
@@ -53,10 +79,7 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                         : CircleAvatar(
                             backgroundColor: Colors.blue,
                             radius: 70,
-                            child: FittedBox(
-                              child: Image.network(context.watch<OrganizerModel>().imageurl!),
-                            ),
-                          ),
+                            foregroundImage: NetworkImage(context.watch<OrganizerModel>().imageurl!)),
 
                     // edit button
                     Positioned(
@@ -89,12 +112,11 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                 ),
                 const SizedBox(height: 5),
                 Container(
-                    color: Colors.white,
                     height: MediaQuery.of(context).size.height / 6,
                     width: MediaQuery.of(context).size.width,
-                    child: context.watch<OrganizerModel>().bannerurl != null
-                        ? Image.network(context.watch<OrganizerModel>().bannerurl!)
-                        :
+                    decoration: BoxDecoration(border: Border.all(color: Colors.blue, width: 1.5)),
+                    alignment: Alignment.center,
+                    child:
                         // image widget to come here
                         const ImageWidget()),
 
@@ -147,44 +169,55 @@ class _ImageWidgetState extends State<ImageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      // upload image, update state
-      onTap: () async {
-        XFile? imageFile = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 500, maxWidth: 2000);
-        if (imageFile != null) {
-          String _auth = FirebaseAuth.instance.currentUser!.uid;
-          isLoading = true;
+    return AbsorbPointer(
+      absorbing: isLoading,
+      child: InkWell(
+        // upload image, update state
+        onTap: () async {
+          XFile? imageFile = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 500, maxWidth: 2000);
+          if (imageFile != null) {
+            String _auth = FirebaseAuth.instance.currentUser!.uid;
+            isLoading = true;
+            setState(() {});
+            await FirebaseStorage.instance
+                .ref("zbgaming/organizers/images/$_auth/banner.jpg")
+                .putFile(File(imageFile.path))
+                .then((p0) async {
+              if (p0.state == TaskState.success) {
+                String link = await p0.ref.getDownloadURL();
+                await FirebaseFirestore.instance
+                    .collection("organizer")
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .update({"bannerurl": link});
+                Fluttertoast.showToast(msg: "Successful");
+                context.read<OrganizerModel>().setbannerurl(link);
+              }
+              if (p0.state == TaskState.error) {
+                Fluttertoast.showToast(msg: "Some error occurred");
+              }
+            });
+          }
+          isLoading = false;
           setState(() {});
-          await FirebaseStorage.instance
-              .ref("zbgaming/organizers/images/$_auth/banner.jpg")
-              .putFile(File(imageFile.path))
-              .then((p0) async {
-            if (p0.state == TaskState.success) {
-              String link = await p0.ref.getDownloadURL();
-              Fluttertoast.showToast(msg: "Successful");
-              context.read<OrganizerModel>().setbannerurl(link);
-            }
-            if (p0.state == TaskState.error) {
-              Fluttertoast.showToast(msg: "Some error occurred");
-            }
-          });
-        }
-        isLoading = false;
-        setState(() {});
-      },
-      child: Container(
-          height: MediaQuery.of(context).size.height / 6,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(border: Border.all(color: Colors.blue, width: 1.5)),
-          alignment: Alignment.center,
-          child: isLoading
-              ? const CircularProgressIndicator(
-                  color: Colors.blue,
-                )
-              : const Icon(
-                  Icons.add,
-                  color: Colors.blue,
-                )),
+        },
+        child: Container(
+            height: MediaQuery.of(context).size.height / 6,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.blue, width: 1.5),
+                image: (context.read<OrganizerModel>().bannerurl != null
+                    ? DecorationImage(image: NetworkImage(context.read<OrganizerModel>().bannerurl!), fit: BoxFit.cover)
+                    : null)),
+            alignment: Alignment.center,
+            child: isLoading
+                ? const CircularProgressIndicator(
+                    color: Colors.blue,
+                  )
+                : const Icon(
+                    Icons.add,
+                    color: Colors.blue,
+                  )),
+      ),
     );
   }
 }

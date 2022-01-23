@@ -56,7 +56,16 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
           context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
           context.read<OrganizerModel>().setusername(data["username"]);
           context.read<OrganizerModel>().setemail(data["email"]);
-          context.read<OrganizerModel>().setimageurl(data["imageurl"]);
+          try {
+            context.read<OrganizerModel>().setbannerurl(data["bannerurl"]);
+          } catch (e) {
+            context.read<OrganizerModel>().setbannerurl(null);
+          }
+          try {
+            context.read<OrganizerModel>().setimageurl(data["imageurl"]);
+          } catch (e) {
+            context.read<OrganizerModel>().setimageurl(null);
+          }
           await Fluttertoast.showToast(
               msg: "Login successful!", backgroundColor: Colors.blue[700], textColor: Colors.white);
           await Future.delayed(const Duration(seconds: 1));
