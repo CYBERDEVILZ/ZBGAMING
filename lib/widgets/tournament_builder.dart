@@ -14,7 +14,8 @@ class TournamentBuilder extends StatefulWidget {
       required this.totalTeams,
       required this.date,
       required this.uid,
-      required this.matchType})
+      required this.matchType,
+      required this.ouid})
       : super(key: key);
   final bool special;
   final String name;
@@ -25,7 +26,10 @@ class TournamentBuilder extends StatefulWidget {
   final int rewards;
   final int regTeams;
   final int totalTeams;
+  // match uid
   final String uid;
+  // organizer uid
+  final String ouid;
   final String matchType;
 
   @override
@@ -48,7 +52,10 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
               team: widget.team,
               totalTeams: widget.totalTeams,
               tournament: widget.tournament,
+              // match uid
               uid: widget.uid,
+              // organizer uid
+              ouid: widget.ouid,
               matchType: widget.matchType)),
     );
   }

@@ -86,7 +86,8 @@ class _BuildTilesState extends State<BuildTiles> {
                     rewards: value["fee"],
                     regTeams: value["reg"],
                     totalTeams: 100,
-                    uid: value["uid"],
+                    uid: value.id,
+                    ouid: value["uid"],
                     matchType: matchType)));
       }).catchError((onError) {
         Fluttertoast.showToast(msg: "An error occurred");

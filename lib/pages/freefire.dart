@@ -48,6 +48,7 @@ class _FreeFireTournamentsState extends State<FreeFireTournaments> {
                               totalTeams: 100,
                               date: e["date"].toDate(),
                               uid: e.id,
+                              ouid: e["uid"],
                               matchType: "freefire",
                             ))
                         .toList()));

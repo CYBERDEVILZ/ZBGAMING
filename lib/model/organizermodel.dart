@@ -19,7 +19,7 @@ class OrganizerModel with ChangeNotifier {
   }
 
   void setbannerurl(String? bannerurl) {
-    _bannerurl = email;
+    _bannerurl = bannerurl;
     notifyListeners();
   }
 

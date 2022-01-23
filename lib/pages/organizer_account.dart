@@ -1,4 +1,11 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
@@ -78,7 +85,7 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                 // Upload banner
                 const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("Upload Banner (width:height = 4:1)"),
+                  child: Text("Upload Banner [width:height = 4:1]"),
                 ),
                 const SizedBox(height: 5),
                 Container(
@@ -128,23 +135,56 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
   }
 }
 
-class ImageWidget extends StatelessWidget {
+class ImageWidget extends StatefulWidget {
   const ImageWidget({Key? key}) : super(key: key);
+
+  @override
+  State<ImageWidget> createState() => _ImageWidgetState();
+}
+
+class _ImageWidgetState extends State<ImageWidget> {
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       // upload image, update state
-      onTap: () {},
+      onTap: () async {
+        XFile? imageFile = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 500, maxWidth: 2000);
+        if (imageFile != null) {
+          String _auth = FirebaseAuth.instance.currentUser!.uid;
+          isLoading = true;
+          setState(() {});
+          await FirebaseStorage.instance
+              .ref("zbgaming/organizers/images/$_auth/banner.jpg")
+              .putFile(File(imageFile.path))
+              .then((p0) async {
+            if (p0.state == TaskState.success) {
+              String link = await p0.ref.getDownloadURL();
+              Fluttertoast.showToast(msg: "Successful");
+              context.read<OrganizerModel>().setbannerurl(link);
+            }
+            if (p0.state == TaskState.error) {
+              Fluttertoast.showToast(msg: "Some error occurred");
+            }
+          });
+        }
+        isLoading = false;
+        setState(() {});
+      },
       child: Container(
           height: MediaQuery.of(context).size.height / 6,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(border: Border.all(color: Colors.blue, width: 1.5)),
           alignment: Alignment.center,
-          child: const Icon(
-            Icons.add,
-            color: Colors.blue,
-          )),
+          child: isLoading
+              ? const CircularProgressIndicator(
+                  color: Colors.blue,
+                )
+              : const Icon(
+                  Icons.add,
+                  color: Colors.blue,
+                )),
     );
   }
 }

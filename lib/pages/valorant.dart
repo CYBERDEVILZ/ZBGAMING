@@ -47,6 +47,7 @@ class _ValorantTournamentsState extends State<ValorantTournaments> {
                               totalTeams: 100,
                               date: e["date"].toDate(),
                               uid: e.id,
+                              ouid: e["uid"],
                               matchType: "valo",
                             ))
                         .toList()));

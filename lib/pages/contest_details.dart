@@ -21,7 +21,8 @@ class ContestDetails extends StatefulWidget {
       required this.regTeams,
       required this.totalTeams,
       required this.uid,
-      required this.matchType})
+      required this.matchType,
+      required this.ouid})
       : super(key: key);
   final bool special;
   final String name;
@@ -32,7 +33,10 @@ class ContestDetails extends StatefulWidget {
   final int rewards;
   final int regTeams;
   final int totalTeams;
+  // uid of match
   final String uid;
+  // organizer id
+  final String ouid;
   final String matchType;
 
   @override
@@ -360,7 +364,7 @@ class _ContestDetailsState extends State<ContestDetails> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const BannerImage(),
+            BannerImage(ouid: widget.ouid),
 
             // contest details
             contestDetails,
@@ -418,21 +422,27 @@ class _ContestDetailsState extends State<ContestDetails> {
 
 // banner image
 class BannerImage extends StatefulWidget {
-  const BannerImage({Key? key}) : super(key: key);
+  const BannerImage({Key? key, required this.ouid}) : super(key: key);
+  final String ouid;
 
   @override
-  State<BannerImage> createState() => _BannerImageState();
+  // ignore: no_logic_in_create_state
+  State<BannerImage> createState() => _BannerImageState(ouid);
 }
 
 class _BannerImageState extends State<BannerImage> {
+  final String ouid;
   String? imageurl;
+
+  _BannerImageState(this.ouid);
 
   // download and use banner
   void downloadBanner() async {
-    Reference storage =
-        FirebaseStorage.instance.ref("zbgaming/organizers/images/yOyxI8FKjkfeOrkcDyI6Fb6QrNA3/freefire.png");
-    imageurl = await storage.getDownloadURL();
-    setState(() {});
+    Reference storage = FirebaseStorage.instance.ref("zbgaming/organizers/images/$ouid/banner.jpg");
+    await storage.getDownloadURL().then((value) {
+      imageurl = value;
+      setState(() {});
+    }).catchError((e) {});
   }
 
   @override
