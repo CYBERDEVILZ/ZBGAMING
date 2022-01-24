@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
@@ -151,10 +152,8 @@ class PreviewPane extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: 5.0),
                 child: Text("Organized By:", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
               ),
-              const OrganizerCard(
-                imageurl: "assets/images/csgo.jpg",
-                rating: 4.0,
-                name: "Zbunker Matches and Tournaments",
+              OrganizerCard(
+                ouid: FirebaseAuth.instance.currentUser!.uid,
               ),
               const SizedBox(height: 30),
               const Text("Rules", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),

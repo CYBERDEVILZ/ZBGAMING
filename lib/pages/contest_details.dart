@@ -270,10 +270,8 @@ class _ContestDetailsState extends State<ContestDetails> {
               padding: EdgeInsets.only(bottom: 5.0),
               child: Text("Organized By:", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
             ),
-            const OrganizerCard(
-              imageurl: "assets/images/csgo.jpg",
-              rating: 4.0,
-              name: "Zbunker Matches and Tournaments",
+            OrganizerCard(
+              ouid: widget.ouid,
             ),
 
             const SizedBox(height: 30),
