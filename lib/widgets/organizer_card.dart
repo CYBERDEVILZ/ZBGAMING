@@ -71,7 +71,7 @@ class _OrganizerCardState extends State<OrganizerCard> {
                   const SizedBox(height: 10),
                   rating == null
                       ? const Text(
-                          "Rating here",
+                          "Unrated",
                           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                         )
                       : StarBuilder(
