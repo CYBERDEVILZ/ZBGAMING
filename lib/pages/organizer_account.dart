@@ -96,9 +96,9 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                           onTap: () {
                             updateImage();
                           },
-                          child: const Icon(
+                          child: Icon(
                             Icons.edit,
-                            color: Colors.black,
+                            color: Colors.blue[800],
                           ),
                         )),
                   ]),
@@ -107,7 +107,11 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                 const SizedBox(height: 20),
 
                 // Name
-                Text(context.watch<OrganizerModel>().username!),
+                Text(
+                  context.watch<OrganizerModel>().username!,
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                  textScaleFactor: 2,
+                ),
 
                 const SizedBox(height: 30),
 
