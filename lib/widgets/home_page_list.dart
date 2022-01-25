@@ -15,13 +15,13 @@ class HomePageList extends StatelessWidget {
             Navigator.pushNamed(context, AppRoutes.csgo);
           }),
       Tile(
-          img: "assets/images/freefire.png",
+          img: "assets/images/freefire.jpg",
           title: "Garena Free Fire",
           ontap: () {
             Navigator.pushNamed(context, AppRoutes.freefire);
           }),
       Tile(
-          img: "assets/images/pubg.png",
+          img: "assets/images/pubg.jpg",
           title: "PUBG New State",
           ontap: () {
             Navigator.pushNamed(context, AppRoutes.pubg);
