@@ -183,7 +183,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                     ? const [
                                         Icon(Icons.flash_off, size: 25, color: Colors.teal),
                                         SizedBox(width: 5),
-                                        Text("10 and above",
+                                        Text("10 and above\n",
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
@@ -362,7 +362,7 @@ class _ContestDetailsState extends State<ContestDetails> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            BannerImage(ouid: widget.ouid),
+            BannerImage(ouid: widget.ouid, matchType: widget.matchType),
 
             // contest details
             contestDetails,
@@ -420,19 +420,21 @@ class _ContestDetailsState extends State<ContestDetails> {
 
 // banner image
 class BannerImage extends StatefulWidget {
-  const BannerImage({Key? key, required this.ouid}) : super(key: key);
+  const BannerImage({Key? key, required this.ouid, required this.matchType}) : super(key: key);
   final String ouid;
+  final String matchType;
 
   @override
   // ignore: no_logic_in_create_state
-  State<BannerImage> createState() => _BannerImageState(ouid);
+  State<BannerImage> createState() => _BannerImageState(ouid, matchType);
 }
 
 class _BannerImageState extends State<BannerImage> {
   final String ouid;
+  final String matchType;
   String? imageurl;
 
-  _BannerImageState(this.ouid);
+  _BannerImageState(this.ouid, this.matchType);
 
   // download and use banner
   void downloadBanner() async {
@@ -460,7 +462,7 @@ class _BannerImageState extends State<BannerImage> {
               imageurl!, // change the image to contest banner
               fit: BoxFit.cover,
             )
-          : Image.asset("assets/images/csgo.jpg", fit: BoxFit.cover),
+          : Image.asset("assets/images/$matchType.jpg", fit: BoxFit.cover),
     );
   }
 }

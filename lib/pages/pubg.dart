@@ -74,7 +74,7 @@ class SlivAppBar extends StatelessWidget {
       // space for image in appbar
       flexibleSpace: FlexibleSpaceBar(
         background: Image.asset(
-          "assets/images/pubg.png", // add a different image
+          "assets/images/pubg.jpg", // add a different image
           fit: BoxFit.cover,
         ),
       ),
