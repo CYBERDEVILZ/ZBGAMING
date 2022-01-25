@@ -460,6 +460,14 @@ class _BannerImageState extends State<BannerImage> {
       child: imageurl != null
           ? Image.network(
               imageurl!,
+
+              // error builder
+              errorBuilder: (context, error, stackTrace) => const Text(
+                "Error occurred",
+                style: TextStyle(color: Colors.red),
+              ),
+
+              // loading builder
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) {
                   return child;
