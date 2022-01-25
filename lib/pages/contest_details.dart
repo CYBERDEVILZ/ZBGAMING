@@ -459,7 +459,20 @@ class _BannerImageState extends State<BannerImage> {
       width: MediaQuery.of(context).size.width,
       child: imageurl != null
           ? Image.network(
-              imageurl!, // change the image to contest banner
+              imageurl!,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                }
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+              // change the image to contest banner
               fit: BoxFit.cover,
             )
           : Image.asset("assets/images/$matchType.jpg", fit: BoxFit.cover),
