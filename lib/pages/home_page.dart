@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
 import 'package:zbgaming/widgets/drawer.dart';
+import 'package:zbgaming/widgets/favorite_organizer.dart';
 import 'package:zbgaming/widgets/home_page_list.dart';
 
 // ignore: unused_import
@@ -18,6 +19,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int index = 0; // index for bottom nav bar
+  Map<int, Widget> showBody = {0: const HomePageList(), 1: const FavoriteOrganizers()}; // mapping for bottom nav bar
+
   bool isLogged = false;
 
   @override
@@ -50,8 +53,8 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
         bottom: false,
         child: Scaffold(
-          appBar: AppBar(title: const Text("Games"), elevation: 0, centerTitle: true),
-          body: const HomePageList(), // contains list of games
+          appBar: AppBar(title: Text(index == 0 ? "Games" : "Favorite Organizers"), elevation: 0, centerTitle: true),
+          body: showBody[index], // contains list of games
           drawer: isLogged ? const AfterLoginDrawer() : const BeforeLoginDrawer(),
           bottomNavigationBar: BottomNavigationBar(
               items: const [
