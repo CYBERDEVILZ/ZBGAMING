@@ -173,7 +173,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: widget.skill == 0
                                 ? const [
-                                    Icon(Icons.flash_on, size: 25, color: Colors.teal),
+                                    Icon(Icons.flash_off, size: 25, color: Colors.teal),
                                     SizedBox(width: 5),
                                     Text("No LVL Required",
                                         textAlign: TextAlign.center,
@@ -181,7 +181,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                   ]
                                 : widget.skill == 1
                                     ? const [
-                                        Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                        Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                         SizedBox(width: 5),
                                         Text("10 and above\n",
                                             textAlign: TextAlign.center,
@@ -190,7 +190,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                       ]
                                     : widget.skill == 2
                                         ? const [
-                                            Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                            Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                             SizedBox(width: 5),
                                             Text("Pro tag required",
                                                 textAlign: TextAlign.center,
@@ -198,7 +198,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                                     fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
                                           ]
                                         : const [
-                                            Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                            Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                             SizedBox(width: 5),
                                             Text("error occurred",
                                                 textAlign: TextAlign.center,
