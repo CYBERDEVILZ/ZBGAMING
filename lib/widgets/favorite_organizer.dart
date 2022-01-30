@@ -72,3 +72,35 @@ class BuildTiles extends StatelessWidget {
                 ));
   }
 }
+
+class OrganizerTiles extends StatefulWidget {
+  const OrganizerTiles({Key? key, required this.name, required this.imageurl}) : super(key: key);
+  final String? name;
+  final String? imageurl;
+
+  @override
+  _OrganizerTilesState createState() => _OrganizerTilesState();
+}
+
+class _OrganizerTilesState extends State<OrganizerTiles> {
+  @override
+  Widget build(BuildContext context) {
+    return widget.imageurl != null
+        ? ListTile(
+            leading: CircleAvatar(
+              maxRadius: 40,
+              backgroundImage: NetworkImage(widget.imageurl!),
+            ),
+            title: widget.name != null ? Text(widget.name!) : const Text("null"),
+            trailing: GestureDetector(child: const Icon(Icons.open_in_new), onTap: () {}),
+          )
+        : ListTile(
+            leading: const CircleAvatar(
+              maxRadius: 40,
+              backgroundColor: Colors.blue,
+            ),
+            title: widget.name != null ? Text(widget.name!) : const Text("null"),
+            trailing: GestureDetector(child: const Icon(Icons.open_in_new), onTap: () {}),
+          );
+  }
+}

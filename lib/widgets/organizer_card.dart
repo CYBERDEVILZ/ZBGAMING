@@ -1,5 +1,9 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/widgets/star_builder.dart';
 
 class OrganizerCard extends StatefulWidget {
@@ -16,6 +20,10 @@ class _OrganizerCardState extends State<OrganizerCard> {
   String? name;
   num? rating;
   String ouid;
+  bool isLoading = false;
+  bool isFound = false;
+
+  List<QueryDocumentSnapshot> fav = [];
 
   _OrganizerCardState(this.ouid);
 
@@ -29,10 +37,38 @@ class _OrganizerCardState extends State<OrganizerCard> {
     setState(() {});
   }
 
+  // check if the org is added to fav
+  void isFavOrg() async {
+    isLoading = true;
+    setState(() {});
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      await FirebaseFirestore.instance
+          .collection("userinfo")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("favOrganizers")
+          .get()
+          .then((value) {
+        fav = value.docs;
+      }).catchError((onError) {
+        Fluttertoast.showToast(msg: "Error occurred while fetching data.");
+      });
+    }
+    if (fav.isEmpty) {
+    } else {
+      for (int i = 0; i < fav.length; i++) {
+        if (ouid == fav[i]["ouid"]) {
+          isFound = true;
+          break;
+        }
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     fetchOrganizerData();
+    isFavOrg();
   }
 
   @override
@@ -63,7 +99,7 @@ class _OrganizerCardState extends State<OrganizerCard> {
                   Text(
                     name == null ? "Null" : name!,
                     textAlign: TextAlign.center,
-                    textScaleFactor: 1.2,
+                    textScaleFactor: 1.5,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
