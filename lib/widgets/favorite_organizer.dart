@@ -31,7 +31,7 @@ class _FetchDataState extends State<FetchData> {
     await FirebaseFirestore.instance
         .collection("userinfo")
         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("FavOrganizers")
+        .collection("favOrganizers")
         .get()
         .then((value) {
       fav = value.docs;
@@ -65,33 +65,62 @@ class BuildTiles extends StatelessWidget {
     return fav.isEmpty
         ? const Center(child: Text("No favorite organizers found"))
         : ListView.builder(
-            itemBuilder: (context, index) => const ListTile(
-                  leading: Text("logo here"),
-                  title: Text("Title here"),
-                  trailing: Text("Organizer page"),
-                ));
+            itemBuilder: (context, index) => Container(
+                decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.blue))),
+                margin: const EdgeInsets.only(top: 10, left: 8, right: 8),
+                padding: const EdgeInsets.only(bottom: 10),
+                child: OrganizerTiles(ouid: fav[index]["ouid"])),
+            itemCount: fav.length,
+          );
   }
 }
 
 class OrganizerTiles extends StatefulWidget {
-  const OrganizerTiles({Key? key, required this.name, required this.imageurl}) : super(key: key);
-  final String? name;
-  final String? imageurl;
+  const OrganizerTiles({Key? key, required this.ouid}) : super(key: key);
+  final String ouid;
 
   @override
   _OrganizerTilesState createState() => _OrganizerTilesState();
 }
 
 class _OrganizerTilesState extends State<OrganizerTiles> {
+  bool isLoading = true;
+  String? imageurl;
+  String? name;
+
+  void fetchOrganizerData() async {
+    await FirebaseFirestore.instance.collection("organizer").doc(widget.ouid).get().then((value) {
+      try {
+        imageurl = value["imageurl"];
+      } catch (e) {
+        imageurl = null;
+      }
+
+      try {
+        name = value["username"];
+      } catch (e) {
+        name = null;
+      }
+    });
+    isLoading = false;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchOrganizerData();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return widget.imageurl != null
+    return imageurl != null
         ? ListTile(
             leading: CircleAvatar(
               maxRadius: 40,
-              backgroundImage: NetworkImage(widget.imageurl!),
+              backgroundImage: NetworkImage(imageurl!),
             ),
-            title: widget.name != null ? Text(widget.name!) : const Text("null"),
+            title: name != null ? Text(name!) : const Text("null"),
             trailing: GestureDetector(child: const Icon(Icons.open_in_new), onTap: () {}),
           )
         : ListTile(
@@ -99,7 +128,7 @@ class _OrganizerTilesState extends State<OrganizerTiles> {
               maxRadius: 40,
               backgroundColor: Colors.blue,
             ),
-            title: widget.name != null ? Text(widget.name!) : const Text("null"),
+            title: name != null ? Text(name!) : const Text("null"),
             trailing: GestureDetector(child: const Icon(Icons.open_in_new), onTap: () {}),
           );
   }

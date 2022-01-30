@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +19,7 @@ class _OrganizerCardState extends State<OrganizerCard> {
   num? rating;
   String ouid;
   bool isLoading = false;
+  bool isNotEligible = false;
   bool isFound = false;
 
   List<QueryDocumentSnapshot> fav = [];
@@ -41,7 +40,11 @@ class _OrganizerCardState extends State<OrganizerCard> {
   void isFavOrg() async {
     isLoading = true;
     setState(() {});
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
+    if (FirebaseAuth.instance.currentUser?.uid == null) {
+      isNotEligible = true;
+      isLoading = false;
+      setState(() {});
+    } else {
       await FirebaseFirestore.instance
           .collection("userinfo")
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -53,15 +56,40 @@ class _OrganizerCardState extends State<OrganizerCard> {
         Fluttertoast.showToast(msg: "Error occurred while fetching data.");
       });
     }
-    if (fav.isEmpty) {
-    } else {
-      for (int i = 0; i < fav.length; i++) {
+
+    for (int i = 0; i < fav.length; i++) {
+      try {
         if (ouid == fav[i]["ouid"]) {
           isFound = true;
           break;
         }
+      } catch (e) {
+        null;
       }
     }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  // add organizer to fav
+  Future<void> addOrg() async {
+    await FirebaseFirestore.instance
+        .collection("userinfo")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("favOrganizers")
+        .doc(ouid)
+        .set({"ouid": ouid});
+  }
+
+  // remove organizer from fav
+  Future<void> removeOrg() async {
+    await FirebaseFirestore.instance
+        .collection("userinfo")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("favOrganizers")
+        .doc(ouid)
+        .delete();
   }
 
   @override
@@ -122,12 +150,32 @@ class _OrganizerCardState extends State<OrganizerCard> {
 
           // add to fav
           GestureDetector(
-            onTap: () {}, // add or remove from fav func
-            child: const Icon(
-              Icons.star_border,
-              color: Colors.white,
-            ),
-          )
+              onTap: isLoading
+                  ? null
+                  : isNotEligible
+                      ? () {
+                          Fluttertoast.showToast(msg: "Login to perform this action");
+                        }
+                      : isFound
+                          ? () async {
+                              await removeOrg();
+                              isFound = false;
+                              setState(() {});
+                            }
+                          : () async {
+                              await addOrg();
+                              isFound = true;
+                              setState(() {});
+                            }, // add or remove from fav func
+              child: isFound
+                  ? const Icon(
+                      Icons.star,
+                      color: Colors.yellow,
+                    )
+                  : const Icon(
+                      Icons.star_border,
+                      color: Colors.white,
+                    ))
         ]),
       ),
     );
