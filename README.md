@@ -5,11 +5,11 @@ ZBunker gaming evolved with only one motive: To make India a Super Gaming Hub. G
 ZBgaming is an application to host matches and tournaments to find the right talents who can raise the bar for the next generation of gamers. Win tournaments, earn prizes and survive the leaderboard!
 
 ## TO-DO LIST
-- [ ] Login Screen
-- [ ] Sign Up Screen
+- [ x ] Login Screen
+- [ x ] Sign Up Screen
 - [ ] Google Cloud Storage to store images
 - [ ] Google Firestore for database
-- [ ] Create widget for games (csgo, valo, etc)
+- [ x ] Create widget for games (csgo, valo, etc)
 - [ ] Give functions to buttons, drawers, BottomNavBar
 - [ ] Integrate Razorpay
 - [ ] Define page for Organizer
@@ -19,6 +19,7 @@ ZBgaming is an application to host matches and tournaments to find the right tal
 - [ ] Create a backend server to perform authorization to database (scaling)
 - [ ] Upgrade to MONGODB or any other nosql database (scaling)
 - [ ] Custom Tournament card
+
 
 ## PRICE DISTRIBUTION
 

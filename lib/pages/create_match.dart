@@ -69,6 +69,8 @@ class _CreateMatchState extends State<CreateMatch> {
             "match": match,
             "skill": skill,
             "fee": fee,
+            "reg": 0,
+            "totalTeams": 100, // change this with matches
             "date": datepicked,
             "uid": FirebaseAuth.instance.currentUser!.uid
           })

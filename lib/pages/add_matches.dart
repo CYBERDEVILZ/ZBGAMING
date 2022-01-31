@@ -39,7 +39,7 @@ class TournamentList extends StatelessWidget {
                         )));
           }),
       Tile(
-          img: "assets/images/freefire.png",
+          img: "assets/images/freefire.jpg",
           title: "Garena Free Fire",
           ontap: () {
             Navigator.push(
@@ -51,7 +51,7 @@ class TournamentList extends StatelessWidget {
                         )));
           }),
       Tile(
-          img: "assets/images/pubg.png",
+          img: "assets/images/pubg.jpg",
           title: "PUBG New State",
           ontap: () {
             Navigator.push(
