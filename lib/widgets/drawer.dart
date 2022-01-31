@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
 import 'package:zbgaming/model/usermodel.dart';
+import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/utils/routes.dart';
 
 // drawer after login
@@ -81,24 +82,6 @@ class AfterLoginDrawer extends StatelessWidget {
                   ],
                 )),
             ListTile(
-              onTap: () {}, // leads to registered matches
-              leading: const Icon(Icons.flag, color: Colors.black),
-              trailing: const Icon(Icons.arrow_right, color: Colors.black),
-              title: const Text(
-                "Registered Matches",
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-            ListTile(
-              onTap: () {}, // leads to favorites
-              leading: const Icon(Icons.star, color: Colors.black),
-              trailing: const Icon(Icons.arrow_right, color: Colors.black),
-              title: const Text(
-                "Favorites",
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-            ListTile(
               onTap: () {}, // leads to match history
               leading: const Icon(Icons.history, color: Colors.black),
               trailing: const Icon(Icons.arrow_right, color: Colors.black),
@@ -108,7 +91,9 @@ class AfterLoginDrawer extends StatelessWidget {
               ),
             ),
             ListTile(
-              onTap: () {}, // leads to my account
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const UserAccount()));
+              }, // leads to my account
               leading: const Icon(Icons.account_circle, color: Colors.black),
               trailing: const Icon(Icons.arrow_right, color: Colors.black),
               title: const Text(
