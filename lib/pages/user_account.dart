@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/login.dart';
+import 'package:provider/provider.dart';
 
 class UserAccount extends StatefulWidget {
   const UserAccount({Key? key}) : super(key: key);
@@ -20,6 +26,7 @@ class _UserAccountState extends State<UserAccount> {
   bool? isEmailVerified;
   bool isVerifying = false;
   bool isLoading = false;
+  bool isImageLoad = false;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -51,8 +58,75 @@ class _UserAccountState extends State<UserAccount> {
     fetchData();
   }
 
+  void imageUpload() async {
+    XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 250, maxWidth: 250);
+    if (image != null) {
+      isImageLoad = true;
+      setState(() {});
+      await FirebaseStorage.instance
+          .ref("zbgaming/users/images/${FirebaseAuth.instance.currentUser?.uid}/profile.jpg")
+          .putFile(File(image.path))
+          .then((p0) async {
+        if (p0.state == TaskState.success) {
+          String imageurl = await p0.ref.getDownloadURL();
+          context.read<UserModel>().setimageurl(imageurl);
+          Fluttertoast.showToast(msg: "Image Uploaded Successfully");
+        }
+        if (p0.state == TaskState.error) {
+          Fluttertoast.showToast(msg: "Some error occurred");
+        }
+      }).catchError((onError) {
+        Fluttertoast.showToast(msg: "Some error occurred");
+      });
+      isImageLoad = false;
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Image Widget
+    Widget imageWidget = Stack(clipBehavior: Clip.none, children: [
+      // blue rectangle in the back
+      Container(
+        color: Colors.blue,
+        height: 100,
+        width: MediaQuery.of(context).size.width,
+      ),
+
+      // background circle
+      Positioned(
+        bottom: -40,
+        left: MediaQuery.of(context).size.width / 2 - 55,
+        child: Stack(
+          children: [
+            const CircleAvatar(
+              backgroundColor: Colors.blue,
+              radius: 55,
+            ),
+            // inside circle
+            Positioned(
+                left: 5,
+                top: 5,
+                child: GestureDetector(
+                  // image select and upload code
+                  onTap: () {
+                    imageUpload();
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 50,
+                    child: isImageLoad ? const CircularProgressIndicator() : const Icon(Icons.add_a_photo_outlined),
+                    backgroundImage: context.watch<UserModel>().imageurl == null
+                        ? null
+                        : NetworkImage(context.watch<UserModel>().imageurl!),
+                  ),
+                )),
+          ],
+        ),
+      ),
+    ]);
+
     // Name Widget
     Widget nameWidget = Text(
       name == null ? "null" : name!,
@@ -134,11 +208,16 @@ class _UserAccountState extends State<UserAccount> {
             : ListView(
                 padding: const EdgeInsets.all(8),
                 children: [
+                  imageWidget,
+                  const SizedBox(height: 50),
                   nameWidget,
                   emailWidget,
+                  Text("Level: Number of paid matches played"),
                   Text("Is Verified?(KYC)"),
                   Text("Link Accounts csgo, pubg, valo, freefire"),
                   Text("Link Bank Account"),
+                  Text("Signout Account"),
+                  Text("Delete Account"),
                 ],
               ),
       ),
