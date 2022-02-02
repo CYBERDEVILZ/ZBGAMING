@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zbgaming/model/usermodel.dart';
-import 'package:zbgaming/pages/login.dart';
+import 'package:zbgaming/pages/home_page.dart';
 import 'package:provider/provider.dart';
 
 class UserAccount extends StatefulWidget {
@@ -54,9 +54,9 @@ class _UserAccountState extends State<UserAccount> {
     super.initState();
     _auth.userChanges().listen((event) {
       if (event?.uid == null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
       } else {
-        setState(() {});
+        if (mounted) setState(() {});
       }
     });
     fetchData();
@@ -66,7 +66,7 @@ class _UserAccountState extends State<UserAccount> {
     XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 250, maxWidth: 250);
     if (image != null) {
       isImageLoad = true;
-      setState(() {});
+      if (mounted) setState(() {});
       await FirebaseStorage.instance
           .ref("zbgaming/users/images/${FirebaseAuth.instance.currentUser?.uid}/profile.jpg")
           .putFile(File(image.path))
@@ -87,7 +87,7 @@ class _UserAccountState extends State<UserAccount> {
         Fluttertoast.showToast(msg: "Some error occurred");
       });
       isImageLoad = false;
-      setState(() {});
+      if (mounted) setState(() {});
     }
   }
 
@@ -163,7 +163,7 @@ class _UserAccountState extends State<UserAccount> {
               // verify email logic here
               onTap: () async {
                 isVerifying = true;
-                setState(() {});
+                if (mounted) setState(() {});
                 await _auth.currentUser?.sendEmailVerification().then((value) async {
                   await Fluttertoast.showToast(
                       msg: "Verify mail and login again", textColor: Colors.white, backgroundColor: Colors.blue);
@@ -174,7 +174,7 @@ class _UserAccountState extends State<UserAccount> {
                 });
 
                 isVerifying = false;
-                setState(() {});
+                if (mounted) setState(() {});
               },
               child: Container(
                   height: 18,
