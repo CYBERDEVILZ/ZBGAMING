@@ -32,7 +32,9 @@ class _UserAccountState extends State<UserAccount> {
 
   void fetchData() async {
     isLoading = true;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
     await FirebaseFirestore.instance.collection("userinfo").doc(_auth.currentUser!.uid).get().then((value) {
       name = value["username"];
       imageurl = value["imageurl"];
@@ -42,7 +44,9 @@ class _UserAccountState extends State<UserAccount> {
       Fluttertoast.showToast(msg: "Error getting data");
     });
     isLoading = false;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -70,6 +74,10 @@ class _UserAccountState extends State<UserAccount> {
         if (p0.state == TaskState.success) {
           String imageurl = await p0.ref.getDownloadURL();
           context.read<UserModel>().setimageurl(imageurl);
+          await FirebaseFirestore.instance
+              .collection("userinfo")
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .update({"imageurl": imageurl});
           Fluttertoast.showToast(msg: "Image Uploaded Successfully");
         }
         if (p0.state == TaskState.error) {
