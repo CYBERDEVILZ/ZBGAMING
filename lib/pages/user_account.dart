@@ -23,6 +23,7 @@ class _UserAccountState extends State<UserAccount> {
   String? imageurl;
   String? lvl;
   String? email;
+  int? level;
   bool? isEmailVerified;
   bool isVerifying = false;
   bool isLoading = false;
@@ -39,6 +40,11 @@ class _UserAccountState extends State<UserAccount> {
       name = value["username"];
       imageurl = value["imageurl"];
       email = value["email"];
+      try {
+        level = value["level"];
+      } catch (e) {
+        level = null;
+      }
       isEmailVerified = _auth.currentUser!.emailVerified;
     }).catchError((onError) {
       Fluttertoast.showToast(msg: "Error getting data");
@@ -135,6 +141,24 @@ class _UserAccountState extends State<UserAccount> {
       ),
     ]);
 
+    // Level Widget
+    Widget levelWidget = Container(
+      decoration: level == null
+          ? const BoxDecoration()
+          : level! <= 5000
+              ? const BoxDecoration()
+              : level! <= 20000
+                  ? const BoxDecoration()
+                  : const BoxDecoration(),
+      margin: const EdgeInsets.only(top: 5),
+      child: level == null
+          ? const Text(
+              "Level --",
+              style: TextStyle(fontSize: 20),
+            )
+          : Text("Level: $level"),
+    );
+
     // Name Widget
     Widget nameWidget = Text(
       name == null ? "null" : name!,
@@ -217,6 +241,7 @@ class _UserAccountState extends State<UserAccount> {
                 padding: const EdgeInsets.all(8),
                 children: [
                   imageWidget,
+                  levelWidget,
                   const SizedBox(height: 50),
                   nameWidget,
                   emailWidget,
