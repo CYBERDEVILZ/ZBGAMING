@@ -25,6 +25,7 @@ class _UserAccountState extends State<UserAccount> {
   int? level;
   String levelAttrib = "Unidentified";
   bool? isEmailVerified;
+  bool? isKYCVerified;
   bool isVerifying = false;
   bool isLoading = false;
   bool isImageLoad = false;
@@ -32,7 +33,7 @@ class _UserAccountState extends State<UserAccount> {
   Map<String, Color> colorCodeForHeading = {
     "Unidentified": Colors.blue,
     "Rookie": Colors.blue,
-    "Veteran": Colors.white,
+    "Veteran": const Color(0xffB3E3EE),
     "Master Elite": const Color(0xFFFFD700)
   };
 
@@ -64,8 +65,13 @@ class _UserAccountState extends State<UserAccount> {
           levelAttrib = "Master Elite";
         }
       } catch (e) {
-        level = null;
-        levelAttrib = "Unidentified";
+        level = 20000;
+        levelAttrib = "Veteran";
+      }
+      try {
+        isKYCVerified = value["verified"];
+      } catch (e) {
+        isKYCVerified = false;
       }
       isEmailVerified = _auth.currentUser!.emailVerified;
     }).catchError((onError) {
@@ -106,13 +112,24 @@ class _UserAccountState extends State<UserAccount> {
               .collection("userinfo")
               .doc(FirebaseAuth.instance.currentUser!.uid)
               .update({"imageurl": imageurl});
-          Fluttertoast.showToast(msg: "Image Uploaded Successfully");
+          Fluttertoast.showToast(
+              msg: "Image Uploaded Successfully",
+              textColor: Colors.black,
+              backgroundColor: colorCodeForHeading[levelAttrib]);
         }
         if (p0.state == TaskState.error) {
-          Fluttertoast.showToast(msg: "Some error occurred");
+          Fluttertoast.showToast(
+            msg: "Some error occurred",
+            backgroundColor: colorCodeForHeading[levelAttrib],
+            textColor: Colors.black,
+          );
         }
       }).catchError((onError) {
-        Fluttertoast.showToast(msg: "Some error occurred");
+        Fluttertoast.showToast(
+          msg: "Some error occurred",
+          backgroundColor: colorCodeForHeading[levelAttrib],
+          textColor: Colors.black,
+        );
       });
       isImageLoad = false;
       if (mounted) setState(() {});
@@ -150,9 +167,11 @@ class _UserAccountState extends State<UserAccount> {
                     imageUpload();
                   },
                   child: CircleAvatar(
-                    backgroundColor: Colors.white,
+                    backgroundColor: colorCodeForHeading[levelAttrib],
                     radius: 50,
-                    child: isImageLoad ? const CircularProgressIndicator() : const Icon(Icons.add_a_photo_outlined),
+                    child: isImageLoad
+                        ? CircularProgressIndicator(color: colorCodeForHeading[levelAttrib])
+                        : Icon(Icons.add_a_photo_outlined, color: colorCodeForHeading[levelAttrib]),
                     backgroundImage: context.watch<UserModel>().imageurl == null
                         ? null
                         : NetworkImage(context.watch<UserModel>().imageurl!),
@@ -181,46 +200,37 @@ class _UserAccountState extends State<UserAccount> {
               // if level == rookie
               : level! <= 5000
                   ? Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.blue, width: 1.2),
-                      ),
                       margin: const EdgeInsets.only(top: 3),
                       child: const Text(
                         "Rookie",
-                        style: TextStyle(fontSize: 15, color: Colors.blue),
+                        style: TextStyle(
+                            fontSize: 15, color: Colors.blue, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                       ))
 
                   // if level == veteran
                   : level! <= 20000
                       ? Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.white, width: 1.2),
-                          ),
                           margin: const EdgeInsets.only(top: 3),
-                          child: const Text(
+                          child: Text(
                             "Veteran",
-                            style: TextStyle(fontSize: 15, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: colorCodeForHeading[levelAttrib],
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic),
                           ))
 
                       // if level == elite
                       : level! > 20000
                           ? Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(color: const Color(0XFFFFD700), width: 1.2),
-                                  gradient: LinearGradient(
-                                      colors: <Color>[Colors.black, Colors.black.withOpacity(0.3)],
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter)),
                               margin: const EdgeInsets.only(top: 3),
                               child: const Text(
                                 "Master Elite",
-                                style: TextStyle(fontSize: 15, color: Color(0XFFFFD700)),
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Color(0XFFFFD700),
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.italic),
                               ))
 
                           // if level == invalid
@@ -316,13 +326,71 @@ class _UserAccountState extends State<UserAccount> {
                         )))
     ]);
 
+    // KYCWidget
+    Widget kycWidget = Row(
+        children: isKYCVerified == null
+            ? [
+                Text(
+                  "Null",
+                  style: TextStyle(fontWeight: FontWeight.w300, color: colorCodeForHeading[levelAttrib]),
+                ),
+              ]
+            : isKYCVerified!
+                ? [
+                    Text(
+                      "Verified",
+                      style: TextStyle(fontWeight: FontWeight.bold, color: colorCodeForHeading[levelAttrib]),
+                    ),
+                    Text(
+                      "User",
+                      style: TextStyle(fontWeight: FontWeight.w300, color: colorCodeForHeading[levelAttrib]),
+                    )
+                  ]
+                : [
+                    GestureDetector(
+                        // send user to verification page
+                        onTap: () async {
+                          Fluttertoast.showToast(msg: "Navigate to user verification page");
+                        },
+                        child: Container(
+                            height: 18,
+                            width: 80,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                border: Border.all(color: colorCodeForHeading[levelAttrib]!)),
+                            child: Text(
+                              " verify user ",
+                              style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 12),
+                            )))
+                  ]);
+
+    Widget linkWidget = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "Link",
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w100, color: colorCodeForHeading[levelAttrib]),
+            ),
+            Text(
+              "Accounts",
+              style: TextStyle(fontSize: 30, color: colorCodeForHeading[levelAttrib], fontWeight: FontWeight.w300),
+            ),
+          ],
+        )
+      ],
+    );
+
     // --------------- Return is Here --------------- //
     return Scaffold(
       body: Material(
         color: levelAttrib == "Unidentified"
             ? Colors.white
             : levelAttrib == "Veteran"
-                ? Colors.blue
+                ? const Color(0xff00334c)
                 : levelAttrib == "Rookie"
                     ? Colors.white
                     : Colors.black,
@@ -343,9 +411,10 @@ class _UserAccountState extends State<UserAccount> {
                         const SizedBox(height: 30),
                         nameWidget,
                         emailWidget,
-                        Text("Level: Number of paid matches played"),
-                        Text("Is Verified?(KYC)"),
-                        Text("Link Accounts csgo, pubg, valo, freefire"),
+                        const SizedBox(height: 5),
+                        kycWidget,
+                        const SizedBox(height: 50),
+                        linkWidget,
                         Text("Link Bank Account"),
                         Text("Signout Account"),
                         Text("Delete Account"),
