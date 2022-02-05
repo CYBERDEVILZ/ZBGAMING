@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,7 +23,7 @@ class _UserAccountState extends State<UserAccount> {
   String? lvl;
   String? email;
   int? level;
-  String? levelAttrib;
+  String levelAttrib = "Unidentified";
   bool? isEmailVerified;
   bool isVerifying = false;
   bool isLoading = false;
@@ -35,6 +34,13 @@ class _UserAccountState extends State<UserAccount> {
     "Rookie": Colors.blue,
     "Veteran": Colors.white,
     "Master Elite": const Color(0xFFFFD700)
+  };
+
+  Map<String, Color> colorCodeForText = {
+    "Unidentified": Colors.black,
+    "Rookie": Colors.black,
+    "Veteran": Colors.white,
+    "Master Elite": Colors.white
   };
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -58,8 +64,8 @@ class _UserAccountState extends State<UserAccount> {
           levelAttrib = "Master Elite";
         }
       } catch (e) {
-        level = 20001;
-        levelAttrib = "Master Elite";
+        level = null;
+        levelAttrib = "Unidentified";
       }
       isEmailVerified = _auth.currentUser!.emailVerified;
     }).catchError((onError) {
@@ -119,8 +125,8 @@ class _UserAccountState extends State<UserAccount> {
     Widget imageWidget = Stack(clipBehavior: Clip.none, children: [
       // blue rectangle in the back
       Container(
-        color: Colors.blue,
-        height: 100,
+        color: colorCodeForHeading[levelAttrib],
+        height: 125,
         width: MediaQuery.of(context).size.width,
       ),
 
@@ -130,8 +136,8 @@ class _UserAccountState extends State<UserAccount> {
         left: MediaQuery.of(context).size.width / 2 - 55,
         child: Stack(
           children: [
-            const CircleAvatar(
-              backgroundColor: Colors.blue,
+            CircleAvatar(
+              backgroundColor: colorCodeForHeading[levelAttrib],
               radius: 55,
             ),
             // inside circle
@@ -158,80 +164,107 @@ class _UserAccountState extends State<UserAccount> {
     ]);
 
     // Level Widget
-    Widget levelWidget = Align(
-        alignment: Alignment.centerLeft,
-        child:
-            // if level == null
-            level == null
-                ? Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey),
-                    margin: const EdgeInsets.only(top: 5),
-                    child: const Text(
-                      "Unidentified",
-                      style: TextStyle(fontSize: 15, color: Colors.white),
-                    ))
+    Widget levelWidget = Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          // if level == null
+          level == null
+              ? Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey),
+                  margin: const EdgeInsets.only(top: 5),
+                  child: const Text(
+                    "Unidentified",
+                    style: TextStyle(fontSize: 15, color: Colors.white),
+                  ))
 
-                // if level == rookie
-                : level! <= 5000
-                    ? Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.blue, width: 1.2),
-                        ),
-                        margin: const EdgeInsets.only(top: 3),
-                        child: const Text(
-                          "Rookie",
-                          style: TextStyle(fontSize: 15, color: Colors.blue),
-                        ))
+              // if level == rookie
+              : level! <= 5000
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.blue, width: 1.2),
+                      ),
+                      margin: const EdgeInsets.only(top: 3),
+                      child: const Text(
+                        "Rookie",
+                        style: TextStyle(fontSize: 15, color: Colors.blue),
+                      ))
 
-                    // if level == veteran
-                    : level! <= 20000
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                gradient: LinearGradient(colors: <Color>[Colors.purple, Colors.blue[800]!])),
-                            margin: const EdgeInsets.only(top: 3),
-                            child: const Text(
-                              "Veteran",
-                              style: TextStyle(fontSize: 15, color: Colors.white),
-                            ))
+                  // if level == veteran
+                  : level! <= 20000
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white, width: 1.2),
+                          ),
+                          margin: const EdgeInsets.only(top: 3),
+                          child: const Text(
+                            "Veteran",
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ))
 
-                        // if level == elite
-                        : level! > 20000
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: const Color(0XFFFFD700), width: 1.2),
-                                    gradient: LinearGradient(
-                                        colors: <Color>[Colors.black, Colors.black.withOpacity(0.3)],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter)),
-                                margin: const EdgeInsets.only(top: 3),
-                                child: const Text(
-                                  "Master Elite",
-                                  style: TextStyle(fontSize: 15, color: Color(0XFFFFD700)),
-                                ))
+                      // if level == elite
+                      : level! > 20000
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: const Color(0XFFFFD700), width: 1.2),
+                                  gradient: LinearGradient(
+                                      colors: <Color>[Colors.black, Colors.black.withOpacity(0.3)],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter)),
+                              margin: const EdgeInsets.only(top: 3),
+                              child: const Text(
+                                "Master Elite",
+                                style: TextStyle(fontSize: 15, color: Color(0XFFFFD700)),
+                              ))
 
-                            // if level == invalid
-                            : Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.red),
-                                margin: const EdgeInsets.only(top: 5),
-                                child: const Text(
-                                  "Invalid",
-                                  style: TextStyle(fontSize: 15, color: Colors.white),
-                                )));
+                          // if level == invalid
+                          : Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.red),
+                              margin: const EdgeInsets.only(top: 5),
+                              child: const Text(
+                                "Invalid",
+                                style: TextStyle(fontSize: 15, color: Colors.white),
+                              )),
+          Container(
+            height: 20,
+            width: MediaQuery.of(context).size.width / 2 - 63,
+            alignment: Alignment.centerRight,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: FittedBox(
+                      fit: BoxFit.fitHeight,
+                      child: Text(
+                        "$level",
+                        style: TextStyle(fontWeight: FontWeight.w300, color: colorCodeForHeading[levelAttrib]),
+                      ),
+                    ),
+                  ),
+                ),
+                Text(
+                  "pts",
+                  style: TextStyle(fontWeight: FontWeight.bold, color: colorCodeForHeading[levelAttrib]),
+                )
+              ],
+            ),
+          )
+        ]));
 
     // Name Widget
     Widget nameWidget = Text(name == null ? "null" : name!,
         style: TextStyle(
           fontSize: 40,
           fontWeight: FontWeight.w500,
-          color: colorCodeForHeading[levelAttrib!],
+          color: colorCodeForHeading[levelAttrib],
         ));
 
     // Email Widget
@@ -242,14 +275,14 @@ class _UserAccountState extends State<UserAccount> {
         ),
         child: Text(
           email == null ? "null" : email!,
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w300),
+          style: TextStyle(color: colorCodeForText[levelAttrib], fontWeight: FontWeight.w300),
         ),
       ),
       const SizedBox(width: 10),
       isEmailVerified == true
-          ? const Icon(
+          ? Icon(
               Icons.verified_rounded,
-              color: Colors.blue,
+              color: colorCodeForHeading[levelAttrib],
               size: 15,
             )
           : GestureDetector(
@@ -284,55 +317,43 @@ class _UserAccountState extends State<UserAccount> {
     ]);
 
     // --------------- Return is Here --------------- //
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "My Account",
-            style: TextStyle(color: Colors.black),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            icon: const Icon(
-              CupertinoIcons.back,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          elevation: 0,
-        ),
-        body: Material(
-          color: levelAttrib == null
-              ? Colors.white
-              : levelAttrib == "Unidentified"
-                  ? Colors.white
-                  : levelAttrib == "Veteran"
-                      ? Colors.blue
-                      : levelAttrib == "Rookie"
-                          ? Colors.white
-                          : Colors.black,
-          child: isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : ListView(
-                  padding: const EdgeInsets.all(8),
-                  children: [
-                    imageWidget,
-                    levelWidget,
-                    const SizedBox(height: 50),
-                    nameWidget,
-                    emailWidget,
-                    Text("Level: Number of paid matches played"),
-                    Text("Is Verified?(KYC)"),
-                    Text("Link Accounts csgo, pubg, valo, freefire"),
-                    Text("Link Bank Account"),
-                    Text("Signout Account"),
-                    Text("Delete Account"),
-                  ],
-                ),
-        ),
+    return Scaffold(
+      body: Material(
+        color: levelAttrib == "Unidentified"
+            ? Colors.white
+            : levelAttrib == "Veteran"
+                ? Colors.blue
+                : levelAttrib == "Rookie"
+                    ? Colors.white
+                    : Colors.black,
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  imageWidget,
+                  levelWidget,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 30),
+                        nameWidget,
+                        emailWidget,
+                        Text("Level: Number of paid matches played"),
+                        Text("Is Verified?(KYC)"),
+                        Text("Link Accounts csgo, pubg, valo, freefire"),
+                        Text("Link Bank Account"),
+                        Text("Signout Account"),
+                        Text("Delete Account"),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
