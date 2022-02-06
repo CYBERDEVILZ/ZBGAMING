@@ -29,13 +29,16 @@ class _UserAccountState extends State<UserAccount> {
   bool isVerifying = false;
   bool isLoading = false;
   bool isImageLoad = false;
-  bool isAnimateContainer = false;
+
+  // add more games here if any...
   final List array = <String>[
     "Player Unknown Battlegrounds",
     "Counter Strike Global Offensive",
     "Free Fire",
     "Valorant"
   ];
+
+  Map<String, String?> linkedAccounts = {};
 
   Map<String, Color> colorCodeForHeading = {
     "Unidentified": Colors.blue,
@@ -79,8 +82,8 @@ class _UserAccountState extends State<UserAccount> {
           levelAttrib = "Master Elite";
         }
       } catch (e) {
-        level = 20001;
-        levelAttrib = "Master Elite";
+        level = 20000;
+        levelAttrib = "Veteran";
       }
       try {
         isKYCVerified = value["verified"];
@@ -91,9 +94,23 @@ class _UserAccountState extends State<UserAccount> {
     }).catchError((onError) {
       Fluttertoast.showToast(msg: "Error getting data");
     });
+
+    // fetching linked accounts data
+    await FirebaseFirestore.instance
+        .collection("userinfo")
+        .doc(_auth.currentUser!.uid)
+        .collection("linkedAccounts")
+        .get()
+        .then((value) {
+      List<QueryDocumentSnapshot> list = value.docs;
+      for (int i = 0; i < list.length; i++) {
+        linkedAccounts.putIfAbsent(list[i].id, () => list[i]["id"]);
+      }
+    }).catchError((onError) {
+      Fluttertoast.showToast(msg: onError.toString());
+    });
     isLoading = false;
     if (mounted) {
-      isAnimateContainer = true;
       setState(() {});
     }
   }
@@ -101,6 +118,7 @@ class _UserAccountState extends State<UserAccount> {
   @override
   void initState() {
     super.initState();
+
     _auth.userChanges().listen((event) {
       if (event?.uid == null) {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
@@ -108,6 +126,11 @@ class _UserAccountState extends State<UserAccount> {
         if (mounted) setState(() {});
       }
     });
+
+    // initialize the linked accounts with null values
+    array.map((e) => linkedAccounts.putIfAbsent(e, () => null));
+
+    // fetch data
     fetchData();
   }
 
@@ -401,7 +424,7 @@ class _UserAccountState extends State<UserAccount> {
         // Link Tiles
         ...array
             .map((element) => Container(
-                  margin: const EdgeInsets.all(5),
+                  margin: const EdgeInsets.all(3),
                   child: ListTile(
                       tileColor: colorCodeForHeading[levelAttrib],
                       leading: Container(
@@ -412,34 +435,51 @@ class _UserAccountState extends State<UserAccount> {
                           style: TextStyle(color: colorCodeForButton[levelAttrib]),
                         ),
                       ),
-
-                      // trailing: Text("Linked"),
-                      trailing: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-                        color: colorCodeForButton[levelAttrib],
-                        child: Text(
-                          "Link Now",
-                          style: TextStyle(color: colorCodeForText[levelAttrib]),
-                        ),
-                      )),
+                      trailing:
+                          // if linked_id == true
+                          linkedAccounts[element] != null
+                              ? GestureDetector(
+                                  // navigate to edit account page
+                                  onTap: () {},
+                                  child: Icon(
+                                    Icons.open_in_new,
+                                    color: colorCodeForButton[levelAttrib],
+                                  ),
+                                )
+                              :
+                              // if linked_id == false
+                              Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                                  color: colorCodeForButton[levelAttrib],
+                                  child: GestureDetector(
+                                    // navigates to link page
+                                    onTap: () {
+                                      Fluttertoast.showToast(msg: "Navigate the nigga");
+                                    },
+                                    child: Text(
+                                      "Link Now",
+                                      style: TextStyle(color: colorCodeForText[levelAttrib]),
+                                    ),
+                                  ),
+                                )),
                 ))
-            .toList()
+            .toList(),
       ],
     );
 
     // --------------- Return is Here --------------- //
     return Scaffold(
-      body: Material(
-        color: levelAttrib == "Unidentified"
-            ? Colors.white
-            : levelAttrib == "Veteran"
-                ? const Color(0xff00334c)
-                : levelAttrib == "Rookie"
-                    ? Colors.white
-                    : Colors.black,
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
+      backgroundColor: levelAttrib == "Unidentified"
+          ? Colors.white
+          : levelAttrib == "Veteran"
+              ? const Color(0xff00334c)
+              : levelAttrib == "Rookie"
+                  ? Colors.white
+                  : Colors.black,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -456,7 +496,7 @@ class _UserAccountState extends State<UserAccount> {
                         emailWidget,
                         const SizedBox(height: 5),
                         kycWidget,
-                        const SizedBox(height: 50),
+                        const SizedBox(height: 30),
                         linkWidget,
                         Text("Link Bank Account"),
                         Text("Signout Account"),
@@ -466,7 +506,7 @@ class _UserAccountState extends State<UserAccount> {
                   ),
                 ],
               ),
-      ),
+            ),
     );
   }
 }
