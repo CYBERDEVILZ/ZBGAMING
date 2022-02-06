@@ -29,6 +29,13 @@ class _UserAccountState extends State<UserAccount> {
   bool isVerifying = false;
   bool isLoading = false;
   bool isImageLoad = false;
+  bool isAnimateContainer = false;
+  final List array = <String>[
+    "Player Unknown Battlegrounds",
+    "Counter Strike Global Offensive",
+    "Free Fire",
+    "Valorant"
+  ];
 
   Map<String, Color> colorCodeForHeading = {
     "Unidentified": Colors.blue,
@@ -42,6 +49,13 @@ class _UserAccountState extends State<UserAccount> {
     "Rookie": Colors.black,
     "Veteran": Colors.white,
     "Master Elite": Colors.white
+  };
+
+  Map<String, Color> colorCodeForButton = {
+    "Unidentified": Colors.white,
+    "Rookie": Colors.white,
+    "Veteran": const Color(0xff00334c),
+    "Master Elite": Colors.black
   };
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -65,8 +79,8 @@ class _UserAccountState extends State<UserAccount> {
           levelAttrib = "Master Elite";
         }
       } catch (e) {
-        level = 20000;
-        levelAttrib = "Veteran";
+        level = 20001;
+        levelAttrib = "Master Elite";
       }
       try {
         isKYCVerified = value["verified"];
@@ -79,6 +93,7 @@ class _UserAccountState extends State<UserAccount> {
     });
     isLoading = false;
     if (mounted) {
+      isAnimateContainer = true;
       setState(() {});
     }
   }
@@ -365,6 +380,7 @@ class _UserAccountState extends State<UserAccount> {
                             )))
                   ]);
 
+    // Link Widget
     Widget linkWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -380,7 +396,34 @@ class _UserAccountState extends State<UserAccount> {
               style: TextStyle(fontSize: 30, color: colorCodeForHeading[levelAttrib], fontWeight: FontWeight.w300),
             ),
           ],
-        )
+        ),
+        const SizedBox(height: 10),
+        // Link Tiles
+        ...array
+            .map((element) => Container(
+                  margin: const EdgeInsets.all(5),
+                  child: ListTile(
+                      tileColor: colorCodeForHeading[levelAttrib],
+                      leading: Container(
+                        width: MediaQuery.of(context).size.width / 2,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          element,
+                          style: TextStyle(color: colorCodeForButton[levelAttrib]),
+                        ),
+                      ),
+
+                      // trailing: Text("Linked"),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                        color: colorCodeForButton[levelAttrib],
+                        child: Text(
+                          "Link Now",
+                          style: TextStyle(color: colorCodeForText[levelAttrib]),
+                        ),
+                      )),
+                ))
+            .toList()
       ],
     );
 
