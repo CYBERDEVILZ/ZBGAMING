@@ -140,7 +140,7 @@ class _UserAccountState extends State<UserAccount> {
 
     _auth.userChanges().listen((event) {
       if (event?.uid == null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
       } else {
         if (mounted) setState(() {});
       }
@@ -515,9 +515,10 @@ class _UserAccountState extends State<UserAccount> {
 
     // SignOut Widget
     Widget signoutWidget = OutlinedButton(
-      onPressed:
-          // function to signout
-          () {},
+      // function to signout
+      onPressed: () async {
+        await FirebaseAuth.instance.signOut();
+      },
       child: const Text(
         "Sign Out",
         style: TextStyle(color: Colors.red),
