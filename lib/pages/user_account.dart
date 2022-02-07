@@ -47,6 +47,7 @@ class _UserAccountState extends State<UserAccount> {
   bool isVerifying = false;
   bool isLoading = false;
   bool isImageLoad = false;
+  bool? bankStatus;
 
   // add more games here if any...
   final List<String> array = [
@@ -72,7 +73,7 @@ class _UserAccountState extends State<UserAccount> {
     "Master Elite": Colors.white
   };
 
-  Map<String, Color> colorCodeForButton = {
+  Map<String, Color> colorCodeForButtonText = {
     "Unidentified": Colors.white,
     "Rookie": Colors.white,
     "Veteran": const Color(0xff00334c),
@@ -100,8 +101,8 @@ class _UserAccountState extends State<UserAccount> {
           levelAttrib = "Master Elite";
         }
       } catch (e) {
-        level = 20000;
-        levelAttrib = "Veteran";
+        level = 2000;
+        levelAttrib = "Rookie";
       }
       try {
         isKYCVerified = value["verified"];
@@ -450,7 +451,7 @@ class _UserAccountState extends State<UserAccount> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           element,
-                          style: TextStyle(color: colorCodeForButton[levelAttrib]),
+                          style: TextStyle(color: colorCodeForButtonText[levelAttrib]),
                         ),
                       ),
                       trailing:
@@ -461,14 +462,14 @@ class _UserAccountState extends State<UserAccount> {
                                   onTap: () {},
                                   child: Icon(
                                     Icons.open_in_new,
-                                    color: colorCodeForButton[levelAttrib],
+                                    color: colorCodeForButtonText[levelAttrib],
                                   ),
                                 )
                               :
                               // if linked_id == false
                               Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-                                  color: colorCodeForButton[levelAttrib],
+                                  color: colorCodeForButtonText[levelAttrib],
                                   child: GestureDetector(
                                     // navigates to link page
                                     onTap: () {
@@ -483,6 +484,64 @@ class _UserAccountState extends State<UserAccount> {
                 ))
             .toList(),
       ],
+    );
+
+    // Bank Widget
+    Widget bankWidget = Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "Bank",
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w100, color: colorCodeForHeading[levelAttrib]),
+            ),
+            Text(
+              "Information",
+              style: TextStyle(fontSize: 30, color: colorCodeForHeading[levelAttrib], fontWeight: FontWeight.w300),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        bankStatus == null
+            ? Text("Couldn't retreive data",
+                style: TextStyle(color: colorCodeForHeading[levelAttrib], fontWeight: FontWeight.w300))
+            : bankStatus == true
+                ? Container()
+                : Container(),
+      ],
+    );
+
+    // SignOut Widget
+    Widget signoutWidget = OutlinedButton(
+      onPressed:
+          // function to signout
+          () {},
+      child: const Text(
+        "Sign Out",
+        style: TextStyle(color: Colors.red),
+      ),
+      style: ButtonStyle(
+          fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 50)),
+          overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0)),
+          side: MaterialStateProperty.all(const BorderSide(color: Colors.red))),
+    );
+
+    // Delete User Widget
+    Widget deleteUserWidget = ElevatedButton(
+      onPressed:
+          // delete user function
+          () {},
+      child: Text(
+        "Delete Account",
+        style: TextStyle(color: colorCodeForButtonText[levelAttrib]),
+      ),
+      style: ButtonStyle(
+        fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 50)),
+        backgroundColor: MaterialStateProperty.all(Colors.red),
+        elevation: MaterialStateProperty.all(0),
+      ),
     );
 
     // --------------- Return is Here --------------- //
@@ -516,9 +575,13 @@ class _UserAccountState extends State<UserAccount> {
                         kycWidget,
                         const SizedBox(height: 30),
                         linkWidget,
-                        Text("Link Bank Account"),
-                        Text("Signout Account"),
-                        Text("Delete Account"),
+                        const SizedBox(height: 20),
+                        bankWidget,
+                        const SizedBox(height: 50),
+                        signoutWidget,
+                        const SizedBox(height: 10),
+                        deleteUserWidget,
+                        const SizedBox(height: 50),
                       ],
                     ),
                   ),
