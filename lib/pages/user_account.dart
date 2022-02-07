@@ -1,9 +1,20 @@
-// ----------------- NOTES FOR DEVELOPER ----------------- //
+// ------------------- NOTES FOR DEVELOPER ------------------- //
 
 // --> LINK ACCOUNTS LOGIC
-//      - games to be linked are stored in "array"
+//      - games to be linked are stored in "array". <<<<<<< Make it online, much easier!
+//      - during init, check the array, create a map
+//        "linkedAccounts" with keys == elements of
+//        "array" and values initialized to null.
+//      - create list tiles based on the elements in array.
+//      - fetch data from database and update the values of
+//        each key. If value == null, not linked else linked.
+//      * IF A NEW GAME NEEDS TO BE ADDED....
+//      * Update the "array" with the name.
+//      * Automatically, list tile will be created for it.
+//      * When user clicks on link, it will add a new value to
+//        his database.
 
-// ----------------- NOTES FOR DEVELOPER ----------------- //
+// ------------------- NOTES FOR DEVELOPER ------------------- //
 
 import 'dart:io';
 
