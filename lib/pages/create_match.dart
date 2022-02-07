@@ -363,6 +363,7 @@ class DropDownReward extends StatelessWidget {
         if (!isEligible && (value.toString() == "\u20b9 1000" || value.toString() == "\u20b9 5000")) {
           return "You don't have required Organizer level";
         }
+        return null;
       },
     );
   }

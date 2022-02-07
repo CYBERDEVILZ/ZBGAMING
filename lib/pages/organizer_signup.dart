@@ -82,6 +82,7 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
         if (emailController.text.isEmpty) {
           return "Username field cannot be empty";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
@@ -105,6 +106,7 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
         if (!RegExp("^[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]+\$").hasMatch(emailController.text)) {
           return "Invalid Email";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
@@ -128,6 +130,7 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
         if (passwdController.text.length < 6) {
           return "Minimum 6 characters needed";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
@@ -149,6 +152,7 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
         if (confirmPasswdController.text != passwdController.text) {
           return "Password doesn't match";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),

@@ -77,6 +77,7 @@ class _SignUpState extends State<SignUp> {
         if (emailController.text.isEmpty) {
           return "Username field cannot be empty";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
@@ -100,6 +101,7 @@ class _SignUpState extends State<SignUp> {
         if (!RegExp("^[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]+\$").hasMatch(emailController.text)) {
           return "Invalid Email";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
@@ -123,6 +125,7 @@ class _SignUpState extends State<SignUp> {
         if (passwdController.text.length < 6) {
           return "Minimum 6 characters needed";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
@@ -144,6 +147,7 @@ class _SignUpState extends State<SignUp> {
         if (confirmPasswdController.text != passwdController.text) {
           return "Password doesn't match";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),

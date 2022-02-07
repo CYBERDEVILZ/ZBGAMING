@@ -1,3 +1,10 @@
+// ----------------- NOTES FOR DEVELOPER ----------------- //
+
+// --> LINK ACCOUNTS LOGIC
+//      - games to be linked are stored in "array"
+
+// ----------------- NOTES FOR DEVELOPER ----------------- //
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,7 +38,7 @@ class _UserAccountState extends State<UserAccount> {
   bool isImageLoad = false;
 
   // add more games here if any...
-  final List array = <String>[
+  final List<String> array = [
     "Player Unknown Battlegrounds",
     "Counter Strike Global Offensive",
     "Free Fire",

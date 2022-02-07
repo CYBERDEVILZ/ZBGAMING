@@ -68,6 +68,7 @@ class _LoginState extends State<Login> {
         if (!RegExp("^[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]+\$").hasMatch(email.text)) {
           return "Invalid Email";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
@@ -91,6 +92,7 @@ class _LoginState extends State<Login> {
         if (passwd.text.length < 6) {
           return "Minimum 6 characters needed";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),

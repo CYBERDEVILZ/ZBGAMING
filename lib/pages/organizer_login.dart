@@ -90,6 +90,7 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
         if (!RegExp("^[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]+\$").hasMatch(email.text)) {
           return "Invalid Email";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
@@ -113,6 +114,7 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
         if (passwd.text.length < 6) {
           return "Minimum 6 characters needed";
         }
+        return null;
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
