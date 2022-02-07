@@ -101,8 +101,8 @@ class _UserAccountState extends State<UserAccount> {
           levelAttrib = "Master Elite";
         }
       } catch (e) {
-        level = 2000;
-        levelAttrib = "Rookie";
+        level = null;
+        levelAttrib = "Unidentified";
       }
       try {
         isKYCVerified = value["verified"];
@@ -533,9 +533,9 @@ class _UserAccountState extends State<UserAccount> {
       onPressed:
           // delete user function
           () {},
-      child: Text(
+      child: const Text(
         "Delete Account",
-        style: TextStyle(color: colorCodeForButtonText[levelAttrib]),
+        style: TextStyle(color: Colors.white),
       ),
       style: ButtonStyle(
         fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 50)),
