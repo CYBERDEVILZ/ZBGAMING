@@ -47,6 +47,10 @@ class _SignUpState extends State<SignUp> {
         // show toast if successful
         await Fluttertoast.showToast(
             msg: "Registration successful!", backgroundColor: Colors.blue[700], textColor: Colors.white);
+        Navigator.pushAndRemoveUntil(
+            context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+      }).catchError((e) {
+        Fluttertoast.showToast(msg: "Error occurred");
       });
     }
 
@@ -60,9 +64,6 @@ class _SignUpState extends State<SignUp> {
             .then((value) async {
           await submitData();
         }).catchError((onError) => null);
-
-        Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
       }
       isLoading = false;
       if (mounted) setState(() {});

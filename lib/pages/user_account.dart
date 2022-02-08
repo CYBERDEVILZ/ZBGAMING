@@ -13,7 +13,12 @@
 //      * Automatically, list tile will be created for it.
 //      * When user clicks on link, it will add a new value to
 //        his database.
-
+//
+// --> ACCOUNT DELETE LOGIC
+//      - firebase doesn't support user deletion from our side.
+//      - reauthenticate user
+//      - delete the user
+//
 // ------------------- NOTES FOR DEVELOPER ------------------- //
 
 import 'dart:io';
@@ -27,6 +32,37 @@ import 'package:image_picker/image_picker.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/home_page.dart';
 import 'package:provider/provider.dart';
+
+Map<String, Color> colorCodeForHeading = {
+  "Unidentified": Colors.blue,
+  "Rookie": Colors.blue,
+  "Veteran": const Color(0xffB3E3EE),
+  "Master Elite": const Color(0xFFFFD700)
+};
+
+Map<String, Color> colorCodeForText = {
+  "Unidentified": Colors.black,
+  "Rookie": Colors.black,
+  "Veteran": Colors.white,
+  "Master Elite": Colors.white
+};
+
+Map<String, Color> colorCodeForButtonTextCumCanvas = {
+  "Unidentified": Colors.white,
+  "Rookie": Colors.white,
+  "Veteran": const Color(0xff00334c),
+  "Master Elite": Colors.black
+};
+
+Map<String, Color> colorCodeForCanvas = {
+  "Unidentified": Colors.white,
+  "Rookie": Colors.white,
+  "Veteran": const Color(0xff00334c),
+  "Master Elite": Colors.black
+};
+
+TextEditingController emailValue = TextEditingController();
+TextEditingController passValue = TextEditingController();
 
 class UserAccount extends StatefulWidget {
   const UserAccount({Key? key}) : super(key: key);
@@ -48,6 +84,7 @@ class _UserAccountState extends State<UserAccount> {
   bool isLoading = false;
   bool isImageLoad = false;
   bool? bankStatus;
+  bool isDeleting = false;
 
   // add more games here if any...
   final List<String> array = [
@@ -58,27 +95,6 @@ class _UserAccountState extends State<UserAccount> {
   ];
 
   Map<String, String?> linkedAccounts = {};
-
-  Map<String, Color> colorCodeForHeading = {
-    "Unidentified": Colors.blue,
-    "Rookie": Colors.blue,
-    "Veteran": const Color(0xffB3E3EE),
-    "Master Elite": const Color(0xFFFFD700)
-  };
-
-  Map<String, Color> colorCodeForText = {
-    "Unidentified": Colors.black,
-    "Rookie": Colors.black,
-    "Veteran": Colors.white,
-    "Master Elite": Colors.white
-  };
-
-  Map<String, Color> colorCodeForButtonText = {
-    "Unidentified": Colors.white,
-    "Rookie": Colors.white,
-    "Veteran": const Color(0xff00334c),
-    "Master Elite": Colors.black
-  };
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -126,7 +142,7 @@ class _UserAccountState extends State<UserAccount> {
         linkedAccounts.putIfAbsent(list[i].id, () => list[i]["id"]);
       }
     }).catchError((onError) {
-      Fluttertoast.showToast(msg: onError.toString());
+      Fluttertoast.showToast(msg: "An error occurred");
     });
     isLoading = false;
     if (mounted) {
@@ -171,26 +187,26 @@ class _UserAccountState extends State<UserAccount> {
               .update({"imageurl": imageurl});
           Fluttertoast.showToast(
               msg: "Image Uploaded Successfully",
-              textColor: Colors.black,
+              textColor: colorCodeForButtonTextCumCanvas[levelAttrib],
               backgroundColor: colorCodeForHeading[levelAttrib]);
         }
         if (p0.state == TaskState.error) {
           Fluttertoast.showToast(
             msg: "Some error occurred",
             backgroundColor: colorCodeForHeading[levelAttrib],
-            textColor: Colors.black,
+            textColor: colorCodeForButtonTextCumCanvas[levelAttrib],
           );
         }
       }).catchError((onError) {
         Fluttertoast.showToast(
           msg: "Some error occurred",
           backgroundColor: colorCodeForHeading[levelAttrib],
-          textColor: Colors.black,
+          textColor: colorCodeForButtonTextCumCanvas[levelAttrib],
         );
       });
-      isImageLoad = false;
-      if (mounted) setState(() {});
     }
+    isImageLoad = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -211,7 +227,7 @@ class _UserAccountState extends State<UserAccount> {
         child: Stack(
           children: [
             CircleAvatar(
-              backgroundColor: colorCodeForHeading[levelAttrib],
+              backgroundColor: colorCodeForButtonTextCumCanvas[levelAttrib],
               radius: 55,
             ),
             // inside circle
@@ -227,8 +243,14 @@ class _UserAccountState extends State<UserAccount> {
                     backgroundColor: colorCodeForHeading[levelAttrib],
                     radius: 50,
                     child: isImageLoad
-                        ? CircularProgressIndicator(color: colorCodeForHeading[levelAttrib])
-                        : Icon(Icons.add_a_photo_outlined, color: colorCodeForHeading[levelAttrib]),
+                        ? CircularProgressIndicator(
+                            color: context.watch<UserModel>().imageurl == null
+                                ? colorCodeForButtonTextCumCanvas[levelAttrib]
+                                : colorCodeForHeading[levelAttrib])
+                        : Icon(Icons.add_a_photo_outlined,
+                            color: context.watch<UserModel>().imageurl == null
+                                ? colorCodeForButtonTextCumCanvas[levelAttrib]
+                                : colorCodeForHeading[levelAttrib]),
                     backgroundImage: context.watch<UserModel>().imageurl == null
                         ? null
                         : NetworkImage(context.watch<UserModel>().imageurl!),
@@ -451,7 +473,7 @@ class _UserAccountState extends State<UserAccount> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           element,
-                          style: TextStyle(color: colorCodeForButtonText[levelAttrib]),
+                          style: TextStyle(color: colorCodeForButtonTextCumCanvas[levelAttrib]),
                         ),
                       ),
                       trailing:
@@ -462,14 +484,14 @@ class _UserAccountState extends State<UserAccount> {
                                   onTap: () {},
                                   child: Icon(
                                     Icons.open_in_new,
-                                    color: colorCodeForButtonText[levelAttrib],
+                                    color: colorCodeForButtonTextCumCanvas[levelAttrib],
                                   ),
                                 )
                               :
                               // if linked_id == false
                               Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-                                  color: colorCodeForButtonText[levelAttrib],
+                                  color: colorCodeForButtonTextCumCanvas[levelAttrib],
                                   child: GestureDetector(
                                     // navigates to link page
                                     onTap: () {
@@ -529,11 +551,75 @@ class _UserAccountState extends State<UserAccount> {
           side: MaterialStateProperty.all(const BorderSide(color: Colors.red))),
     );
 
+    // Delete Modal
+    Widget deleteModal = AbsorbPointer(
+        absorbing: isDeleting,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(color: colorCodeForButtonTextCumCanvas[levelAttrib]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text("Warning!", style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 25)),
+              const SizedBox(height: 10),
+              Text("You are about to delete your account. All your information will be deleted from our database.",
+                  style: TextStyle(color: colorCodeForText[levelAttrib])),
+              Text("This action cannot be reversed once initiated.",
+                  style: TextStyle(color: colorCodeForText[levelAttrib])),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: const Text(
+                                  "Login",
+                                  style: TextStyle(fontSize: 20),
+                                  textAlign: TextAlign.center,
+                                ),
+                                content: Column(children: [
+                                  TextField(
+                                    controller: emailValue,
+                                  )
+                                ]),
+                              ));
+                    },
+                    child: const Text("Delete"),
+                    style: ButtonStyle(
+                        elevation: MaterialStateProperty.all(0),
+                        backgroundColor: MaterialStateProperty.all(Colors.red),
+                        fixedSize: MaterialStateProperty.all(const Size(150, 20))),
+                  ),
+                  const Spacer(),
+                  OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Cancel"),
+                      style: ButtonStyle(
+                          overlayColor: MaterialStateProperty.all(null),
+                          foregroundColor: MaterialStateProperty.all(Colors.red),
+                          side: MaterialStateProperty.all(const BorderSide(color: Colors.red))))
+                ],
+              )
+            ],
+          ),
+        ));
+
     // Delete User Widget
     Widget deleteUserWidget = ElevatedButton(
-      onPressed:
-          // delete user function
-          () {},
+      onPressed: () {
+        // show modal bottom sheet
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => deleteModal,
+          isDismissible: false,
+          constraints: const BoxConstraints(maxHeight: 300),
+        );
+      },
       child: const Text(
         "Delete Account",
         style: TextStyle(color: Colors.white),
@@ -547,13 +633,7 @@ class _UserAccountState extends State<UserAccount> {
 
     // --------------- Return is Here --------------- //
     return Scaffold(
-      backgroundColor: levelAttrib == "Unidentified"
-          ? Colors.white
-          : levelAttrib == "Veteran"
-              ? const Color(0xff00334c)
-              : levelAttrib == "Rookie"
-                  ? Colors.white
-                  : Colors.black,
+      backgroundColor: colorCodeForButtonTextCumCanvas[levelAttrib],
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -592,3 +672,74 @@ class _UserAccountState extends State<UserAccount> {
     );
   }
 }
+
+//  // Delete Modal
+//     Widget deleteModal = AbsorbPointer(
+//         absorbing: isDeleting,
+//         child: Container(
+//           padding: const EdgeInsets.all(20),
+//           decoration: BoxDecoration(color: colorCodeForButtonTextCumCanvas[levelAttrib]),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             mainAxisAlignment: MainAxisAlignment.start,
+//             children: [
+//               Text("Warning!", style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 25)),
+//               const SizedBox(height: 10),
+//               Text("You are about to delete your account. All your information will be deleted from our database.",
+//                   style: TextStyle(color: colorCodeForText[levelAttrib])),
+//               Text("This action cannot be reversed once initiated.",
+//                   style: TextStyle(color: colorCodeForText[levelAttrib])),
+//               const SizedBox(height: 10),
+//               Row(
+//                 children: [
+//                   ElevatedButton(
+//                     onPressed: () async {
+//                       isDeleting = true;
+//                       setState(() {});
+
+//                       // delete firestore data
+//                       await FirebaseFirestore.instance
+//                           .collection("userinfo")
+//                           .doc(FirebaseAuth.instance.currentUser!.uid)
+//                           .delete()
+//                           .then((value) async {
+//                         // delete storage data
+//                         await FirebaseStorage.instance
+//                             .ref("zbgaming/users/images/${FirebaseAuth.instance.currentUser!.uid}/profile.jpg")
+//                             .delete()
+//                             .then((value) async {
+//                           // delete auth data
+
+//                           await FirebaseAuth.instance.currentUser!.delete().catchError((onError) {
+//                             Fluttertoast.showToast(msg: onError.toString());
+//                           });
+//                         }).catchError((e) {
+//                           Fluttertoast.showToast(msg: "An erro occurred\nerror code: 7UK213");
+//                         });
+//                       }).catchError((e) {
+//                         Fluttertoast.showToast(msg: "An erro occurred\nerror code: 3EF451");
+//                       });
+//                       isDeleting = false;
+//                       setState(() {});
+//                     },
+//                     child: isDeleting ? const CircularProgressIndicator(color: Colors.white) : const Text("Delete"),
+//                     style: ButtonStyle(
+//                         elevation: MaterialStateProperty.all(0),
+//                         backgroundColor: MaterialStateProperty.all(Colors.red),
+//                         fixedSize: MaterialStateProperty.all(const Size(150, 20))),
+//                   ),
+//                   const Spacer(),
+//                   OutlinedButton(
+//                       onPressed: () {
+//                         Navigator.pop(context);
+//                       },
+//                       child: const Text("Cancel"),
+//                       style: ButtonStyle(
+//                           overlayColor: MaterialStateProperty.all(null),
+//                           foregroundColor: MaterialStateProperty.all(Colors.red),
+//                           side: MaterialStateProperty.all(const BorderSide(color: Colors.red))))
+//                 ],
+//               )
+//             ],
+//           ),
+//         ));

@@ -49,7 +49,9 @@ class _LoginState extends State<Login> {
               msg: "Login successful!", backgroundColor: Colors.blue[700], textColor: Colors.white);
           await Future.delayed(const Duration(seconds: 1));
           Navigator.pop(context);
-        }).catchError((onError) => /* Write code for error */ null);
+        }).catchError((e) {
+          Fluttertoast.showToast(msg: "Some error occurred");
+        });
       }
       isLoading = false;
       setState(() {});
