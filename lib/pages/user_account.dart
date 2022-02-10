@@ -61,7 +61,6 @@ Map<String, Color> colorCodeForCanvas = {
   "Master Elite": Colors.black
 };
 
-TextEditingController emailValue = TextEditingController();
 TextEditingController passValue = TextEditingController();
 
 class UserAccount extends StatefulWidget {
@@ -570,9 +569,11 @@ class _UserAccountState extends State<UserAccount> {
               const SizedBox(height: 10),
               Row(
                 children: [
+                  // delete button
                   ElevatedButton(
                     onPressed: () async {
-                      showDialog(
+                      // show alert box asking for reauth
+                      await showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
                                 title: const Text(
@@ -581,9 +582,32 @@ class _UserAccountState extends State<UserAccount> {
                                   textAlign: TextAlign.center,
                                 ),
                                 content: Column(children: [
+                                  // password field
                                   TextField(
-                                    controller: emailValue,
-                                  )
+                                    controller: passValue,
+                                    textInputAction: TextInputAction.next,
+                                    decoration: const InputDecoration(label: Text("Password")),
+                                    obscureText: true,
+                                  ),
+
+                                  // submit button
+                                  OutlinedButton(
+                                      // reauthenticate user
+                                      onPressed: () async {
+                                        AuthCredential credential = EmailAuthProvider.credential(
+                                            email: context.watch<UserModel>().email!, password: passValue.text);
+                                        if (passValue.text.isNotEmpty) {
+                                          await FirebaseAuth.instance.currentUser!
+                                              .reauthenticateWithCredential(credential)
+                                              .then((value) async {
+                                            Navigator.pop(context);
+                                          }).catchError((e) {
+                                            Navigator.pop(context);
+                                            Fluttertoast.showToast(msg: e.toString());
+                                          });
+                                        }
+                                      },
+                                      child: const Text("Submit"))
                                 ]),
                               ));
                     },
@@ -594,6 +618,8 @@ class _UserAccountState extends State<UserAccount> {
                         fixedSize: MaterialStateProperty.all(const Size(150, 20))),
                   ),
                   const Spacer(),
+
+                  // cancel button
                   OutlinedButton(
                       onPressed: () {
                         Navigator.pop(context);
