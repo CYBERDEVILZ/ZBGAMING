@@ -63,7 +63,9 @@ class _SignUpState extends State<SignUp> {
             .createUserWithEmailAndPassword(email: emailController.text, password: passwdController.text)
             .then((value) async {
           await submitData();
-        }).catchError((onError) => null);
+        }).catchError((onError) {
+          Fluttertoast.showToast(msg: "Something went wrong");
+        });
       }
       isLoading = false;
       if (mounted) setState(() {});

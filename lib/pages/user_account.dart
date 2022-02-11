@@ -61,8 +61,6 @@ Map<String, Color> colorCodeForCanvas = {
   "Master Elite": Colors.black
 };
 
-TextEditingController passValue = TextEditingController();
-
 class UserAccount extends StatefulWidget {
   const UserAccount({Key? key}) : super(key: key);
 
@@ -84,6 +82,8 @@ class _UserAccountState extends State<UserAccount> {
   bool isImageLoad = false;
   bool? bankStatus;
   bool isDeleting = false;
+
+  TextEditingController passValue = TextEditingController();
 
   // add more games here if any...
   final List<String> array = [
@@ -581,7 +581,7 @@ class _UserAccountState extends State<UserAccount> {
                                   style: TextStyle(fontSize: 20),
                                   textAlign: TextAlign.center,
                                 ),
-                                content: Column(children: [
+                                content: Column(mainAxisSize: MainAxisSize.min, children: [
                                   // password field
                                   TextField(
                                     controller: passValue,
@@ -595,23 +595,55 @@ class _UserAccountState extends State<UserAccount> {
                                       // reauthenticate user
                                       onPressed: () async {
                                         AuthCredential credential = EmailAuthProvider.credential(
-                                            email: context.watch<UserModel>().email!, password: passValue.text);
+                                            email: Provider.of<UserModel>(context, listen: false).email!,
+                                            password: passValue.text);
                                         if (passValue.text.isNotEmpty) {
                                           await FirebaseAuth.instance.currentUser!
                                               .reauthenticateWithCredential(credential)
                                               .then((value) async {
                                             Navigator.pop(context);
+                                            isDeleting = true;
+                                            setState(() {});
+                                            // delete userinfo data
+                                            try {
+                                              await FirebaseFirestore.instance
+                                                  .collection("userinfo")
+                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                  .delete();
+                                            } catch (e) {
+                                              return null;
+                                            }
+
+                                            try {
+                                              // delete storage data
+                                              await FirebaseStorage.instance
+                                                  .ref(
+                                                      "zbgaming/users/images/${FirebaseAuth.instance.currentUser!.uid}/profile.jpg")
+                                                  .delete();
+                                            } catch (e) {
+                                              null;
+                                            }
+
+                                            // delete auth data
+                                            await FirebaseAuth.instance.currentUser!.delete().catchError((onError) {
+                                              Fluttertoast.showToast(msg: onError.toString());
+                                            });
+
+                                            isDeleting = false;
+                                            setState(() {});
                                           }).catchError((e) {
+                                            Fluttertoast.showToast(msg: "Couldn't Reauthenticate");
                                             Navigator.pop(context);
-                                            Fluttertoast.showToast(msg: e.toString());
                                           });
+                                        } else {
+                                          Fluttertoast.showToast(msg: "Password cannot be empty");
                                         }
                                       },
                                       child: const Text("Submit"))
                                 ]),
                               ));
                     },
-                    child: const Text("Delete"),
+                    child: isDeleting ? const CircularProgressIndicator() : const Text("Delete"),
                     style: ButtonStyle(
                         elevation: MaterialStateProperty.all(0),
                         backgroundColor: MaterialStateProperty.all(Colors.red),
