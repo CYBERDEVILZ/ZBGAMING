@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/widgets/not_signed_in.dart';
+import 'package:zbgaming/widgets/organizer_info.dart';
 
 class FavoriteOrganizers extends StatelessWidget {
   const FavoriteOrganizers({Key? key}) : super(key: key);
@@ -121,7 +122,13 @@ class _OrganizerTilesState extends State<OrganizerTiles> {
               backgroundImage: NetworkImage(imageurl!),
             ),
             title: name != null ? Text(name!) : const Text("null"),
-            trailing: GestureDetector(child: const Icon(Icons.open_in_new), onTap: () {}),
+            trailing: GestureDetector(
+                child: const Icon(Icons.open_in_new),
+                onTap: () {
+                  // navigate to organizer page
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => OrganizerInfo(organizerId: widget.ouid)));
+                }),
           )
         : ListTile(
             leading: const CircleAvatar(
