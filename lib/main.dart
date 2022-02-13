@@ -25,7 +25,7 @@ void main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserModel()),
     ChangeNotifierProvider(create: (_) => OrganizerModel()),
-    ChangeNotifierProvider(create: (_) => DetailProvider())
+    ChangeNotifierProvider(create: (_) => DetailProvider()),
   ], child: const MyApp()));
 }
 

@@ -81,7 +81,6 @@ class _UserAccountState extends State<UserAccount> {
   bool isLoading = false;
   bool isImageLoad = false;
   bool? bankStatus;
-  bool isDeleting = false;
 
   TextEditingController passValue = TextEditingController();
 
@@ -551,121 +550,116 @@ class _UserAccountState extends State<UserAccount> {
     );
 
     // Delete Modal
-    Widget deleteModal = AbsorbPointer(
-        absorbing: isDeleting,
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(color: colorCodeForButtonTextCumCanvas[levelAttrib]),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
+    Widget deleteModal = Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(color: colorCodeForButtonTextCumCanvas[levelAttrib]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text("Warning!", style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 25)),
+          const SizedBox(height: 10),
+          Text("You are about to delete your account. All your information will be deleted from our database.",
+              style: TextStyle(color: colorCodeForText[levelAttrib])),
+          Text("This action cannot be reversed once initiated.",
+              style: TextStyle(color: colorCodeForText[levelAttrib])),
+          const SizedBox(height: 10),
+          Row(
             children: [
-              Text("Warning!", style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 25)),
-              const SizedBox(height: 10),
-              Text("You are about to delete your account. All your information will be deleted from our database.",
-                  style: TextStyle(color: colorCodeForText[levelAttrib])),
-              Text("This action cannot be reversed once initiated.",
-                  style: TextStyle(color: colorCodeForText[levelAttrib])),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  // delete button
-                  ElevatedButton(
-                    onPressed: () async {
-                      // show alert box asking for reauth
-                      await showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                title: const Text(
-                                  "Login",
-                                  style: TextStyle(fontSize: 20),
-                                  textAlign: TextAlign.center,
-                                ),
-                                content: Column(mainAxisSize: MainAxisSize.min, children: [
-                                  // password field
-                                  TextField(
-                                    controller: passValue,
-                                    textInputAction: TextInputAction.next,
-                                    decoration: const InputDecoration(label: Text("Password")),
-                                    obscureText: true,
-                                  ),
+              // delete button
+              ElevatedButton(
+                onPressed: () async {
+                  // show alert box asking for reauth
+                  await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: const Text(
+                              "Login",
+                              style: TextStyle(fontSize: 20),
+                              textAlign: TextAlign.center,
+                            ),
+                            content: Column(mainAxisSize: MainAxisSize.min, children: [
+                              // password field
+                              TextField(
+                                controller: passValue,
+                                textInputAction: TextInputAction.next,
+                                decoration: const InputDecoration(label: Text("Password")),
+                                obscureText: true,
+                              ),
 
-                                  // submit button
-                                  OutlinedButton(
-                                      // reauthenticate user
-                                      onPressed: () async {
-                                        AuthCredential credential = EmailAuthProvider.credential(
-                                            email: Provider.of<UserModel>(context, listen: false).email!,
-                                            password: passValue.text);
-                                        if (passValue.text.isNotEmpty) {
-                                          await FirebaseAuth.instance.currentUser!
-                                              .reauthenticateWithCredential(credential)
-                                              .then((value) async {
-                                            Navigator.pop(context);
-                                            isDeleting = true;
-                                            setState(() {});
-                                            // delete userinfo data
-                                            try {
-                                              await FirebaseFirestore.instance
-                                                  .collection("userinfo")
-                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                                                  .delete();
-                                            } catch (e) {
-                                              return null;
-                                            }
+                              // submit button
+                              OutlinedButton(
+                                  // reauthenticate user
+                                  onPressed: () async {
+                                    AuthCredential credential = EmailAuthProvider.credential(
+                                        email: Provider.of<UserModel>(context, listen: false).email!,
+                                        password: passValue.text);
+                                    if (passValue.text.isNotEmpty) {
+                                      await FirebaseAuth.instance.currentUser!
+                                          .reauthenticateWithCredential(credential)
+                                          .then((value) async {
+                                        Navigator.pop(context);
 
-                                            try {
-                                              // delete storage data
-                                              await FirebaseStorage.instance
-                                                  .ref(
-                                                      "zbgaming/users/images/${FirebaseAuth.instance.currentUser!.uid}/profile.jpg")
-                                                  .delete();
-                                            } catch (e) {
-                                              null;
-                                            }
-
-                                            // delete auth data
-                                            await FirebaseAuth.instance.currentUser!.delete().catchError((onError) {
-                                              Fluttertoast.showToast(msg: onError.toString());
-                                            });
-
-                                            isDeleting = false;
-                                            setState(() {});
-                                          }).catchError((e) {
-                                            Fluttertoast.showToast(msg: "Couldn't Reauthenticate");
-                                            Navigator.pop(context);
-                                          });
-                                        } else {
-                                          Fluttertoast.showToast(msg: "Password cannot be empty");
+                                        // delete userinfo data
+                                        try {
+                                          await FirebaseFirestore.instance
+                                              .collection("userinfo")
+                                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                                              .delete();
+                                        } catch (e) {
+                                          return null;
                                         }
-                                      },
-                                      child: const Text("Submit"))
-                                ]),
-                              ));
-                    },
-                    child: isDeleting ? const CircularProgressIndicator() : const Text("Delete"),
-                    style: ButtonStyle(
-                        elevation: MaterialStateProperty.all(0),
-                        backgroundColor: MaterialStateProperty.all(Colors.red),
-                        fixedSize: MaterialStateProperty.all(const Size(150, 20))),
-                  ),
-                  const Spacer(),
 
-                  // cancel button
-                  OutlinedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel"),
-                      style: ButtonStyle(
-                          overlayColor: MaterialStateProperty.all(null),
-                          foregroundColor: MaterialStateProperty.all(Colors.red),
-                          side: MaterialStateProperty.all(const BorderSide(color: Colors.red))))
-                ],
-              )
+                                        try {
+                                          // delete storage data
+                                          await FirebaseStorage.instance
+                                              .ref(
+                                                  "zbgaming/users/images/${FirebaseAuth.instance.currentUser!.uid}/profile.jpg")
+                                              .delete();
+                                        } catch (e) {
+                                          null;
+                                        }
+
+                                        // delete auth data
+                                        await FirebaseAuth.instance.currentUser!.delete().catchError((onError) {
+                                          Fluttertoast.showToast(msg: onError.toString());
+                                        });
+                                      }).catchError((e) {
+                                        Fluttertoast.showToast(msg: "Couldn't Reauthenticate");
+
+                                        Navigator.pop(context);
+                                      });
+                                    } else {
+                                      Fluttertoast.showToast(msg: "Password cannot be empty");
+                                    }
+                                  },
+                                  child: const Text("Submit"))
+                            ]),
+                          ));
+                },
+                child: const Text("Delete"),
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(0),
+                    backgroundColor: MaterialStateProperty.all(Colors.red),
+                    fixedSize: MaterialStateProperty.all(const Size(150, 20))),
+              ),
+              const Spacer(),
+
+              // cancel button
+              OutlinedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Cancel"),
+                  style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.all(null),
+                      foregroundColor: MaterialStateProperty.all(Colors.red),
+                      side: MaterialStateProperty.all(const BorderSide(color: Colors.red))))
             ],
-          ),
-        ));
+          )
+        ],
+      ),
+    );
 
     // Delete User Widget
     Widget deleteUserWidget = ElevatedButton(
@@ -730,74 +724,3 @@ class _UserAccountState extends State<UserAccount> {
     );
   }
 }
-
-//  // Delete Modal
-//     Widget deleteModal = AbsorbPointer(
-//         absorbing: isDeleting,
-//         child: Container(
-//           padding: const EdgeInsets.all(20),
-//           decoration: BoxDecoration(color: colorCodeForButtonTextCumCanvas[levelAttrib]),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             mainAxisAlignment: MainAxisAlignment.start,
-//             children: [
-//               Text("Warning!", style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 25)),
-//               const SizedBox(height: 10),
-//               Text("You are about to delete your account. All your information will be deleted from our database.",
-//                   style: TextStyle(color: colorCodeForText[levelAttrib])),
-//               Text("This action cannot be reversed once initiated.",
-//                   style: TextStyle(color: colorCodeForText[levelAttrib])),
-//               const SizedBox(height: 10),
-//               Row(
-//                 children: [
-//                   ElevatedButton(
-//                     onPressed: () async {
-//                       isDeleting = true;
-//                       setState(() {});
-
-//                       // delete firestore data
-//                       await FirebaseFirestore.instance
-//                           .collection("userinfo")
-//                           .doc(FirebaseAuth.instance.currentUser!.uid)
-//                           .delete()
-//                           .then((value) async {
-//                         // delete storage data
-//                         await FirebaseStorage.instance
-//                             .ref("zbgaming/users/images/${FirebaseAuth.instance.currentUser!.uid}/profile.jpg")
-//                             .delete()
-//                             .then((value) async {
-//                           // delete auth data
-
-//                           await FirebaseAuth.instance.currentUser!.delete().catchError((onError) {
-//                             Fluttertoast.showToast(msg: onError.toString());
-//                           });
-//                         }).catchError((e) {
-//                           Fluttertoast.showToast(msg: "An erro occurred\nerror code: 7UK213");
-//                         });
-//                       }).catchError((e) {
-//                         Fluttertoast.showToast(msg: "An erro occurred\nerror code: 3EF451");
-//                       });
-//                       isDeleting = false;
-//                       setState(() {});
-//                     },
-//                     child: isDeleting ? const CircularProgressIndicator(color: Colors.white) : const Text("Delete"),
-//                     style: ButtonStyle(
-//                         elevation: MaterialStateProperty.all(0),
-//                         backgroundColor: MaterialStateProperty.all(Colors.red),
-//                         fixedSize: MaterialStateProperty.all(const Size(150, 20))),
-//                   ),
-//                   const Spacer(),
-//                   OutlinedButton(
-//                       onPressed: () {
-//                         Navigator.pop(context);
-//                       },
-//                       child: const Text("Cancel"),
-//                       style: ButtonStyle(
-//                           overlayColor: MaterialStateProperty.all(null),
-//                           foregroundColor: MaterialStateProperty.all(Colors.red),
-//                           side: MaterialStateProperty.all(const BorderSide(color: Colors.red))))
-//                 ],
-//               )
-//             ],
-//           ),
-//         ));
