@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zbgaming/widgets/star_builder.dart';
 
 class OrganizerInfo extends StatefulWidget {
   const OrganizerInfo({Key? key, required this.organizerId}) : super(key: key);
@@ -16,6 +17,8 @@ class _OrganizerState extends State<OrganizerInfo> {
   String? name;
   String? email;
   bool? special;
+  num? rating;
+  num? amountGiven;
 
   void fetchOrganizerData() async {
     isLoading = true;
@@ -27,6 +30,8 @@ class _OrganizerState extends State<OrganizerInfo> {
       name = value["username"];
       email = value["email"];
       special = value["special"];
+      rating = value["rating"];
+      amountGiven = value["amountGiven"];
     });
     isLoading = false;
     setState(() {});
@@ -40,24 +45,163 @@ class _OrganizerState extends State<OrganizerInfo> {
 
   @override
   Widget build(BuildContext context) {
+    //Rating Widget
+    Widget ratingWidget = rating == null
+        ? Container(margin: const EdgeInsets.only(left: 10 + 125 + 5), child: const Text("Rating: error"))
+        : Container(
+            margin: const EdgeInsets.only(left: 10 + 125 + 5),
+            child: StarBuilder(
+              star: rating!,
+              starColor: Colors.blue,
+              size: 25,
+              rowAlignment: MainAxisAlignment.start,
+            ));
+
+    // Prize Widget
+    Widget totalPrizeGiven = Container(
+        margin: const EdgeInsets.only(left: 10 + 125 + 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RichText(
+              text: const TextSpan(
+                  text: "Prizes",
+                  style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 20),
+                  children: <TextSpan>[
+                    TextSpan(text: "Awarded:", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w200))
+                  ]),
+            ),
+            Text(
+              "\u20B9$amountGiven",
+              style: const TextStyle(color: Colors.blue),
+            )
+          ],
+        ));
+
+    // Name Widget
+    Widget nameWidget = Container(
+      child: Text("Name goes here"),
+    );
+
+    // Email Widget
+    Widget emailWidget = Container(
+      child: Text("Email goes here"),
+    );
+
     // --------------- Return is Here --------------- //
     return Scaffold(
       body: SingleChildScrollView(
           child: isLoading
-              ? Column(children: const [SizedBox(height: 50), Center(child: CircularProgressIndicator())])
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text("banner"),
-                    Text("image"),
-                    Text("name"),
-                    Text("rating"),
-                    Text("email"),
-                    Text("organized matches"),
-                    Text("Prizes given"),
-                  ],
+              ? Center(
+                  child: Column(children: const [SizedBox(height: 50), Center(child: CircularProgressIndicator())]))
+              : SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Banner(getBannerUrl: bannerurl, getImageUrl: imageurl),
+                      ratingWidget,
+                      const SizedBox(height: 10),
+                      totalPrizeGiven,
+                      const SizedBox(height: 20),
+                      nameWidget,
+                      emailWidget,
+                      UpcomingMatches(organizerId: widget.organizerId),
+                    ],
+                  ),
                 )),
+    );
+  }
+}
+
+// Banner for Organizer
+class Banner extends StatelessWidget {
+  const Banner({Key? key, required this.getBannerUrl, required this.getImageUrl}) : super(key: key);
+  final String? getBannerUrl;
+  final String? getImageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(clipBehavior: Clip.none, children: [
+      // background banner
+      Container(
+        height: 125,
+        width: MediaQuery.of(context).size.width,
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+        ),
+        child: getBannerUrl != null
+            ? Image.network(
+                getBannerUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, obj, s) => const Text("error"),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(
+                        color: Colors.white,
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                            : null),
+                  );
+                },
+              )
+            : null,
+      ),
+
+      // profile pic block
+      Positioned(
+        bottom: -125 / 1.5,
+        left: 10,
+        child: Container(
+          height: 125,
+          width: 125,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.blue, width: 5),
+          ),
+          child: getImageUrl != null
+              ? Image.network(
+                  getImageUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, obj, s) => const Text("error"),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    }
+                    return Center(
+                      child: CircularProgressIndicator(
+                          color: Colors.blue,
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                              : null),
+                    );
+                  },
+                )
+              : null,
+        ),
+      )
+    ]);
+  }
+}
+
+// Upcoming Matches
+class UpcomingMatches extends StatefulWidget {
+  const UpcomingMatches({Key? key, required this.organizerId}) : super(key: key);
+  final String organizerId;
+
+  @override
+  _UpcomingMatchesState createState() => _UpcomingMatchesState();
+}
+
+class _UpcomingMatchesState extends State<UpcomingMatches> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Text("Upcoming matches"),
     );
   }
 }

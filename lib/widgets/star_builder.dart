@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 class StarBuilder extends StatelessWidget {
-  const StarBuilder({Key? key, required this.star, required this.starColor, required this.size}) : super(key: key);
+  const StarBuilder(
+      {Key? key, required this.star, required this.starColor, required this.size, required this.rowAlignment})
+      : super(key: key);
 
   final num star;
   final Color starColor;
   final double size;
+  final MainAxisAlignment rowAlignment;
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +31,7 @@ class StarBuilder extends StatelessWidget {
     }
 
     return stars.isEmpty
-        ? Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [Text("No Rating", style: TextStyle(color: starColor))])
-        : Row(mainAxisAlignment: MainAxisAlignment.center, children: [...stars]);
+        ? Row(mainAxisAlignment: rowAlignment, children: [Text("No Rating", style: TextStyle(color: starColor))])
+        : Row(mainAxisAlignment: rowAlignment, children: [...stars]);
   }
 }

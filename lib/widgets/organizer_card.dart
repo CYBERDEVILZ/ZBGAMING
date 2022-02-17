@@ -142,6 +142,7 @@ class _OrganizerCardState extends State<OrganizerCard> {
                           star: rating!,
                           starColor: Colors.white,
                           size: 20,
+                          rowAlignment: MainAxisAlignment.center,
                         )
                 ],
               ),
