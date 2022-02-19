@@ -175,7 +175,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                 ? const [
                                     Icon(Icons.flash_off, size: 25, color: Colors.teal),
                                     SizedBox(width: 5),
-                                    Text("No LVL Required",
+                                    Text("Rookie and above",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
                                   ]
@@ -183,7 +183,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                     ? const [
                                         Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                         SizedBox(width: 5),
-                                        Text("10 and above\n",
+                                        Text("Veteran and above",
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
@@ -192,7 +192,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                         ? const [
                                             Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                             SizedBox(width: 5),
-                                            Text("Pro tag required",
+                                            Text("Only Master Elites",
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))

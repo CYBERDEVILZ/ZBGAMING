@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zbgaming/widgets/match_fetch_widget.dart';
 import 'package:zbgaming/widgets/star_builder.dart';
 
 class OrganizerInfo extends StatefulWidget {
@@ -79,13 +80,15 @@ class _OrganizerState extends State<OrganizerInfo> {
         ));
 
     // Name Widget
-    Widget nameWidget = Container(
-      child: Text("Name goes here"),
+    Widget nameWidget = Text(
+      name == null ? "null" : name!,
+      style: const TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.w600),
     );
 
     // Email Widget
-    Widget emailWidget = Container(
-      child: Text("Email goes here"),
+    Widget emailWidget = Text(
+      email == null ? "null" : email!,
+      style: const TextStyle(fontWeight: FontWeight.w300, color: Colors.blue),
     );
 
     // --------------- Return is Here --------------- //
@@ -97,17 +100,31 @@ class _OrganizerState extends State<OrganizerInfo> {
               : SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Banner(getBannerUrl: bannerurl, getImageUrl: imageurl),
-                      ratingWidget,
-                      const SizedBox(height: 10),
-                      totalPrizeGiven,
-                      const SizedBox(height: 20),
-                      nameWidget,
-                      emailWidget,
-                      UpcomingMatches(organizerId: widget.organizerId),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Banner(getBannerUrl: bannerurl, getImageUrl: imageurl),
+                          ratingWidget,
+                          const SizedBox(height: 20),
+                          totalPrizeGiven,
+                          const SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                nameWidget,
+                                emailWidget,
+                                const SizedBox(height: 20),
+                              ],
+                            ),
+                          ),
+                          UpcomingMatches(organizerId: widget.organizerId)
+                        ],
+                      ),
                     ],
                   ),
                 )),
@@ -128,9 +145,8 @@ class Banner extends StatelessWidget {
       Container(
         height: 125,
         width: MediaQuery.of(context).size.width,
-        decoration: const BoxDecoration(
-          color: Colors.blue,
-        ),
+        decoration:
+            const BoxDecoration(color: Colors.blue, border: Border(bottom: BorderSide(color: Colors.blue, width: 5))),
         child: getBannerUrl != null
             ? Image.network(
                 getBannerUrl!,
@@ -199,9 +215,21 @@ class UpcomingMatches extends StatefulWidget {
 
 class _UpcomingMatchesState extends State<UpcomingMatches> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text("Upcoming matches"),
+      color: Colors.blue,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, children: const [
+          Text("Upcoming Tournaments", style: TextStyle(fontSize: 20, color: Colors.white)),
+        ]),
+        const SizedBox(height: 10),
+        MatchFetchWidget(matchName: "csgo", organizerId: widget.organizerId, color: Colors.white, size: 15)
+      ]),
     );
   }
 }

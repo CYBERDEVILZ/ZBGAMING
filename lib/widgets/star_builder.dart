@@ -13,7 +13,12 @@ class StarBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int fullStars = star.floor();
-    num halfStars = star.toString()[2] == "0" ? 0 : 1;
+    late num halfStars;
+    try {
+      halfStars = star.toString()[2] == "0" ? 0 : 1;
+    } catch (e) {
+      halfStars = 0;
+    }
     List<Widget> stars = [];
     for (int i = 0; i < fullStars; i++) {
       stars.add(Icon(
