@@ -226,7 +226,8 @@ class _UpcomingMatchesState extends State<UpcomingMatches> {
       color: Colors.blue,
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, children: const [
-          Text("Upcoming Tournaments", style: TextStyle(fontSize: 20, color: Colors.white)),
+          Text("Upcoming Tournaments",
+              style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w200)),
         ]),
         MatchFetchWidget(matchName: "csgo", organizerId: widget.organizerId, color: Colors.white, size: 17),
         MatchFetchWidget(matchName: "valorant", organizerId: widget.organizerId, color: Colors.white, size: 17),
