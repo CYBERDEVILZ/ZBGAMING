@@ -222,13 +222,16 @@ class _UpcomingMatchesState extends State<UpcomingMatches> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
       color: Colors.blue,
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, children: const [
           Text("Upcoming Tournaments", style: TextStyle(fontSize: 20, color: Colors.white)),
         ]),
-        const SizedBox(height: 10),
-        MatchFetchWidget(matchName: "csgo", organizerId: widget.organizerId, color: Colors.white, size: 15)
+        MatchFetchWidget(matchName: "csgo", organizerId: widget.organizerId, color: Colors.white, size: 17),
+        MatchFetchWidget(matchName: "valorant", organizerId: widget.organizerId, color: Colors.white, size: 17),
+        MatchFetchWidget(matchName: "pubg", organizerId: widget.organizerId, color: Colors.white, size: 17),
+        MatchFetchWidget(matchName: "freefire", organizerId: widget.organizerId, color: Colors.white, size: 17),
       ]),
     );
   }

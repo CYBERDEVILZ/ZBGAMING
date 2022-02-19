@@ -36,43 +36,54 @@ class _MatchFetchWidgetState extends State<MatchFetchWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          widget.matchName,
-          style: TextStyle(color: widget.color, fontSize: widget.size, decoration: TextDecoration.overline),
-        ),
-        ...matches.map((e) {
-          return ListTile(
-              tileColor: Colors.white,
-              title: Text(
-                e["name"],
-                style: TextStyle(fontSize: widget.size - 1),
-              ),
-              subtitle: Text(DateToString().dateToString(e["date"].toDate())),
-              trailing: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: ((context) => ContestDetails(
-                                special: e["special"],
-                                name: e["name"],
-                                team: e["solo"],
-                                tournament: e["match"],
-                                skill: e["skill"],
-                                date: e["date"].toDate(),
-                                rewards: e["fee"],
-                                regTeams: e["reg"],
-                                totalTeams: 100,
-                                uid: e.id,
-                                matchType: "csgo",
-                                ouid: widget.organizerId))));
-                  },
-                  child: const Icon(Icons.open_in_new)));
-        }).toList(),
-      ],
-    );
+    return matches.isEmpty
+        ? Container()
+        : Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  widget.matchName,
+                  style: TextStyle(color: widget.color, fontSize: widget.size, decoration: TextDecoration.overline),
+                ),
+                const SizedBox(height: 5),
+                ...matches.map((e) {
+                  return SizedBox(
+                    width: MediaQuery.of(context).size.width / 1.09,
+                    child: Card(
+                      child: ListTile(
+                          tileColor: Colors.white,
+                          title: Text(
+                            e["name"],
+                            style: TextStyle(fontSize: widget.size - 1, color: Colors.blue),
+                          ),
+                          subtitle: Text(DateToString().dateToString(e["date"].toDate())),
+                          trailing: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: ((context) => ContestDetails(
+                                            special: e["special"],
+                                            name: e["name"],
+                                            team: e["solo"],
+                                            tournament: e["match"],
+                                            skill: e["skill"],
+                                            date: e["date"].toDate(),
+                                            rewards: e["fee"],
+                                            regTeams: e["reg"],
+                                            totalTeams: 100,
+                                            uid: e.id,
+                                            matchType: "csgo",
+                                            ouid: widget.organizerId))));
+                              },
+                              child: const Icon(Icons.open_in_new))),
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+          );
   }
 }
