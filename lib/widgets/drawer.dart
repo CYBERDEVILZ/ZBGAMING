@@ -14,7 +14,7 @@ class AfterLoginDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
         elevation: 0,
-        child: ListView(
+        child: Column(
           children: [
             DrawerHeader(
                 margin: const EdgeInsets.all(0),
@@ -131,10 +131,31 @@ class AfterLoginDrawer extends StatelessWidget {
                       overlayColor: MaterialStateProperty.all(Colors.red[100]),
                       side: MaterialStateProperty.all(const BorderSide(color: Colors.red, width: 2))),
                 )),
-            Container(
-              margin: const EdgeInsets.only(top: 50),
-              child: const Placeholder(), // zbgaming (copyrighted thing)
-              height: 100,
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.only(top: 50),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Image.asset(
+                      "assets/images/glitchlogozbunker.gif",
+                      fit: BoxFit.cover,
+                      width: 75,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "NEVER STOP BELIEVING",
+                      style: TextStyle(color: Colors.white, letterSpacing: 3),
+                      textScaleFactor: 0.7,
+                    )
+                  ],
+                ), // zbgaming (copyrighted thing)
+              ),
             )
           ],
         ));
