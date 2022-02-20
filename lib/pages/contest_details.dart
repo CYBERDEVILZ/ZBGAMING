@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/widgets/Date_to_string.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
+import 'package:zbgaming/widgets/organizer_info.dart';
 import 'package:zbgaming/widgets/rules_and_requirements.dart';
 
 class ContestDetails extends StatefulWidget {
@@ -270,8 +271,14 @@ class _ContestDetailsState extends State<ContestDetails> {
               padding: EdgeInsets.only(bottom: 5.0),
               child: Text("Organized By:", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
             ),
-            OrganizerCard(
-              ouid: widget.ouid,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => OrganizerInfo(organizerId: widget.ouid)));
+              },
+              child: OrganizerCard(
+                ouid: widget.ouid,
+              ),
             ),
 
             const SizedBox(height: 30),
