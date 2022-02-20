@@ -99,18 +99,29 @@ class _BuildTilesState extends State<BuildTiles> {
         ? const Center(child: CircularProgressIndicator())
         : ListView.builder(
             itemCount: data.length,
-            itemBuilder: (context, index) => ListTile(
-                  leading: Text(data[index]["matchType"]),
-                  title: Text(data[index]["name"]),
-                  subtitle: Text(dateObject.dateToString(data[index]["date"].toDate())),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.open_in_new, color: Colors.blue),
+            itemBuilder: (context, index) {
+              var image = data[index]["matchType"];
 
-                    // fetch data and navigate to contest details
-                    onPressed: () {
-                      fetchAndNavigate(data[index]);
-                    },
-                  ),
-                ));
+              return ListTile(
+                leading: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                    child: Image.asset(
+                      "assets/images/$image.jpg",
+                      width: 75,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    )),
+                title: Text(data[index]["name"]),
+                subtitle: Text(dateObject.dateToString(data[index]["date"].toDate())),
+                trailing: IconButton(
+                  icon: const Icon(Icons.open_in_new, color: Colors.blue),
+
+                  // fetch data and navigate to contest details
+                  onPressed: () {
+                    fetchAndNavigate(data[index]);
+                  },
+                ),
+              );
+            });
   }
 }
