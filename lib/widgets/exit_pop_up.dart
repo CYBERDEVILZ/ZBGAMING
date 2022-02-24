@@ -17,12 +17,11 @@ Future<bool> showExitPopup(context) async {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          exit(0);
-                        },
-                        child: const Text("Yes"),
-                        style: ElevatedButton.styleFrom(primary: Colors.red.shade800),
-                      ),
+                          onPressed: () {
+                            exit(0);
+                          },
+                          child: const Text("Yes"),
+                          style: ElevatedButton.styleFrom(primary: Colors.blue)),
                     ),
                     const SizedBox(width: 15),
                     Expanded(
