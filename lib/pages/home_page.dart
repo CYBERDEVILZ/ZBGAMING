@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
 import 'package:zbgaming/widgets/drawer.dart';
+import 'package:zbgaming/widgets/exit_pop_up.dart';
 import 'package:zbgaming/widgets/favorite_organizer.dart';
 import 'package:zbgaming/widgets/home_page_list.dart';
 
@@ -52,31 +53,34 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
         bottom: false,
-        child: Scaffold(
-          appBar: AppBar(title: Text(index == 0 ? "Games" : "Favorite Organizers"), elevation: 0, centerTitle: true),
-          body: showBody[index], // contains list of games
-          drawer: isLogged ? const AfterLoginDrawer() : const BeforeLoginDrawer(),
-          bottomNavigationBar: BottomNavigationBar(
-              items: const [
-                // games
-                BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Games"),
+        child: WillPopScope(
+          onWillPop: () => showExitPopup(context),
+          child: Scaffold(
+            appBar: AppBar(title: Text(index == 0 ? "Games" : "Favorite Organizers"), elevation: 0, centerTitle: true),
+            body: showBody[index], // contains list of games
+            drawer: isLogged ? const AfterLoginDrawer() : const BeforeLoginDrawer(),
+            bottomNavigationBar: BottomNavigationBar(
+                items: const [
+                  // games
+                  BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Games"),
 
-                // favorite organizations
-                BottomNavigationBarItem(icon: Icon(Icons.star), label: "Favorites")
-              ],
-              currentIndex: index,
-              onTap: (value) {
-                index = value;
-                setState(() {});
-              }),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisteredMatches()));
-            }, // shows registered matches
-            child: const Icon(Icons.flag),
-            elevation: 0,
+                  // favorite organizations
+                  BottomNavigationBarItem(icon: Icon(Icons.star), label: "Favorites")
+                ],
+                currentIndex: index,
+                onTap: (value) {
+                  index = value;
+                  setState(() {});
+                }),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => RegisteredMatches()));
+              }, // shows registered matches
+              child: const Icon(Icons.flag),
+              elevation: 0,
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         ));
   }
 }
