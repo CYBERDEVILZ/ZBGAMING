@@ -1,3 +1,4 @@
+from turtle import update
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -19,6 +20,7 @@ def userSignup():
   imageurl = None
 
   # perform form validation here......
+  # username shouldn't be null and email should comply with apt regex
   if (username != None and email != None):
     docs = db.collection("userinfo").where("email", "==", email).get()
     if len(docs) == 0:
@@ -39,6 +41,7 @@ def organizerSignup():
   rating = 0.0
 
   # perform form validation here.........
+  # username shouldn't be null and email should comply with apt regex
   if (username != None and email != None):
     docs = db.collection("organizer").where("email", "==", email).get()
     if len(docs) == 0:
@@ -52,15 +55,36 @@ def organizerSignup():
 @app.route("/api/register")
 def register():
   matchtype = request.args.get("matchtype")
-  matchuid = request.args.get("matchuid")
-  useruid = request.args.get("uuid")
+  matchuid = request.args.get("matchuid") 
+  useruid = request.args.get("useruid")
   
   # perform some validation here.......
-  # check for fees, authenticity, already registered
-  if (matchuid != None and useruid != None):
-    reg = 0
-    db.collection(matchtype).doc(matchuid).update({"reg": reg + 1})
-    return "Success"
+  # check for already registered, fee paid
+  if (matchuid != None and useruid != None and matchtype != None):
+    ref = db.collection(matchtype).document(matchuid)
+
+    # retrieve the total registered and update the value to one [USE TRANSACTION!]
+    transaction = db.transaction()
+    @firestore.transactional
+    def updateRegisteredTeams(transaction, ref):
+      snapshot = ref.get(transaction = transaction)
+      reg = snapshot.get("reg")
+      try:
+        if reg < 100:
+          transaction.update(ref, {"reg": reg + 1})
+          return True
+        else:
+          return False
+      except:
+        return False
+
+    
+    result = updateRegisteredTeams(transaction, ref)
+
+    if result:
+      return "Success"
+    else:
+      return "Failed"
 
   return "Failed"
 
