@@ -1,4 +1,3 @@
-from turtle import update
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -62,13 +61,26 @@ def register():
   useruid = request.args.get("useruid")
   
   # perform some validation here.......
-  # check for valid matchuid
-  # check for already registered
-  # if not, increase reg of the match, update registered matches of user
   # create a separate table of users who are registered for that match
 
   if (matchuid != None and useruid != None):
+
+    # checking for already registered..
+    user = db.collection("userinfo").document(useruid).collection("registered").get()
+    user = [user.id for user in user]
+    if matchuid in user:
+      return "Failed: Already registered"
+
+
     ref = db.collection("pubg").document(matchuid)
+    ref_obj = ref.get().to_dict()
+    try:
+      date = ref_obj["date"]
+      matchType = "pubg"
+      uid = matchuid
+      name = ref_obj["name"]
+    except:
+      return "Failure, no such doc"
 
     # retrieve the total registered and update the value to one [USE TRANSACTION!]
     transaction = db.transaction()
@@ -89,6 +101,7 @@ def register():
     result = updateRegisteredTeams(transaction, ref)
 
     if result:
+      db.collection("userinfo").document(useruid).collection("registered").document(matchuid).set({"date": date, "matchType": matchType, "name": name, "uid": uid})
       return "Success"
     else:
       return "Failed"
