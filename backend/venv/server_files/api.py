@@ -12,6 +12,10 @@ db = firestore.client()
 app = Flask(__name__)
 
 
+@app.route("/")
+def home():
+  return "I am UP :)"
+
 # USER SIGN UP
 @app.route("/api/user_signup")
 def userSignup():
@@ -51,17 +55,20 @@ def organizerSignup():
   return "Failed"
 
 
-# REGISTER
-@app.route("/api/register")
+# REGISTER PUBG
+@app.route("/api/register/pubg")
 def register():
-  matchtype = request.args.get("matchtype")
   matchuid = request.args.get("matchuid") 
   useruid = request.args.get("useruid")
   
   # perform some validation here.......
-  # check for already registered, fee paid
-  if (matchuid != None and useruid != None and matchtype != None):
-    ref = db.collection(matchtype).document(matchuid)
+  # check for valid matchuid
+  # check for already registered
+  # if not, increase reg of the match, update registered matches of user
+  # create a separate table of users who are registered for that match
+
+  if (matchuid != None and useruid != None):
+    ref = db.collection("pubg").document(matchuid)
 
     # retrieve the total registered and update the value to one [USE TRANSACTION!]
     transaction = db.transaction()
