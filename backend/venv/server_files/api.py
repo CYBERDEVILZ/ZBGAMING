@@ -75,7 +75,6 @@ def register():
   useruid = request.args.get("useruid")
   
   # create a separate table of users who are registered for that match
-  # register only user is VERIFIED
 
   if (matchuid != None and useruid != None):
 
@@ -94,7 +93,7 @@ def register():
     if matchuid in user:
       return "Failed: Already registered"
 
-    # if all condition passed, then check for valid matchuid
+    # if all conditions passed, then check for valid matchuid
     ref = db.collection("pubg").document(matchuid)
     ref_obj = ref.get().to_dict()
     try:
