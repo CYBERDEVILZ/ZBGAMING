@@ -31,13 +31,13 @@ def userSignup():
   email = request.args.get('email')
   isVerified = False
   imageurl = None
-
-  if (username != (None or "") and email != (None or "")):
-    if validateEmail(email):
-      docs = db.collection("userinfo").where("email", "==", email).get()
-      if len(docs) == 0:
-        db.collection("userinfo").document().set({"username": username, "email": email, "imageurl": imageurl, "isVerified": isVerified})
-        return "Success"
+  if (username != None and email != None):
+    if (username != "" and email != ""):
+      if validateEmail(email):
+        docs = db.collection("userinfo").where("email", "==", email).get()
+        if len(docs) == 0:
+          db.collection("userinfo").document().set({"username": username, "email": email, "imageurl": imageurl, "isVerified": isVerified})
+          return "Success"
 
   return "Failed"
 
@@ -47,18 +47,24 @@ def userSignup():
 def organizerSignup():
   username = request.args.get('username')
   email = request.args.get('email')
+  print(email)
   imageurl = None
   special = False
   amountGiven = 0
   rating = 0.0
 
-  if (username != (None or "") and email != (None or "")):
-    if validateEmail(email):
-      docs = db.collection("organizer").where("email", "==", email).get()
-      if len(docs) == 0:
-        db.collection("organizer").document().set({"username": username, "email": email, "imageurl": imageurl, "special": special, "amountGiven":amountGiven, "rating": rating})
-        return "Success"
-  
+  # check for validations...
+
+  if (username != None and email != None):
+    if (username != "" and email != ""):
+      if validateEmail(email):
+        usercheck = db.collection("userinfo").where("email", "==", email).get()
+        if len(usercheck) == 0:
+          docs = db.collection("organizer").where("email", "==", email).get()
+          if len(docs) == 0:
+            db.collection("organizer").document().set({"username": username, "email": email, "imageurl": imageurl, "special": special, "amountGiven":amountGiven, "rating": rating})
+            return "Success"
+    
   return "Failed"
 
 
