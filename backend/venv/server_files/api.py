@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 # FUNCTIONS
 def validateEmail(email):
-  result = re.match("^[A-Za-z0-9\.]+@[A-Za-z0-9\.]+\.[A-Za-z0-9]+$", email)
+  result = re.match("[^@]+@[^@]+\.[A-Za-z0-9]+$", email)
   if result:
     return True
   else:
@@ -29,13 +29,14 @@ def home():
 def userSignup():
   username = request.args.get('username')
   email = request.args.get('email')
+  isVerified = False
   imageurl = None
 
   if (username != (None or "") and email != (None or "")):
     if validateEmail(email):
       docs = db.collection("userinfo").where("email", "==", email).get()
       if len(docs) == 0:
-        db.collection("userinfo").document().set({"username": username, "email": email, "imageurl": imageurl})
+        db.collection("userinfo").document().set({"username": username, "email": email, "imageurl": imageurl, "isVerified": isVerified})
         return "Success"
 
   return "Failed"
@@ -68,9 +69,18 @@ def register():
   useruid = request.args.get("useruid")
   
   # create a separate table of users who are registered for that match
-  # register only if both email and user is verified
+  # register only user is VERIFIED
 
   if (matchuid != None and useruid != None):
+
+    # checking whether user is verified (KYC)
+    user = db.collection("userinfo").document(useruid).get()
+    userdata = user.to_dict()
+    if userdata == None:
+      return "Failed: No such user"
+    if userdata["isVerified"] == False:
+      return "Failed: User not verified"
+    
 
     # checking for already registered..
     user = db.collection("userinfo").document(useruid).collection("registered").get()
@@ -78,7 +88,7 @@ def register():
     if matchuid in user:
       return "Failed: Already registered"
 
-
+    # if all condition passed, then check for valid matchuid
     ref = db.collection("pubg").document(matchuid)
     ref_obj = ref.get().to_dict()
     try:
