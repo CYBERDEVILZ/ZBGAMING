@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -104,7 +105,7 @@ def register():
     except:
       return "Failed: No such match"
 
-    # retrieve the total registered and update increase it by one [USE TRANSACTION!]
+    # retrieve the total registered and increase it by one [USE TRANSACTION!]
     transaction = db.transaction()
     @firestore.transactional
     def updateRegisteredTeams(transaction, ref):
@@ -129,6 +130,54 @@ def register():
       return "Failed"
 
   return "Failed"
+
+# CREATE MATCHES
+@app.route("/api/create")
+
+# date, fee, match, name, skill, solo, reg=0, special, uid
+def create():
+  date = request.args.get("date")
+  fee = request.args.get("fee", type=int)
+  match = request.args.get("match", type=bool)
+  name = request.args.get("name", type=str)
+  skill = request.args.get("skill", type=int)
+  solo = request.args.get("solo", type=int)
+  uid = request.args.get("uid", type=str)
+
+  # validations.....
+  # check if date is valid and atleast two days away from today
+  # check if the organizer is special and add accordingly
+  # check if the uid is valid
+  # check if the organizer is eligible to organize high end matches
+  # 
+
+
+  # converting date from string to datetime object
+  try:
+    date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S.%f')
+    print(date)
+    print(datetime.now())
+
+    # check if date is earlier than today
+    if date < datetime.now():
+      return "Failed"
+    if date.day < (datetime.now().day + 2):
+      return "Failed"
+  except:
+    return "Failed"
+
+  db.collection("pubg").document().set({
+    "date": date,
+    "fee": fee,
+    "match": match,
+    "name": name,
+    "skill": skill,
+    "solo": solo,
+    "uid": uid
+  })
+
+  return "Hi :)"
+
 
 
 app.run(debug=True)
