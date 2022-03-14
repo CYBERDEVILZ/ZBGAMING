@@ -145,26 +145,38 @@ def create():
   uid = request.args.get("uid", type=str)
 
   # validations.....
-  # check if date is valid and atleast two days away from today
   # check if the organizer is special and add accordingly
   # check if the uid is valid
   # check if the organizer is eligible to organize high end matches
   # 
 
-
   # converting date from string to datetime object
   try:
     date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S.%f')
     print(date)
+    date.replace(hour=0, minute=0, second=0, microsecond=0)
     print(datetime.now())
 
-    # check if date is earlier than today
+    # checking if date is valid
     if date < datetime.now():
       return "Failed"
+    
+    # checking if date is atleast two days from now
     if date.day < (datetime.now().day + 2):
       return "Failed"
   except:
     return "Failed"
+
+  # checking if organizer uid is valid
+  organizerData = db.collection("organizer").document(uid).get()
+  organizerData = organizerData.to_dict()
+  if organizerData == None:
+    return "Failed"
+  
+  # gathering special status
+  special = organizerData["special"]
+
+    
 
   db.collection("pubg").document().set({
     "date": date,
@@ -173,7 +185,9 @@ def create():
     "name": name,
     "skill": skill,
     "solo": solo,
-    "uid": uid
+    "uid": uid,
+    "special": special,
+    "reg": 0
   })
 
   return "Hi :)"
