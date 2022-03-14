@@ -32,12 +32,20 @@ def userSignup():
   email = request.args.get('email')
   isVerified = False
   imageurl = None
+
   if (username != None and email != None):
     if (username != "" and email != ""):
       if validateEmail(email):
         docs = db.collection("userinfo").where("email", "==", email).get()
         if len(docs) == 0:
-          db.collection("userinfo").document().set({"username": username, "email": email, "imageurl": imageurl, "isVerified": isVerified})
+          db.collection("userinfo").document().set({
+            "username": username, 
+            "email": email, 
+            "imageurl": imageurl, 
+            "level": 0,
+            "isVerified": isVerified,
+            })
+
           return "Success"
 
   return "Failed"
