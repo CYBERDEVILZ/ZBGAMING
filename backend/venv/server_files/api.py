@@ -145,18 +145,35 @@ def register():
 # date, fee, match, name, skill, solo, reg=0, special, uid
 def create():
   date = request.args.get("date")
-  fee = request.args.get("fee", type=int)
-  match = request.args.get("match", type=bool)
-  name = request.args.get("name", type=str)
-  skill = request.args.get("skill", type=int)
-  solo = request.args.get("solo", type=int)
-  uid = request.args.get("uid", type=str)
-
-  # validations.....
-  # check if the organizer is special and add accordingly
-  # check if the uid is valid
-  # check if the organizer is eligible to organize high end matches
-  # 
+  uid = request.args.get("uid")
+  fee = request.args.get("fee")
+  match = request.args.get("match")
+  name = request.args.get("name")
+  skill = request.args.get("skill")
+  solo = request.args.get("solo")
+  
+  # validating data types
+  try:
+    fee = int(fee)
+    skill = int(skill)
+  except:
+    return "Failed" 
+  if fee > 4 or fee < 0:
+    return "Failed"
+  if skill > 2 or skill < 0:
+    return "Failed"
+  if match.lower() == "true":
+    match = True
+  elif match.lower() == "false":
+    match = False
+  else:
+    return "Failed"
+  if solo.lower() == "true":
+    solo = True
+  elif solo.lower() == "false":
+    solo = False
+  else:
+    return "Failed"
 
   # converting date from string to datetime object
   try:
@@ -184,7 +201,10 @@ def create():
   # gathering special status
   special = organizerData["special"]
 
-    
+  # checking match creation eligibility
+  if not special:
+    if fee == 3 or fee == 4:
+      return "Failed"    
 
   db.collection("pubg").document().set({
     "date": date,
