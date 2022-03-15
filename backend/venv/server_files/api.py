@@ -82,8 +82,7 @@ def organizerSignup():
 def register():
   matchuid = request.args.get("matchuid") 
   useruid = request.args.get("useruid")
-  
-  # create a separate table of users who are registered for that match
+
 
   if (matchuid != None and useruid != None):
 
@@ -220,6 +219,17 @@ def create():
 
   return "Hi :)"
 
+
+# API TO CLEAN DATABASE
+@app.route("/api/clean")
+def clean():
+  game = request.args.get("game")
+  date = datetime.now()
+  docs = db.collection(game).where("date", "<", date).get()
+  for doc in docs:
+    db.collection(game).document(doc.id).delete()
+  
+  return "Hi :)"
 
 
 app.run(debug=True)
