@@ -20,7 +20,7 @@ def validateEmail(email):
   else:
     return False
 
-
+# HOME
 @app.route("/")
 def home():
   return "I am UP :)"
@@ -220,16 +220,28 @@ def create():
   return "Hi :)"
 
 
+
 # API TO CLEAN DATABASE
 @app.route("/api/clean")
 def clean():
   game = request.args.get("game")
-  date = datetime.now()
-  docs = db.collection(game).where("date", "<", date).get()
-  for doc in docs:
-    db.collection(game).document(doc.id).delete()
+  uid = request.args.get("uid") # uid of user (to delete registered game)
+
+  if game != None and uid != None:
+    if game != "" and uid != "":
+      date = datetime.now()
+
+      # get all the outdated matches
+      docs = db.collection(game).where("date", "<", date).get()
+
+      # delete all the outdated matches
+      for doc in docs:
+        db.collection(game).document(doc.id).delete()
+        db.collection("userinfo").document(uid).collection("registered").document(doc.id).delete()
+    
+      return "Success"
   
-  return "Hi :)"
+  return "Failed"
 
 
 app.run(debug=True)
