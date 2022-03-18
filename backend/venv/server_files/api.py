@@ -2,10 +2,6 @@
 OPTIMIZATIONS
 -------------
 
-1.  Create a general api for registration of all matches. Take match uid in get parameter.
-    Also send TotalReg for each matchtype from backend.
-    While registering a user for a match, check the totalReg via the backend and then update the user.
-
 
 """
 
@@ -103,76 +99,84 @@ def organizerSignup():
 
 
 # REGISTER PUBG
-@app.route("/api/register/pubg")
+@app.route("/api/register")
 def register():
+    matchType = request.args.get("matchType")
     matchuid = request.args.get("matchuid")
     useruid = request.args.get("useruid")
 
-    if matchuid != None and useruid != None:
+    if matchuid != None and useruid != None and matchType != None:
+        if matchType.lower() == "pubg":
 
-        # checking whether user is verified (KYC)
-        user = db.collection("userinfo").document(useruid).get()
-        userdata = user.to_dict()
-        if userdata == None:
-            return "Failed: No such user"
-        if userdata["isVerified"] == False:
-            return "Failed: User not verified"
+            # checking whether user is verified (KYC)
+            user = db.collection("userinfo").document(useruid).get()
+            userdata = user.to_dict()
+            if userdata == None:
+                return "Failed: No such user"
+            if userdata["isVerified"] == False:
+                return "Failed: User not verified"
 
-        # checking if matchuid exists
-        matchData = db.collection("pubg").document(matchuid).get()
-        matchData = matchData.to_dict()
-        if matchData == None:
-            return "Failed: Match Doesn't Exist"
+            # checking if matchuid exists
+            matchData = db.collection(matchType.lower()).document(matchuid).get()
+            matchData = matchData.to_dict()
+            if matchData == None:
+                return "Failed: Match Doesn't Exist"
 
-        # checking for already registered..
-        user = (
-            db.collection("userinfo").document(useruid).collection("registered").get()
-        )
-        user = [user.id for user in user]
-        if matchuid in user:
-            return "Failed: Already registered"
-
-        # if all conditions passed, then check for valid matchuid
-        ref = db.collection("pubg").document(matchuid)
-        ref_obj = ref.get().to_dict()
-        try:
-            date = ref_obj["date"]
-            matchType = "pubg"
-            uid = matchuid
-            name = ref_obj["name"]
-        except:
-            return "Failed: No such match"
-
-        # retrieve the total registered and increase it by one [USE TRANSACTION!]
-        transaction = db.transaction()
-
-        @firestore.transactional
-        def updateRegisteredTeams(transaction, ref):
-            snapshot = ref.get(transaction=transaction)
-            reg = snapshot.get("reg")
-            total = snapshot.get("total")
-            try:
-                if reg < total:
-                    transaction.update(ref, {"reg": reg + 1})
-                    return True
-                else:
-                    return False
-            except:
-                return False
-
-        result = updateRegisteredTeams(transaction, ref)
-
-        if result:
-            db.collection("userinfo").document(useruid).collection(
-                "registered"
-            ).document(matchuid).set(
-                {"date": date, "matchType": matchType, "name": name, "uid": uid}
+            # checking for already registered..
+            user = (
+                db.collection("userinfo").document(useruid).collection("registered").get()
             )
-            db.collection("userinfo").document(useruid).collection("history").document(
-                matchuid
-            ).set({"date": date, "matchType": matchType, "name": name, "uid": uid})
-            return "Success"
-        else:
+            user = [user.id for user in user]
+            if matchuid in user:
+                return "Failed: Already registered"
+
+            # if all conditions passed, then check for valid matchuid
+            ref = db.collection("pubg").document(matchuid)
+            ref_obj = ref.get().to_dict()
+            try:
+                date = ref_obj["date"]
+                matchType = "pubg"
+                uid = matchuid
+                name = ref_obj["name"]
+            except:
+                return "Failed: No such match"
+
+            # retrieve the total registered and increase it by one [USE TRANSACTION!]
+            transaction = db.transaction()
+
+            @firestore.transactional
+            def updateRegisteredTeams(transaction, ref):
+                snapshot = ref.get(transaction=transaction)
+                reg = snapshot.get("reg")
+                total = snapshot.get("total")
+                try:
+                    if reg < total:
+                        transaction.update(ref, {"reg": reg + 1})
+                        return True
+                    else:
+                        return False
+                except:
+                    return False
+
+            result = updateRegisteredTeams(transaction, ref)
+
+            if result:
+                
+                # add to registered
+                db.collection("userinfo").document(useruid).collection(
+                    "registered"
+                ).document(matchuid).set(
+                    {"date": date, "matchType": matchType, "name": name, "uid": uid}
+                )
+
+                # add to history
+                db.collection("userinfo").document(useruid).collection("history").document(
+                    matchuid
+                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid})
+                return "Success"
+            else:
+                return "Failed"
+        else: 
             return "Failed"
 
     return "Failed"
