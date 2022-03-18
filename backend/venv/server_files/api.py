@@ -1,3 +1,15 @@
+"""
+OPTIMIZATIONS
+-------------
+
+1.  Create a general api for registration of all matches. Take match uid in get parameter.
+    Also send TotalReg for each matchtype from backend.
+    While registering a user for a match, check the totalReg via the backend and then update the user.
+
+
+"""
+
+
 from datetime import datetime
 from flask import Flask
 from flask import request
@@ -106,6 +118,12 @@ def register():
         if userdata["isVerified"] == False:
             return "Failed: User not verified"
 
+        # checking if matchuid exists
+        matchData = db.collection("pubg").document(matchuid).get()
+        matchData = matchData.to_dict()
+        if matchData == None:
+            return "Failed: Match Doesn't Exist"
+
         # checking for already registered..
         user = (
             db.collection("userinfo").document(useruid).collection("registered").get()
@@ -132,8 +150,9 @@ def register():
         def updateRegisteredTeams(transaction, ref):
             snapshot = ref.get(transaction=transaction)
             reg = snapshot.get("reg")
+            total = snapshot.get("total")
             try:
-                if reg < 100:
+                if reg < total:
                     transaction.update(ref, {"reg": reg + 1})
                     return True
                 else:
@@ -168,99 +187,106 @@ def create():
     name = request.args.get("name")
     skill = request.args.get("skill")
     solo = request.args.get("solo")
+    matchType = request.args.get("matchType")
+    total = 0
 
-    # validating data types
-    try:
-        fee = int(fee)
-        skill = int(skill)
-    except:
-        return "Failed"
-    if fee > 4 or fee < 0:
-        return "Failed"
-    if skill > 2 or skill < 0:
-        return "Failed"
-    if match.lower() == "true":
-        match = True
-    elif match.lower() == "false":
-        match = False
+    if matchType.lower() == "pubg":
+        total = 100
+
+        # validating data types
+        try:
+            fee = int(fee)
+            skill = int(skill)
+        except:
+            return "Failed"
+        if fee > 4 or fee < 0:
+            return "Failed"
+        if skill > 2 or skill < 0:
+            return "Failed"
+        if match.lower() == "true":
+            match = True
+        elif match.lower() == "false":
+            match = False
+        else:
+            return "Failed"
+        if solo.lower() == "true":
+            solo = True
+        elif solo.lower() == "false":
+            solo = False
+        else:
+            return "Failed"
+
+        # converting date from string to datetime object
+        try:
+            date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S.%f")
+            date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+            # checking if date is valid
+            if date < datetime.now():
+                return "Failed"
+
+            # checking if date is atleast two days from now
+            if date.day < (datetime.now().day + 2):
+                return "Failed"
+        except:
+            return "Failed"
+
+        # checking if organizer uid is valid
+        organizerData = db.collection("organizer").document(uid).get()
+        organizerData = organizerData.to_dict()
+        if organizerData == None:
+            return "Failed"
+
+        # gathering special status
+        special = organizerData["special"]
+
+        # checking match creation eligibility
+        if not special:
+            if fee == 3 or fee == 4:
+                return "Failed"
+
+        db.collection(matchType.lower()).document().set(
+            {
+                "date": date,
+                "fee": fee,
+                "match": match,
+                "name": name,
+                "skill": skill,
+                "solo": solo,
+                "uid": uid,
+                "special": special,
+                "reg": 0,
+                "total": total
+            }
+        )
+
+        return "Success"
     else:
         return "Failed"
-    if solo.lower() == "true":
-        solo = True
-    elif solo.lower() == "false":
-        solo = False
-    else:
-        return "Failed"
-
-    # converting date from string to datetime object
-    try:
-        date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S.%f")
-        print(date)
-        date.replace(hour=0, minute=0, second=0, microsecond=0)
-        print(datetime.now())
-
-        # checking if date is valid
-        if date < datetime.now():
-            return "Failed"
-
-        # checking if date is atleast two days from now
-        if date.day < (datetime.now().day + 2):
-            return "Failed"
-    except:
-        return "Failed"
-
-    # checking if organizer uid is valid
-    organizerData = db.collection("organizer").document(uid).get()
-    organizerData = organizerData.to_dict()
-    if organizerData == None:
-        return "Failed"
-
-    # gathering special status
-    special = organizerData["special"]
-
-    # checking match creation eligibility
-    if not special:
-        if fee == 3 or fee == 4:
-            return "Failed"
-
-    db.collection("pubg").document().set(
-        {
-            "date": date,
-            "fee": fee,
-            "match": match,
-            "name": name,
-            "skill": skill,
-            "solo": solo,
-            "uid": uid,
-            "special": special,
-            "reg": 0,
-        }
-    )
-
-    return "Hi :)"
 
 
 # API TO CLEAN DATABASE
 @app.route("/api/clean")
 def clean():
-    game = request.args.get("game")
+    matchType = request.args.get("matchType")
     uid = request.args.get("uid")  # uid of user (to delete registered game)
 
-    if game != None and uid != None:
-        if game != "" and uid != "":
+    if matchType != None and uid != None:
+        if matchType != "" and uid != "":
             date = datetime.now()
 
             # get all the outdated matches
-            docs = db.collection(game).where("date", "<", date).get()
+            docs = db.collection(matchType).where("date", "<", date).get()
 
             # delete all the outdated matches
             for doc in docs:
-                db.collection(game).document(doc.id).delete()
+                db.collection(matchType).document(doc.id).delete()
                 db.collection("userinfo").document(uid).collection(
                     "registered"
                 ).document(doc.id).delete()
 
             return "Success"
+
 
     return "Failed"
 
