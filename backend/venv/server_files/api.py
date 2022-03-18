@@ -168,6 +168,9 @@ def register():
             ).document(matchuid).set(
                 {"date": date, "matchType": matchType, "name": name, "uid": uid}
             )
+            db.collection("userinfo").document(useruid).collection("history").document(
+                matchuid
+            ).set({"date": date, "matchType": matchType, "name": name, "uid": uid})
             return "Success"
         else:
             return "Failed"
@@ -256,7 +259,7 @@ def create():
                 "uid": uid,
                 "special": special,
                 "reg": 0,
-                "total": total
+                "total": total,
             }
         )
 
@@ -286,7 +289,6 @@ def clean():
                 ).document(doc.id).delete()
 
             return "Success"
-
 
     return "Failed"
 
