@@ -1,6 +1,10 @@
 """
-OPTIMIZATIONS
--------------
+OPTIMIZATIONS / IDEAS
+---------------------
+
+1. Implement validators login and signup.
+2. Validators have to validate users and organizers based on kyc, youtube link
+3. Validators validate a match conducted by organizer, detect fraud etc
 
 
 """
@@ -292,6 +296,32 @@ def clean():
                     "registered"
                 ).document(doc.id).delete()
 
+            return "Success"
+
+    return "Failed"
+
+# VERIFY USER
+@app.route("/api/verify/user")
+def verifyUser():
+    verifierID = request.args.get("vid")
+    userID = request.args.get("uid")
+
+    if verifierID != None and userID != None:
+        if verifierID != "" and userID != "":
+            
+            # verifying verifier ID
+            verifierData = db.collection("verifier").document(verifierID).get().to_dict()
+            if verifierData == None:
+                return "Failed"
+            
+            # verifying user ID
+            userdata = db.collection("userinfo").document(userID).get().to_dict()
+            if userID == None:
+                return "Failed"
+            
+            # If all checks out to be good
+
+            db.collection("userinfo").document(userID).update({"isVerified": True})
             return "Success"
 
     return "Failed"
