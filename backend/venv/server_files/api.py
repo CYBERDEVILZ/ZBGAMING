@@ -11,6 +11,7 @@ OPTIMIZATIONS / IDEAS
 
 
 from datetime import datetime
+from email.policy import default
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -320,9 +321,11 @@ def verifyUser():
                 return "Failed"
             
             # If all checks out to be good
-
-            db.collection("userinfo").document(userID).update({"isVerified": True})
-            return "Success"
+            try:
+                db.collection("userinfo").document(userID).update({"isVerified": True})
+                return "Success"
+            except:
+                return "Failed"
 
     return "Failed"
 
