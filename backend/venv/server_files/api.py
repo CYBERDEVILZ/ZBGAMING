@@ -329,5 +329,28 @@ def verifyUser():
 
     return "Failed"
 
+# VALIDATOR SIGNUP
+@app.route("/api/verifier/thiswillmakefindingthisapidifficult/signup")
+def verifierSignup():
+    username = request.args.get("username")
+    email = request.args.get("email")
+
+    if username != None and email != None:
+        if username != "" and email != "":
+            if validateEmail(email):
+                docs = db.collection("verifier").where("email", "==", email).get()
+                if len(docs) == 0:
+                    db.collection("verifier").document().set(
+                        {
+                            "username": username,
+                            "email": email,
+                        }
+                    )
+
+                    return "Success"
+
+    return "Failed"
+
+
 
 app.run(debug=True)
