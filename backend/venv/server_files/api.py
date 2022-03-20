@@ -53,17 +53,19 @@ def userSignup():
             if validateEmail(email):
                 docs = db.collection("userinfo").where("email", "==", email).get()
                 if len(docs) == 0:
-                    db.collection("userinfo").document().set(
-                        {
-                            "username": username,
-                            "email": email,
-                            "imageurl": imageurl,
-                            "level": 0,
-                            "isVerified": isVerified,
-                        }
-                    )
+                    docs = db.collection("organizer").where("email", "==", email).get()
+                    if len(docs) == 0:
+                        db.collection("userinfo").document().set(
+                            {
+                                "username": username,
+                                "email": email,
+                                "imageurl": imageurl,
+                                "level": 0,
+                                "isVerified": isVerified,
+                            }
+                        )
 
-                    return "Success"
+                        return "Success"
 
     return "Failed"
 
