@@ -353,6 +353,10 @@ def verifierSignup():
 
     return "Failed"
 
+# IDEAS TO PROCEED
+# CALCULATE THE POINTS OF USERS
+# CALCULATE THE ORGANIZER RATING
+
 
 
 app.run(debug=True)
