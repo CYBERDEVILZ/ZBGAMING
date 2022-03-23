@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ValidatorSignUp extends StatelessWidget {
   ValidatorSignUp({Key? key}) : super(key: key);
@@ -88,9 +89,11 @@ class ValidatorSignUp extends StatelessWidget {
             confirmPasswordField,
             const SizedBox(height: 20),
             ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (formKey.currentState!.validate() == true) {
-                    print("hehe");
+                    Fluttertoast.showToast(msg: "Send the details to dediacted api");
+                    await Future.delayed(const Duration(seconds: 3));
+                    Fluttertoast.showToast(msg: "Send dummy success");
                   }
                 },
                 child: const Text("submit"))
