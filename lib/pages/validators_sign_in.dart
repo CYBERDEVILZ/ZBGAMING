@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
+import 'package:zbgaming/utils/apistring.dart';
 
 class ValidatorSignUp extends StatelessWidget {
   ValidatorSignUp({Key? key}) : super(key: key);
@@ -24,7 +26,7 @@ class ValidatorSignUp extends StatelessWidget {
           if (email.text.isEmpty) {
             return "Email Address cannot be empty";
           }
-          if (!RegExp("[^@]+@+[^@][.][^@]+").hasMatch(email.text)) {
+          if (!RegExp("[^@]+[@][^@]+[.][^@]+").hasMatch(email.text)) {
             return "Invalid Email Address";
           }
           return null;
@@ -45,6 +47,7 @@ class ValidatorSignUp extends StatelessWidget {
     final TextFormField passwordField = TextFormField(
         textInputAction: TextInputAction.next,
         keyboardType: TextInputType.visiblePassword,
+        obscureText: true,
         decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Password"),
         controller: password,
         validator: (value) {
@@ -60,6 +63,7 @@ class ValidatorSignUp extends StatelessWidget {
       textInputAction: TextInputAction.done,
       keyboardType: TextInputType.visiblePassword,
       controller: confirmPassword,
+      obscureText: true,
       decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Confirm Password"),
       validator: (value) {
         if (confirmPassword.text != password.text) {
@@ -88,18 +92,58 @@ class ValidatorSignUp extends StatelessWidget {
             const SizedBox(height: 20),
             confirmPasswordField,
             const SizedBox(height: 20),
-            ElevatedButton(
-                onPressed: () async {
-                  if (formKey.currentState!.validate() == true) {
-                    Fluttertoast.showToast(msg: "Send the details to dediacted api");
-                    await Future.delayed(const Duration(seconds: 3));
-                    Fluttertoast.showToast(msg: "Send dummy success");
-                  }
-                },
-                child: const Text("submit"))
+            ElevatedButtonForValidator(formKey: formKey, email: email.text, username: username.text)
           ]),
         ),
       ),
     ));
+  }
+}
+
+class ElevatedButtonForValidator extends StatefulWidget {
+  const ElevatedButtonForValidator({Key? key, required this.formKey, required this.email, required this.username})
+      : super(key: key);
+
+  final GlobalKey<FormState> formKey;
+  final String email;
+  final String username;
+
+  @override
+  State<ElevatedButtonForValidator> createState() => _ElevatedButtonForValidatorState();
+}
+
+class _ElevatedButtonForValidatorState extends State<ElevatedButtonForValidator> {
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+        onPressed: () async {
+          isLoading = true;
+          setState(() {});
+          if (widget.formKey.currentState!.validate() == true) {
+            await Fluttertoast.showToast(msg: "Waiting for response from API");
+            await get(Uri.parse(ApiEndpoints.baseUrl +
+                    ApiEndpoints.verifierSignup +
+                    "?" +
+                    "username=" +
+                    widget.username +
+                    "&email=" +
+                    widget.email))
+                .then((res) async {
+              if (res.statusCode == 200) {
+                var temp = res.body;
+                await Fluttertoast.showToast(msg: temp);
+              } else {
+                await Fluttertoast.showToast(msg: "Unable to retrieve data at the moment");
+              }
+            }).catchError((e) {
+              Fluttertoast.showToast(msg: "Failed to connect to host");
+            });
+          }
+          isLoading = false;
+          setState(() {});
+        },
+        child: isLoading ? const LinearProgressIndicator(color: Colors.white) : const Text("submit"));
   }
 }
