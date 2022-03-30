@@ -3,16 +3,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:zbgaming/utils/apistring.dart';
 
+// text editing controllers
+final TextEditingController email = TextEditingController();
+final TextEditingController username = TextEditingController();
+final TextEditingController password = TextEditingController();
+final TextEditingController confirmPassword = TextEditingController();
+final formKey = GlobalKey<FormState>();
+
 class ValidatorSignUp extends StatelessWidget {
-  ValidatorSignUp({Key? key}) : super(key: key);
-
-  final formKey = GlobalKey<FormState>();
-
-  // text editing controllers
-  final TextEditingController email = TextEditingController();
-  final TextEditingController username = TextEditingController();
-  final TextEditingController password = TextEditingController();
-  final TextEditingController confirmPassword = TextEditingController();
+  const ValidatorSignUp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +91,7 @@ class ValidatorSignUp extends StatelessWidget {
             const SizedBox(height: 20),
             confirmPasswordField,
             const SizedBox(height: 20),
-            ElevatedButtonForValidator(formKey: formKey, email: email.text, username: username.text)
+            const ElevatedButtonForValidator()
           ]),
         ),
       ),
@@ -101,12 +100,7 @@ class ValidatorSignUp extends StatelessWidget {
 }
 
 class ElevatedButtonForValidator extends StatefulWidget {
-  const ElevatedButtonForValidator({Key? key, required this.formKey, required this.email, required this.username})
-      : super(key: key);
-
-  final GlobalKey<FormState> formKey;
-  final String email;
-  final String username;
+  const ElevatedButtonForValidator({Key? key}) : super(key: key);
 
   @override
   State<ElevatedButtonForValidator> createState() => _ElevatedButtonForValidatorState();
@@ -121,15 +115,15 @@ class _ElevatedButtonForValidatorState extends State<ElevatedButtonForValidator>
         onPressed: () async {
           isLoading = true;
           setState(() {});
-          if (widget.formKey.currentState!.validate() == true) {
+          if (formKey.currentState!.validate() == true) {
             await Fluttertoast.showToast(msg: "Waiting for response from API");
             await get(Uri.parse(ApiEndpoints.baseUrl +
                     ApiEndpoints.verifierSignup +
                     "?" +
                     "username=" +
-                    widget.username +
+                    username.text +
                     "&email=" +
-                    widget.email))
+                    email.text))
                 .then((res) async {
               if (res.statusCode == 200) {
                 var temp = res.body;
