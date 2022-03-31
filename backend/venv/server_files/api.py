@@ -45,17 +45,18 @@ def home():
 def userSignup():
     username = request.args.get("username")
     email = request.args.get("email")
+    docId = request.args.get("docId")
     isVerified = False
     imageurl = None
 
-    if username != None and email != None:
-        if username != "" and email != "":
+    if username != None and email != None and docId != None:
+        if username != "" and email != "" and docId != "":
             if validateEmail(email):
                 docs = db.collection("userinfo").where("email", "==", email).get()
                 if len(docs) == 0:
                     docs = db.collection("organizer").where("email", "==", email).get()
                     if len(docs) == 0:
-                        db.collection("userinfo").document().set(
+                        db.collection("userinfo").document(docId).set(
                             {
                                 "username": username,
                                 "email": email,

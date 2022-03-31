@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
@@ -9,6 +9,8 @@ import 'package:provider/src/provider.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/home_page.dart';
 import 'package:zbgaming/utils/routes.dart';
+
+import '../utils/apistring.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -33,22 +35,31 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     // submit data to firestore
     Future<void> submitData() async {
-      await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).set({
-        "username": usernameController.text,
-        "email": emailController.text,
-        "imageurl": null,
-      }).then((value) async {
-        // add data to usermodel to reduce number of reads to firestore
-        context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-        context.read<UserModel>().setusername(usernameController.text);
-        context.read<UserModel>().setimageurl(null);
-        context.read<UserModel>().setemail(emailController.text);
+      await get(Uri.parse(ApiEndpoints.baseUrl +
+              ApiEndpoints.userSignup +
+              "?" +
+              "username=" +
+              usernameController.text +
+              "&email=" +
+              emailController.text +
+              "&docId=" +
+              FirebaseAuth.instance.currentUser!.uid))
+          .then((value) async {
+        if (value.statusCode == 200) {
+          Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue[700], textColor: Colors.white);
 
-        // show toast if successful
-        await Fluttertoast.showToast(
-            msg: "Registration successful!", backgroundColor: Colors.blue[700], textColor: Colors.white);
-        Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+          // add data to usermodel to reduce number of reads to firestore
+          context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+          context.read<UserModel>().setusername(usernameController.text);
+          context.read<UserModel>().setimageurl(null);
+          context.read<UserModel>().setemail(emailController.text);
+
+          Navigator.pushAndRemoveUntil(
+              context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+        } else {
+          Fluttertoast.showToast(
+              msg: "Something went wrong", backgroundColor: Colors.blue[700], textColor: Colors.white);
+        }
       }).catchError((e) {
         Fluttertoast.showToast(msg: "Error occurred");
       });
