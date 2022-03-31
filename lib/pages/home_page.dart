@@ -35,15 +35,20 @@ class _HomePageState extends State<HomePage> {
         if (mounted) setState(() {});
         if (mounted) context.read<UserModel>().signout();
       } else if (event?.uid != null) {
-        var data =
-            await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).get();
-        context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-        context.read<UserModel>().setusername(data["username"]);
-        context.read<UserModel>().setemail(data["email"]);
-        context.read<UserModel>().setimageurl(data["imageurl"]);
-        isLogged = true;
+        try {
+          var data =
+              await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser!.uid).get();
+          context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+          context.read<UserModel>().setusername(data["username"]);
+          context.read<UserModel>().setemail(data["email"]);
+          context.read<UserModel>().setimageurl(data["imageurl"]);
+          isLogged = true;
 
-        if (mounted) setState(() {});
+          if (mounted) setState(() {});
+        } catch (e) {
+          isLogged = false;
+          if (mounted) setState(() {});
+        }
       }
     });
   }
