@@ -11,6 +11,7 @@
 .svn/
 *.env
 **/lib/utils/apistring.dart
+**/lib/utils/portforwarding.py
 
 # IntelliJ related
 *.iml
