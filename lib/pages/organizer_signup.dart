@@ -1,15 +1,17 @@
 // THIS IS FOR TESTING PURPOSE ONLY! DONT ADD IT TO PRODUCTION ENVIRONMENT
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
 
 import 'package:zbgaming/model/organizermodel.dart';
 import 'package:zbgaming/pages/organizer.dart';
+
+import '../utils/apistring.dart';
 
 class OrganizerSignUp extends StatefulWidget {
   const OrganizerSignUp({Key? key}) : super(key: key);
@@ -36,21 +38,29 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
   Widget build(BuildContext context) {
     // submit data to firestore
     Future<void> submitData() async {
-      await FirebaseFirestore.instance.collection("organizer").doc(FirebaseAuth.instance.currentUser!.uid).set({
-        "username": usernameController.text,
-        "email": emailController.text,
-        "imageurl": null,
-        "special": false, // UTTER NONSENSE HERE! USE BACKEND AUTHORIZATION
-      }).then((value) async {
-        // add data to usermodel to reduce number of reads to firestore
-        context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-        context.read<OrganizerModel>().setusername(usernameController.text);
-        context.read<OrganizerModel>().setimageurl(null);
-        context.read<OrganizerModel>().setemail(emailController.text);
+      await get(Uri.parse(ApiEndpoints.baseUrl +
+              ApiEndpoints.organizerSignup +
+              "?" +
+              "username=" +
+              usernameController.text +
+              "&email=" +
+              emailController.text +
+              "&docId=" +
+              FirebaseAuth.instance.currentUser!.uid))
+          .then((value) async {
+        if (value.statusCode == 200) {
+          Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue[700], textColor: Colors.white);
 
-        // show toast if successful
-        await Fluttertoast.showToast(
-            msg: "Registration successful!", backgroundColor: Colors.blue[700], textColor: Colors.white);
+          // add data to usermodel to reduce number of reads to firestore
+          context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+          context.read<OrganizerModel>().setusername(usernameController.text);
+          context.read<OrganizerModel>().setimageurl(null);
+          context.read<OrganizerModel>().setemail(emailController.text);
+        } else {
+          Fluttertoast.showToast(msg: "Server error");
+        }
+      }).catchError((e) {
+        Fluttertoast.showToast(msg: "Something went wrong");
       });
     }
 

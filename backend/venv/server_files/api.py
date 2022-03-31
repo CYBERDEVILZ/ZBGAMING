@@ -76,6 +76,7 @@ def userSignup():
 def organizerSignup():
     username = request.args.get("username")
     email = request.args.get("email")
+    docId = request.args.get("docId")
     print(email)
     imageurl = None
     special = False
@@ -84,14 +85,14 @@ def organizerSignup():
 
     # check for validations...
 
-    if username != None and email != None:
-        if username != "" and email != "":
+    if username != None and email != None and docId != None:
+        if username != "" and email != "" and docId != "":
             if validateEmail(email):
                 usercheck = db.collection("userinfo").where("email", "==", email).get()
                 if len(usercheck) == 0:
                     docs = db.collection("organizer").where("email", "==", email).get()
                     if len(docs) == 0:
-                        db.collection("organizer").document().set(
+                        db.collection("organizer").document(docId).set(
                             {
                                 "username": username,
                                 "email": email,
