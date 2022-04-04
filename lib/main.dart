@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      home: OrganizerSignUp(),
       // home: const OrganizerLogin(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",

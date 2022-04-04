@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
+import 'package:zbgaming/utils/apistring.dart';
 
 class CreateMatch extends StatefulWidget {
   const CreateMatch({Key? key, required this.matchType, required this.eligible}) : super(key: key);
@@ -58,24 +60,18 @@ class _CreateMatchState extends State<CreateMatch> {
                           : -1;
       DateTime datepicked = context.read<DetailProvider>().date!;
 
-      // send data to cloud firestore
-      await FirebaseFirestore.instance
-          .collection(matchType)
-          .doc()
-          .set({
-            "special": false,
-            "name": organizerName,
-            "solo": solo,
-            "match": match,
-            "skill": skill,
-            "fee": fee,
-            "reg": 0,
-            "totalTeams": 100, // change this with matches
-            "date": datepicked,
-            "uid": FirebaseAuth.instance.currentUser!.uid
-          })
-          .then((value) => Fluttertoast.showToast(msg: "Registration Successfull!"))
-          .catchError((onError) => Fluttertoast.showToast(msg: "Something went wrong!"));
+      await get(Uri.parse(ApiEndpoints.baseUrl +
+              ApiEndpoints.createMatch +
+              "?date=$datepicked&uid=${FirebaseAuth.instance.currentUser!.uid}&fee=$fee&match=$match&name=$organizerName&skill=$skill&solo=$solo&matchType=$matchType"))
+          .then((value) {
+        if (value.statusCode == 200) {
+          Fluttertoast.showToast(msg: value.body);
+        } else {
+          Fluttertoast.showToast(msg: "Something went wrong");
+        }
+      }).catchError((onError) {
+        Fluttertoast.showToast(msg: "Something went wrong");
+      });
     }
     isLoading = false;
     setState(() {});
@@ -200,23 +196,20 @@ class PickDate extends StatelessWidget {
   Widget build(BuildContext context) {
     final DateTime selectedDate = DateTime.now();
 
-    String currentYear = selectedDate.toString().split("-")[0];
-    String currentMonth = selectedDate.toString().split("-")[1];
-    String currentDay = selectedDate.toString().split("-")[2].split(" ")[0];
-    String matchStartDay = (int.parse(currentDay) + 2).toString();
-    DateTime matchTime = DateTime.parse(currentYear + currentMonth + matchStartDay);
-
     // select date function
     void selectDate() async {
       DateTime? pickedDate = await showDatePicker(
-          context: context, initialDate: matchTime, firstDate: matchTime, lastDate: DateTime(2100));
+          context: context,
+          initialDate: DateTime.now().add(Duration(days: 2)),
+          firstDate: DateTime.now().add(const Duration(days: 2)),
+          lastDate: DateTime(2100));
       context.read<DetailProvider>().setDate(pickedDate);
     }
 
     return Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
       Expanded(
         child: InputDatePickerFormField(
-          firstDate: matchTime,
+          firstDate: DateTime.now().add(const Duration(days: 2)),
           lastDate: DateTime(2100),
           fieldLabelText: "Enter Date or Pick from Calendar",
           errorFormatText: "Invalid Date Format (mm/dd/yyyy)",
