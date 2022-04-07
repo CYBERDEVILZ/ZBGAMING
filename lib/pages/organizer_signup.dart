@@ -64,8 +64,9 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
           Fluttertoast.showToast(msg: "Server error");
           await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
         }
-      }).catchError((e) {
+      }).catchError((e) async {
         Fluttertoast.showToast(msg: "Something went wrong");
+        await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
       });
     }
 

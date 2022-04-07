@@ -47,21 +47,23 @@ class _SignUpState extends State<SignUp> {
           .then((value) async {
         if (value.statusCode == 200) {
           Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue[700], textColor: Colors.white);
-
-          // add data to usermodel to reduce number of reads to firestore
-          context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-          context.read<UserModel>().setusername(usernameController.text);
-          context.read<UserModel>().setimageurl(null);
-          context.read<UserModel>().setemail(emailController.text);
-
-          Navigator.pushAndRemoveUntil(
-              context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+          if (value.body == "Success") {
+            // add data to usermodel to reduce number of reads to firestore
+            context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+            context.read<UserModel>().setusername(usernameController.text);
+            context.read<UserModel>().setimageurl(null);
+            context.read<UserModel>().setemail(emailController.text);
+            Navigator.pushAndRemoveUntil(
+                context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+          }
         } else {
           Fluttertoast.showToast(
               msg: "Something went wrong", backgroundColor: Colors.blue[700], textColor: Colors.white);
+          await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
         }
-      }).catchError((e) {
+      }).catchError((e) async {
         Fluttertoast.showToast(msg: "Error occurred");
+        await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
       });
     }
 
