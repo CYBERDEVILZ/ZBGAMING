@@ -51,13 +51,18 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
         if (value.statusCode == 200) {
           Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue[700], textColor: Colors.white);
 
-          // add data to usermodel to reduce number of reads to firestore
-          context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-          context.read<OrganizerModel>().setusername(usernameController.text);
-          context.read<OrganizerModel>().setimageurl(null);
-          context.read<OrganizerModel>().setemail(emailController.text);
+          if (value.body == "Success") {
+            // add data to usermodel to reduce number of reads to firestore
+            context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+            context.read<OrganizerModel>().setusername(usernameController.text);
+            context.read<OrganizerModel>().setimageurl(null);
+            context.read<OrganizerModel>().setemail(emailController.text);
+            Navigator.pushAndRemoveUntil(
+                context, MaterialPageRoute(builder: (context) => const Organizer()), (route) => false);
+          }
         } else {
           Fluttertoast.showToast(msg: "Server error");
+          await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
         }
       }).catchError((e) {
         Fluttertoast.showToast(msg: "Something went wrong");
@@ -73,8 +78,6 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
             .createUserWithEmailAndPassword(email: emailController.text, password: passwdController.text)
             .then((value) async {
           await submitData();
-          Navigator.pushAndRemoveUntil(
-              context, MaterialPageRoute(builder: (context) => const Organizer()), (route) => false);
         }).catchError((onError) {
           Fluttertoast.showToast(msg: "Something Went Wrong");
         });

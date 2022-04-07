@@ -11,6 +11,7 @@ import 'package:zbgaming/model/organizermodel.dart';
 import 'package:zbgaming/pages/add_matches.dart';
 import 'package:zbgaming/pages/organizer_account.dart';
 import 'package:zbgaming/pages/organizer_login.dart';
+import 'package:zbgaming/pages/organizer_signup.dart';
 
 class Organizer extends StatefulWidget {
   const Organizer({Key? key}) : super(key: key);
@@ -47,30 +48,36 @@ class _OrganizerState extends State<Organizer> {
     super.initState();
 
     // check for authentication
-    FirebaseAuth.instance.authStateChanges().listen((event) async {
-      if (event?.uid == null) {
-        if (mounted) {
-          Navigator.pushAndRemoveUntil(
-              context, MaterialPageRoute(builder: (context) => const OrganizerLogin()), (route) => false);
-        }
-      } else if (event?.uid != null) {
-        if (mounted) {
-          var data = await FirebaseFirestore.instance
-              .collection("organizer")
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .get();
-          context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-          context.read<OrganizerModel>().setusername(data["username"]);
-          context.read<OrganizerModel>().setemail(data["email"]);
-          context.read<OrganizerModel>().setimageurl(data["imageurl"]);
-          try {
-            context.read<OrganizerModel>().setbannerurl(data["bannerurl"]);
-          } catch (e) {
-            context.read<OrganizerModel>().setbannerurl(null);
+    if (mounted) {
+      FirebaseAuth.instance.authStateChanges().listen((event) async {
+        if (event?.uid == null) {
+          if (mounted) {
+            Navigator.pushAndRemoveUntil(
+                context, MaterialPageRoute(builder: (context) => const OrganizerLogin()), (route) => false);
+          }
+        } else if (event?.uid != null) {
+          if (Provider.of<OrganizerModel>(context, listen: false).uid == null) {
+            await Navigator.pushAndRemoveUntil(
+                context, MaterialPageRoute(builder: (context) => const OrganizerSignUp()), (route) => false);
+          }
+          if (Provider.of<OrganizerModel>(context, listen: false).uid != null) {
+            var data = await FirebaseFirestore.instance
+                .collection("organizer")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .get();
+            context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+            context.read<OrganizerModel>().setusername(data["username"]);
+            context.read<OrganizerModel>().setemail(data["email"]);
+            context.read<OrganizerModel>().setimageurl(data["imageurl"]);
+            try {
+              context.read<OrganizerModel>().setbannerurl(data["bannerurl"]);
+            } catch (e) {
+              context.read<OrganizerModel>().setbannerurl(null);
+            }
           }
         }
-      }
-    });
+      });
+    }
   }
 
   @override

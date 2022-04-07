@@ -122,7 +122,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                   padding: const EdgeInsets.only(top: 5),
                   child: Column(
                     children: [
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
                         SizedBox(
                           width: 100,
                           child: Column(
@@ -176,7 +176,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                 ? const [
                                     Icon(Icons.flash_off, size: 25, color: Colors.teal),
                                     SizedBox(width: 5),
-                                    Text("Rookie and above",
+                                    Text("Rookie +\n",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
                                   ]
@@ -184,7 +184,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                     ? const [
                                         Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                         SizedBox(width: 5),
-                                        Text("Veteran and above",
+                                        Text("Veteran +\n",
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
@@ -193,7 +193,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                         ? const [
                                             Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                             SizedBox(width: 5),
-                                            Text("Only Master Elites",
+                                            Text("Only Master\nElites",
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))

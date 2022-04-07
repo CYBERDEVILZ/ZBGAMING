@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:zbgaming/utils/routes.dart';
 
@@ -9,12 +11,14 @@ class HomePageList extends StatelessWidget {
     // array containing multiple tiles
     final List<Widget> list = [
       Tile(
+          disabled: true,
           img: "assets/images/csgo.jpg",
           title: "Counter Strike: Global Offensive",
           ontap: () {
             Navigator.pushNamed(context, AppRoutes.csgo);
           }),
       Tile(
+          disabled: true,
           img: "assets/images/freefire.jpg",
           title: "Garena Free Fire",
           ontap: () {
@@ -27,6 +31,7 @@ class HomePageList extends StatelessWidget {
             Navigator.pushNamed(context, AppRoutes.pubg);
           }),
       Tile(
+          disabled: true,
           img: "assets/images/valo.jpg",
           title: "Valorant",
           ontap: () {
@@ -44,18 +49,24 @@ class HomePageList extends StatelessWidget {
 
 // tile blueprint
 class Tile extends StatelessWidget {
-  const Tile({Key? key, required this.img, required this.title, required this.ontap}) : super(key: key);
+  const Tile({Key? key, required this.img, required this.title, required this.ontap, this.disabled = false})
+      : super(key: key);
   final String img;
   final String title;
   final VoidCallback ontap;
-  final Widget dropIcon = const Icon(Icons.keyboard_arrow_right);
+
+  final bool disabled;
 
   @override
   Widget build(BuildContext context) {
+    Widget dropIcon = Icon(
+      Icons.keyboard_arrow_right,
+      color: disabled ? Colors.black.withOpacity(0.3) : null,
+    );
     return Padding(
       padding: const EdgeInsets.only(top: 30, left: 5, right: 5),
       child: GestureDetector(
-        onTap: ontap,
+        onTap: disabled ? null : ontap,
         child: SizedBox(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,8 +85,11 @@ class Tile extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 15),
               ),
               Expanded(
-                  child: Text(title,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  child: Text(disabled ? "Coming Soon" : title,
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: disabled ? Colors.black.withOpacity(0.3) : null),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 3,
                       textAlign: TextAlign.start)),
