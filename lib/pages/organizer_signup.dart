@@ -50,7 +50,6 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
           .then((value) async {
         if (value.statusCode == 200) {
           Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue[700], textColor: Colors.white);
-
           if (value.body == "Success") {
             // add data to usermodel to reduce number of reads to firestore
             context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);

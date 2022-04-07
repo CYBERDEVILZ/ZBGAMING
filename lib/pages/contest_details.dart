@@ -364,20 +364,6 @@ class _ContestDetailsState extends State<ContestDetails> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.only(bottom: 10),
-              height: 90,
-              width: MediaQuery.of(context).size.width,
-              color: Colors.blue,
-              child: const Text("Contest Details",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w400,
-                      decoration: TextDecoration.overline,
-                      letterSpacing: 2)),
-              alignment: Alignment.bottomCenter,
-            ),
             // banner image
             BannerImage(ouid: widget.ouid, matchType: widget.matchType),
 

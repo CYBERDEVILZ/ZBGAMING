@@ -4,13 +4,12 @@ OPTIMIZATIONS / IDEAS
 
 Validator should be able to validate a match
 Validate organizers (KYC, BANK ACCOUNT, isverified tag add if they are verified)
-Database Cleanup every 24 hours
-Add coming soon to csgo valo and freefire
+Database Cleanup every 24 hours (OPTIONAL ==== JUST AN OPTIMIZATION)
 Backend to calculate organizer ratings
 Backend to calculate user, organizer levels
 Backend to collect and distribute money
-User account delete
 Organizer account delete
+Customer Care chat feature, account related assistance, monetary related assistance
 
 
 """

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -194,13 +193,11 @@ class PickDate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateTime selectedDate = DateTime.now();
-
     // select date function
     void selectDate() async {
       DateTime? pickedDate = await showDatePicker(
           context: context,
-          initialDate: DateTime.now().add(Duration(days: 2)),
+          initialDate: DateTime.now().add(const Duration(days: 2)),
           firstDate: DateTime.now().add(const Duration(days: 2)),
           lastDate: DateTime(2100));
       context.read<DetailProvider>().setDate(pickedDate);
