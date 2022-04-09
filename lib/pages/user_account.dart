@@ -28,10 +28,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/home_page.dart';
 import 'package:provider/provider.dart';
+import 'package:zbgaming/utils/apistring.dart';
 
 Map<String, Color> colorCodeForHeading = {
   "Unidentified": Colors.blue,
@@ -101,6 +103,17 @@ class _UserAccountState extends State<UserAccount> {
     if (mounted) {
       setState(() {});
     }
+    await get(Uri.parse(ApiEndpoints.baseUrl + ApiEndpoints.userLevelCalculate + "?uid=${_auth.currentUser!.uid}"))
+        .then((value) async {
+      if (value.statusCode != 200) {
+        Fluttertoast.showToast(msg: "Something went wrong :(");
+      } else {
+        if (value.body == "Failed") {
+          Fluttertoast.showToast(msg: "Something went wrong :(");
+        }
+      }
+    });
+
     await FirebaseFirestore.instance.collection("userinfo").doc(_auth.currentUser!.uid).get().then((value) {
       name = value["username"];
       imageurl = value["imageurl"];

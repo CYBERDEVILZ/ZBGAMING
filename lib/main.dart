@@ -5,7 +5,6 @@ import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
 import 'package:zbgaming/pages/login.dart';
 import 'package:zbgaming/pages/organizer.dart';
-// ignore: unused_import
 import 'package:zbgaming/pages/organizer_login.dart';
 import 'package:zbgaming/pages/organizer_signup.dart';
 import 'package:zbgaming/pages/pubg.dart';
@@ -36,7 +35,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const SignUp(),
+      home: const HomePage(),
       // home: const OrganizerLogin(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",

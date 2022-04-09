@@ -11,7 +11,8 @@ Backend to collect and distribute money
 Organizer account delete
 Customer Care chat feature, account related assistance, monetary related assistance
 
-
+AFTER MATCH GETS OVER, ORGANIZER UPDATES WHO WON AND VALIDATOR CHECKS THE UPDATION
+OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
 """
 
 
@@ -152,6 +153,8 @@ def register():
                 matchType = "pubg"
                 uid = matchuid
                 name = ref_obj["name"]
+                paid = ref_obj["fee"]
+                skill = ref_obj["skill"]
             except:
                 return "Failed: No such match"
 
@@ -186,7 +189,7 @@ def register():
                 # add to history
                 db.collection("userinfo").document(useruid).collection("history").document(
                     matchuid
-                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid})
+                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": 0, "skill": skill})
                 return "Success"
             else:
                 return "Failed"
@@ -326,7 +329,7 @@ def verifyUser():
             
             # verifying user ID
             userdata = db.collection("userinfo").document(userID).get().to_dict()
-            if userID == None:
+            if userdata == None:
                 return "Failed"
             
             # If all checks out to be good
@@ -360,9 +363,50 @@ def verifierSignup():
 
     return "Failed"
 
-# IDEAS TO PROCEED
-# CALCULATE THE POINTS OF USERS
-# CALCULATE THE ORGANIZER RATING
+# USER LEVEL CALCULATION
+@app.route("/api/userlevelcalculate")
+def userLevelCalculate():
+    participation = 0
+    won = 0
+    uid = request.args.get("uid")
+
+    # Checking if uid is valid
+    try:
+        # get all the paid matches
+        docs = db.collection("userinfo").document(uid).collection("history").where("paid", "!=", 0).get()
+
+        # no matches played yet, make level 0
+        if len(docs) == 0:
+            db.collection("userinfo").document(uid).update({"level": 0})
+            return "Success"
+        
+        participation = len(docs) * 20
+
+        # calculate the level of user
+        for doc in docs:
+            data = doc.to_dict()
+            wonMatches = data["won"]
+            
+            if wonMatches == 1:
+                paid = data["paid"]
+                # scores based on FEE STRUCTURE
+                if paid == 1:
+                    won += 300
+                if paid == 2:
+                    won += 500
+                if paid == 3:
+                    won += 1500
+                if paid == 4:
+                    won += 2000
+                else:
+                     won += 0
+        
+        totalScore = participation + won
+        db.collection("userinfo").document(uid).update({"level": totalScore})
+        return "Success"
+        
+    except:
+        return "Failed"
 
 
 

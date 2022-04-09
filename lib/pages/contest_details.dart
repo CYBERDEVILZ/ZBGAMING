@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
+import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/Date_to_string.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
@@ -338,12 +340,15 @@ class _ContestDetailsState extends State<ContestDetails> {
         // if free register then and there
         if (widget.rewards == 0) {
           if (widget.regTeams < widget.totalTeams) {
-            await FirebaseFirestore.instance
-                .collection(widget.matchType)
-                .doc(widget.uid)
-                .update({"reg": widget.regTeams + 1}).then((value) async {
-              await addToHistory();
-              Fluttertoast.showToast(msg: "Registration successful");
+            await get(Uri.parse(ApiEndpoints.baseUrl +
+                    ApiEndpoints.register +
+                    "?matchType=${widget.matchType}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchuid=${widget.uid}"))
+                .then((value) {
+              if (value.statusCode == 200) {
+                Fluttertoast.showToast(msg: value.body);
+              } else {
+                Fluttertoast.showToast(msg: "Something went wrong");
+              }
             }).catchError((onError) {
               Fluttertoast.showToast(msg: "An error occurred");
             });
