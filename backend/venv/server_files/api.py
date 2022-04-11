@@ -4,12 +4,14 @@ OPTIMIZATIONS / IDEAS
 
 Validator should be able to validate a match
 Validate organizers (KYC, BANK ACCOUNT, isverified tag add if they are verified)
-Database Cleanup every 24 hours (OPTIONAL ==== JUST AN OPTIMIZATION)
+Database Cleanup (After every call to view matches, registered matches, always clean the database)
 Backend to calculate organizer ratings
 Backend to calculate user, organizer levels
 Backend to collect and distribute money
 Organizer account delete
 Customer Care chat feature, account related assistance, monetary related assistance
+
+REGISTRATION FOR PAID MATCHES IS STILL VULNERABLE!!!!
 
 AFTER MATCH GETS OVER, ORGANIZER UPDATES WHO WON AND VALIDATOR CHECKS THE UPDATION
 OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
