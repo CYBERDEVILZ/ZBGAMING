@@ -13,6 +13,7 @@ Customer Care chat feature, account related assistance, monetary related assista
 
 REGISTRATION FOR PAID MATCHES IS STILL VULNERABLE!!!!
 INTEGRATE RAZORPAY BOIIII
+API FOR PAID REGISTRATIONS
 
 AFTER MATCH GETS OVER, ORGANIZER UPDATES WHO WON AND VALIDATOR CHECKS THE UPDATION
 OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
@@ -21,18 +22,26 @@ OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
 
 from datetime import datetime
 from email.policy import default
+import hashlib
+import json
 from flask import Flask
 from flask import request
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+import razorpay
 import re
+import hmac
 
 # FIREBASE INIT
 cred = credentials.Certificate("zbgaming-v1-firebase-adminsdk-2ozhj-4f38e5fc3e.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 app = Flask(__name__)
+
+# RAZORPAY INIT
+secret_key = "C7IHXyYq0nsDlWQYUcRKGzaH"
+client = razorpay.Client(auth=("rzp_test_rKi9TFV4sMHvz2", secret_key))
 
 # FUNCTIONS
 def validateEmail(email):
@@ -116,7 +125,7 @@ def organizerSignup():
     return "Failed"
 
 
-# REGISTER PUBG
+# REGISTER 
 @app.route("/api/register")
 def register():
     matchType = request.args.get("matchType")
@@ -160,6 +169,10 @@ def register():
                 skill = ref_obj["skill"]
             except:
                 return "Failed: No such match"
+            
+            if paid != 0:
+                return "Failed: Can't register for free"
+            
 
             # retrieve the total registered and increase it by one [USE TRANSACTION!]
             transaction = db.transaction()
@@ -202,9 +215,187 @@ def register():
     return "Failed"
 
 
+# CREATE ORDER
+# Only creates order for the client  
+@app.route("/api/createOrder")
+def paidRegister():
+    matchType = request.args.get("matchType")
+    matchuid = request.args.get("matchuid")
+    useruid = request.args.get("useruid")
+
+    if matchuid != None and useruid != None and matchType != None:
+        amount = None
+        if matchType.lower() == "pubg":
+
+            # checking whether user is verified (KYC)
+            user = db.collection("userinfo").document(useruid).get()
+            userdata = user.to_dict()
+            if userdata == None:
+                return "Failed: No such user"
+            if userdata["isVerified"] == False:
+                return "Failed: User not verified"
+
+            # checking if matchuid exists
+            matchData = db.collection(matchType.lower()).document(matchuid).get()
+            matchData = matchData.to_dict()
+            if matchData == None:
+                return "Failed: Match Doesn't Exist"
+
+            # checking for already registered..
+            user = (
+                db.collection("userinfo").document(useruid).collection("registered").get()
+            )
+            user = [user.id for user in user]
+            if matchuid in user:
+                return "Failed: Already registered"
+
+            # if all conditions passed, then check for valid matchuid
+            ref = db.collection("pubg").document(matchuid)
+            ref_obj = ref.get().to_dict()
+            try:
+                date = ref_obj["date"]
+                matchType = "pubg"
+                uid = matchuid
+                name = ref_obj["name"]
+                paid = ref_obj["fee"]
+                skill = ref_obj["skill"]
+            except:
+                return "Failed: No such match"
+            
+            if paid == 1:
+                amount = 100 * 100
+            elif paid == 2:
+                amount == 500 * 100
+            elif paid == 3:
+                amount = 1000 * 100
+            elif paid == 4:
+                amount = 2000 * 100
+            else:
+                return "Failed: Price mismatch"
+
+            DATA = {
+                "amount": amount,
+                "currency": "INR",
+            }
+
+            # CREATING ORDER
+            response = client.order.create(data=DATA)
+            order_id = response["id"]
+
+            # RETURNING ORDER FOR CHECKOUT
+            return order_id
+            
+        else: 
+            return "Failed"
+
+    return "Failed" 
+
+
+# ORDER VALIDATION AND PAID REGISTRATION
+@app.route("/api/validateOrder")
+def validate():
+    order_id = request.args.get("order_id")
+    razorpay_signature = request.args.get("razorpay_signature")
+    razorpay_payment_id = request.args.get("razorpay_payment_id")
+    matchType = request.args.get("matchType")
+    matchuid = request.args.get("matchuid")
+    useruid = request.args.get("useruid")
+
+    verifyStatus = client.utility.verify_payment_signature({
+   'razorpay_order_id': order_id,
+   'razorpay_payment_id': razorpay_payment_id,
+   'razorpay_signature': razorpay_signature
+   })
+
+    if verifyStatus:
+        if matchuid != None and useruid != None and matchType != None:
+            if matchType.lower() == "pubg":
+
+                # checking whether user is verified (KYC)
+                user = db.collection("userinfo").document(useruid).get()
+                userdata = user.to_dict()
+                if userdata == None:
+                    return "Failed: No such user"
+                if userdata["isVerified"] == False:
+                    return "Failed: User not verified"
+
+                # checking if matchuid exists
+                matchData = db.collection(matchType.lower()).document(matchuid).get()
+                matchData = matchData.to_dict()
+                if matchData == None:
+                    return "Failed: Match Doesn't Exist"
+
+                # checking for already registered..
+                user = (
+                    db.collection("userinfo").document(useruid).collection("registered").get()
+                )
+                user = [user.id for user in user]
+                if matchuid in user:
+                    return "Failed: Already registered"
+
+                # if all conditions passed, then check for valid matchuid
+                ref = db.collection("pubg").document(matchuid)
+                ref_obj = ref.get().to_dict()
+                try:
+                    date = ref_obj["date"]
+                    matchType = "pubg"
+                    uid = matchuid
+                    name = ref_obj["name"]
+                    paid = ref_obj["fee"]
+                    skill = ref_obj["skill"]
+                except:
+                    return "Failed: No such match"
+                
+                # retrieve the total registered and increase it by one [USE TRANSACTION!]
+                transaction = db.transaction()
+
+                @firestore.transactional
+                def updateRegisteredTeams(transaction, ref):
+                    snapshot = ref.get(transaction=transaction)
+                    reg = snapshot.get("reg")
+                    total = snapshot.get("total")
+                    try:
+                        if reg < total:
+                            transaction.update(ref, {"reg": reg + 1})
+                            return True
+                        else:
+                            return False
+                    except:
+                        return False
+
+                result = updateRegisteredTeams(transaction, ref)
+
+                if result:
+                    
+                    # add to registered
+                    db.collection("userinfo").document(useruid).collection(
+                        "registered"
+                    ).document(matchuid).set(
+                        {"date": date, "matchType": matchType, "name": name, "uid": uid}
+                    )
+
+                    # add to history
+                    db.collection("userinfo").document(useruid).collection("history").document(
+                        matchuid
+                    ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": 0, "skill": skill})
+                    return "Registration Successful!"
+                else:
+                    return "Failed"
+            else: 
+                return "Failed"
+
+        return "Failed"
+
+    else:
+        return "Something went wrong"
+        
+
+
+    
+
+
 # CREATE MATCHES
 @app.route("/api/create")
-
 # date, fee, match, name, skill, solo, reg=0, special, uid
 def create():
     date = request.args.get("date")
@@ -412,5 +603,7 @@ def userLevelCalculate():
         return "Failed"
 
 
+
+    
 
 app.run(debug=True)

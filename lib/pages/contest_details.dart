@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:zbgaming/widgets/custom_divider.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
 import 'package:zbgaming/widgets/organizer_info.dart';
 import 'package:zbgaming/widgets/rules_and_requirements.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class ContestDetails extends StatefulWidget {
   const ContestDetails(
@@ -49,6 +49,46 @@ class ContestDetails extends StatefulWidget {
 class _ContestDetailsState extends State<ContestDetails> {
   bool isLoading = false;
   DateToString dateString = DateToString();
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    Fluttertoast.showToast(msg: "Success");
+    await get(Uri.parse(ApiEndpoints.baseUrl +
+            ApiEndpoints.validateOrder +
+            "?order_id=${response.orderId}&razorpay_signature=${response.signature}&razorpay_payment_id=${response.paymentId}&matchuid=${widget.uid}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchType=${widget.matchType}&secretKey=DO_NOT_TAMPER_THIS_REQUEST"))
+        .then((value) {
+      if (value.statusCode == 200) {
+        Fluttertoast.showToast(msg: value.body);
+      } else {
+        Fluttertoast.showToast(msg: "Something went wrong");
+      }
+    }).catchError((onError) {
+      Fluttertoast.showToast(msg: "Something Went Wrong!");
+    });
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    Fluttertoast.showToast(msg: "Fail");
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    Fluttertoast.showToast(msg: "Wallet");
+  }
+
+  final Razorpay _razorpay = Razorpay();
+
+  @override
+  void initState() {
+    super.initState();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _razorpay.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -314,17 +354,6 @@ class _ContestDetailsState extends State<ContestDetails> {
           ],
         ));
 
-    // add match to history
-    Future<void> addToHistory() async {
-      var uid = FirebaseAuth.instance.currentUser!.uid;
-      await FirebaseFirestore.instance
-          .collection("userinfo")
-          .doc(uid)
-          .collection("registered")
-          .doc(widget.uid)
-          .set({"name": widget.name, "date": widget.date, "matchType": widget.matchType, "uid": widget.uid});
-    }
-
     // register button function
     void register() async {
       isLoading = true;
@@ -358,6 +387,33 @@ class _ContestDetailsState extends State<ContestDetails> {
         // else take to payments page
         else {
           await Fluttertoast.showToast(msg: "Take to payment page");
+          if (widget.regTeams < widget.totalTeams) {
+            await get(Uri.parse(ApiEndpoints.baseUrl +
+                    ApiEndpoints.createOrder +
+                    "?matchType=${widget.matchType}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchuid=${widget.uid}"))
+                .then((value) {
+              if (value.statusCode == 200) {
+                if (value.body.isNotEmpty) {
+                  Fluttertoast.showToast(msg: "order created");
+                  Map<String, dynamic> checkout = {
+                    'key': 'rzp_test_rKi9TFV4sMHvz2',
+                    'amount': fee! * 100, //in the smallest currency sub-unit.
+                    'name': 'ZBGaming',
+                    'order_id': value.body, // Generate order_id using Orders API
+                    'description': 'Registration Fees',
+                    'timeout': 300, // in seconds
+                  };
+                  _razorpay.open(checkout);
+                } else {
+                  Fluttertoast.showToast(msg: "Failed to create order");
+                }
+              } else {
+                Fluttertoast.showToast(msg: "Something went wrong");
+              }
+            }).catchError((onError) {
+              Fluttertoast.showToast(msg: "An error occurred");
+            });
+          }
         }
       }
       isLoading = false;
@@ -456,7 +512,6 @@ class _BannerImageState extends State<BannerImage> {
   @override
   void initState() {
     super.initState();
-
     downloadBanner();
   }
 
