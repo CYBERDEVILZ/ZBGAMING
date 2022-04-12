@@ -384,9 +384,8 @@ class _ContestDetailsState extends State<ContestDetails> {
           }
         }
 
-        // else take to payments page
+        // else accept payment
         else {
-          await Fluttertoast.showToast(msg: "Take to payment page");
           if (widget.regTeams < widget.totalTeams) {
             await get(Uri.parse(ApiEndpoints.baseUrl +
                     ApiEndpoints.createOrder +
