@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -48,10 +49,13 @@ class ContestDetails extends StatefulWidget {
 
 class _ContestDetailsState extends State<ContestDetails> {
   bool isLoading = false;
+  bool isRegistered = false;
   DateToString dateString = DateToString();
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    Fluttertoast.showToast(msg: "Success");
+    isLoading = true;
+    setState(() {});
+    Fluttertoast.showToast(msg: "Payment Success");
     await get(Uri.parse(ApiEndpoints.baseUrl +
             ApiEndpoints.validateOrder +
             "?order_id=${response.orderId}&razorpay_signature=${response.signature}&razorpay_payment_id=${response.paymentId}&matchuid=${widget.uid}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchType=${widget.matchType}&secretKey=DO_NOT_TAMPER_THIS_REQUEST"))
@@ -64,6 +68,7 @@ class _ContestDetailsState extends State<ContestDetails> {
     }).catchError((onError) {
       Fluttertoast.showToast(msg: "Something Went Wrong!");
     });
+    areYouRegistered();
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -76,12 +81,33 @@ class _ContestDetailsState extends State<ContestDetails> {
 
   final Razorpay _razorpay = Razorpay();
 
+  void areYouRegistered() async {
+    isLoading = true;
+    setState(() {});
+    await FirebaseFirestore.instance
+        .collection("userinfo")
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection("registered")
+        .get()
+        .then((snapshots) {
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> data = snapshots.docs;
+      for (int i = 0; i < data.length; i++) {
+        if (data[i].id == widget.uid) {
+          isRegistered = true;
+        }
+      }
+    });
+    isLoading = false;
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    areYouRegistered();
   }
 
   @override
@@ -458,14 +484,16 @@ class _ContestDetailsState extends State<ContestDetails> {
                       // register button
                       onPressed: widget.regTeams == widget.totalTeams
                           ? null
-                          : () {
-                              register();
-                            },
+                          : isRegistered
+                              ? null
+                              : () {
+                                  register();
+                                },
                       child: isLoading
                           ? const CircularProgressIndicator(
                               color: Colors.white,
                             )
-                          : const Text("Register", textScaleFactor: 1.3),
+                          : Text(isRegistered ? "Registered" : "Register", textScaleFactor: 1.3),
                       style: ButtonStyle(
                           fixedSize: MaterialStateProperty.all(const Size(150, 50)),
                           elevation: MaterialStateProperty.all(0)),
