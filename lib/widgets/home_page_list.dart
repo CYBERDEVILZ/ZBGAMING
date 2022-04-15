@@ -63,7 +63,7 @@ class Tile extends StatelessWidget {
     );
     return Padding(
       padding: const EdgeInsets.only(top: 30, left: 5, right: 5),
-      child: GestureDetector(
+      child: InkWell(
         onTap: disabled ? null : ontap,
         child: SizedBox(
           child: Row(
