@@ -2,6 +2,7 @@
 OPTIMIZATIONS / IDEAS
 ---------------------
 
+Organizer starts the match if eligible, further registration stops, ongoing message shown. If finished, finished message shown
 Validator should be able to validate a match
 Validate organizers (KYC, BANK ACCOUNT, isverified tag add if they are verified)
 Database Cleanup (After every call to view matches, registered matches, always clean the database)
@@ -10,8 +11,6 @@ Backend to calculate user, organizer levels
 Backend to collect and distribute money
 Organizer account delete
 Customer Care chat feature, account related assistance, monetary related assistance
-
-DISABLE 'REGISTER' BUTTON FOR REGISTERED MATCHES
 
 AFTER MATCH GETS OVER, ORGANIZER UPDATES WHO WON AND VALIDATOR CHECKS THE UPDATION
 OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
