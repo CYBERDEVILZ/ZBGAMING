@@ -3,13 +3,14 @@ OPTIMIZATIONS / IDEAS
 ---------------------
 
 IMPORTANT!!!
-ADD A SPECIAL VARIABLE START WHICH TELLS THE MATCH STARTED OR NOT BY THE ORGANIZER. IF THE MATCH IS NOT STARTED
-AND THE TIME GOES BY, THEN AUTOMATICALLY CLOSE THE MATCH AND REFUND ALL THE MONEY, REMOVE FROM REGISTERED MATCHES.
-IF THE ORGANIZER FINISHES THE MATCH, MAKE THE VALIDATOR CHECK WHO THE WINNER IS AND UPDATE THE MATCH STATUS. THEN UPDATE
-THE HISTORY WHETHER HE WON OR NOT. AND ALSO REMOVE THE MATCH FROM REGISTRATION.
+ORGANIZER UPDATED FINISHED STATUS AND WHO WON THE MATCH. VALIDATORS VALIDATE WHETHER THE WINNER IS LEGIT.
+IF MATCH IS NOT 'ONGOING' EVEN AFTER THE DATE HAS PASSED, AUTOMATICALLY THE MATCH WILL BE FINISHED AND 
+MONEY WILL BE REFUNDED TO ALL.
 
-CLEAN DATABASE IS FAULTYYYYYYYY
+CALL CLEAN API EVERYTIME THE USER VISITS ANY MATCH SECTION OR REGISTERED SECTION
 
+ORGANIZER GETS A LIST OF PEOPLE WHO REGISTERED FOR HIS MATCH. THEIR UNIQUE ID IS THEIR EMAIL. NEVER EXPOSE UID!
+HE SELECTS WHO WON THE MATCH WHEN HE FINISHES THE MATCH. HE UPDATES IT AND THEN READ POINT ONE.
 
 Organizer starts the match if eligible, further registration stops, ongoing message shown. If finished, finished message shown
 Validator should be able to validate a match
@@ -27,7 +28,7 @@ OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
 """
 
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -35,7 +36,6 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import razorpay
 import re
-import hmac
 
 # FIREBASE INIT
 cred = credentials.Certificate("zbgaming-v1-firebase-adminsdk-2ozhj-4f38e5fc3e.json")
@@ -497,14 +497,14 @@ def clean():
 
     if matchType != None and uid != None:
         if matchType != "" and uid != "":
-            date = datetime.now()
+            date = datetime.now() - timedelta(days=1)
+            print(date)
 
             # get all the outdated matches
             docs = db.collection(matchType).where("date", "<", date).get()
 
             # delete all the outdated matches
             for doc in docs:
-                print(doc["date"])
                 db.collection(matchType).document(doc.id).delete()
                 db.collection("userinfo").document(uid).collection(
                     "registered"

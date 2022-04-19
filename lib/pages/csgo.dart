@@ -49,6 +49,7 @@ class _CsgoTournamentsState extends State<CsgoTournaments> {
                               uid: e.id,
                               ouid: e["uid"],
                               matchType: "csgo",
+                              started: e["started"],
                             ))
                         .toList()));
               })

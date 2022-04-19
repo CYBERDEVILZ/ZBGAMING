@@ -49,6 +49,7 @@ class _ValorantTournamentsState extends State<ValorantTournaments> {
                               uid: e.id,
                               ouid: e["uid"],
                               matchType: "valo",
+                              started: e["started"],
                             ))
                         .toList()));
               })

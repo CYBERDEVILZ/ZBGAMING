@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:zbgaming/pages/contest_details.dart';
 
 class TournamentBuilder extends StatefulWidget {
-  const TournamentBuilder(
-      {Key? key,
-      required this.special,
-      required this.name,
-      required this.team,
-      required this.tournament,
-      required this.skill,
-      required this.rewards,
-      required this.regTeams,
-      required this.totalTeams,
-      required this.date,
-      required this.uid,
-      required this.matchType,
-      required this.ouid})
-      : super(key: key);
+  const TournamentBuilder({
+    Key? key,
+    required this.special,
+    required this.name,
+    required this.team,
+    required this.tournament,
+    required this.skill,
+    required this.rewards,
+    required this.regTeams,
+    required this.totalTeams,
+    required this.date,
+    required this.uid,
+    required this.matchType,
+    required this.ouid,
+    required this.started,
+  }) : super(key: key);
   final bool special;
   final String name;
   final DateTime date;
@@ -26,6 +27,7 @@ class TournamentBuilder extends StatefulWidget {
   final int rewards;
   final int regTeams;
   final int totalTeams;
+  final int started;
   // match uid
   final String uid;
   // organizer uid
@@ -102,6 +104,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 10.0, right: 5, top: 5, bottom: 5),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,6 +156,23 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                       ],
                                     ),
                                   )),
+                                  widget.started == 0
+                                      ? const Text(
+                                          "Registrations open",
+                                          style: TextStyle(color: Colors.blue),
+                                        )
+                                      : widget.started == 1
+                                          ? const Text(
+                                              "Ongoing",
+                                              style: TextStyle(color: Colors.green),
+                                            )
+                                          : widget.started == 2
+                                              ? const Text(
+                                                  "Finished",
+                                                  style: TextStyle(color: Colors.red),
+                                                )
+                                              : const Text(""),
+                                  const SizedBox(height: 5),
                                   const Divider(
                                     height: 5,
                                   ),

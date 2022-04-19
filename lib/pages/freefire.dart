@@ -50,6 +50,7 @@ class _FreeFireTournamentsState extends State<FreeFireTournaments> {
                               uid: e.id,
                               ouid: e["uid"],
                               matchType: "freefire",
+                              started: e["started"],
                             ))
                         .toList()));
               })

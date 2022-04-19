@@ -49,6 +49,7 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                               uid: e.id,
                               ouid: e["uid"],
                               matchType: "pubg",
+                              started: e["started"],
                             ))
                         .toList()));
               })

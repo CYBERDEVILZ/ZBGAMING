@@ -101,9 +101,12 @@ class _ContestDetailsState extends State<ContestDetails> {
     setState(() {});
   }
 
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> documentStream;
+
   @override
   void initState() {
     super.initState();
+    documentStream = FirebaseFirestore.instance.collection(widget.matchType).doc(widget.uid).snapshots();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
@@ -480,23 +483,64 @@ class _ContestDetailsState extends State<ContestDetails> {
                   )),
                   Padding(
                     padding: const EdgeInsets.only(left: 15),
-                    child: ElevatedButton(
-                      // register button
-                      onPressed: widget.regTeams == widget.totalTeams
-                          ? null
-                          : isRegistered
+                    child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                      stream: documentStream,
+                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+                        if (snapshot.hasError) {
+                          return ElevatedButton(
+                            onPressed: () {},
+                            child: const Text('Something went wrong'),
+                            style: ButtonStyle(
+                                fixedSize: MaterialStateProperty.all(const Size(150, 50)),
+                                elevation: MaterialStateProperty.all(0)),
+                          );
+                        }
+
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return ElevatedButton(
+                            onPressed: () {},
+                            child: const Text("Loading"),
+                            style: ButtonStyle(
+                                fixedSize: MaterialStateProperty.all(const Size(150, 50)),
+                                elevation: MaterialStateProperty.all(0)),
+                          );
+                        }
+                        int a = snapshot.data!['started'];
+                        String? text;
+                        if (a == 0) {
+                          text = "Register";
+                        }
+                        if (a == 1) {
+                          text = "Ongoing";
+                        }
+                        if (a == 2) {
+                          text = "Finished";
+                        }
+                        return ElevatedButton(
+                          // register button
+                          onPressed: widget.regTeams == widget.totalTeams
                               ? null
-                              : () {
-                                  register();
-                                },
-                      child: isLoading
-                          ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                          : Text(isRegistered ? "Registered" : "Register", textScaleFactor: 1.3),
-                      style: ButtonStyle(
-                          fixedSize: MaterialStateProperty.all(const Size(150, 50)),
-                          elevation: MaterialStateProperty.all(0)),
+                              : isRegistered
+                                  ? null
+                                  : () {
+                                      register();
+                                    },
+                          child: isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : Text(
+                                  a == 0
+                                      ? isRegistered
+                                          ? "Registered"
+                                          : text!
+                                      : text!,
+                                  textScaleFactor: 1.3),
+                          style: ButtonStyle(
+                              fixedSize: MaterialStateProperty.all(const Size(150, 50)),
+                              elevation: MaterialStateProperty.all(0)),
+                        );
+                      },
                     ),
                   )
                 ],
