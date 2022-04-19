@@ -2,6 +2,15 @@
 OPTIMIZATIONS / IDEAS
 ---------------------
 
+IMPORTANT!!!
+ADD A SPECIAL VARIABLE START WHICH TELLS THE MATCH STARTED OR NOT BY THE ORGANIZER. IF THE MATCH IS NOT STARTED
+AND THE TIME GOES BY, THEN AUTOMATICALLY CLOSE THE MATCH AND REFUND ALL THE MONEY, REMOVE FROM REGISTERED MATCHES.
+IF THE ORGANIZER FINISHES THE MATCH, MAKE THE VALIDATOR CHECK WHO THE WINNER IS AND UPDATE THE MATCH STATUS. THEN UPDATE
+THE HISTORY WHETHER HE WON OR NOT. AND ALSO REMOVE THE MATCH FROM REGISTRATION.
+
+CLEAN DATABASE IS FAULTYYYYYYYY
+
+
 Organizer starts the match if eligible, further registration stops, ongoing message shown. If finished, finished message shown
 Validator should be able to validate a match
 Validate organizers (KYC, BANK ACCOUNT, isverified tag add if they are verified)
@@ -11,6 +20,7 @@ Backend to calculate user, organizer levels
 Backend to collect and distribute money
 Organizer account delete
 Customer Care chat feature, account related assistance, monetary related assistance
+Add report functionality
 
 AFTER MATCH GETS OVER, ORGANIZER UPDATES WHO WON AND VALIDATOR CHECKS THE UPDATION
 OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
@@ -18,9 +28,6 @@ OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
 
 
 from datetime import datetime
-from email.policy import default
-import hashlib
-import json
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -164,11 +171,15 @@ def register():
                 name = ref_obj["name"]
                 paid = ref_obj["fee"]
                 skill = ref_obj["skill"]
+                started = ref_obj["started"]
             except:
                 return "Failed: No such match"
             
             if paid != 0:
                 return "Failed: Can't register for free"
+
+            if started != 0:
+                return "Failed: This match is no longer accepting registration"
             
 
             # retrieve the total registered and increase it by one [USE TRANSACTION!]
@@ -250,12 +261,8 @@ def paidRegister():
             ref = db.collection("pubg").document(matchuid)
             ref_obj = ref.get().to_dict()
             try:
-                date = ref_obj["date"]
                 matchType = "pubg"
-                uid = matchuid
-                name = ref_obj["name"]
                 paid = ref_obj["fee"]
-                skill = ref_obj["skill"]
             except:
                 return "Failed: No such match"
             
@@ -403,6 +410,7 @@ def create():
     skill = request.args.get("skill")
     solo = request.args.get("solo")
     matchType = request.args.get("matchType")
+    started = 0
     total = 0
 
     if matchType.lower() == "pubg":
@@ -434,7 +442,7 @@ def create():
         # converting date from string to datetime object
         try:
             date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S.%f")
-            date.replace(hour=0, minute=0, second=0, microsecond=0)
+            date = date.replace(hour=0, minute=0, second=0, microsecond=0)
 
             # checking if date is valid
             if date < datetime.now():
@@ -472,6 +480,7 @@ def create():
                 "special": special,
                 "reg": 0,
                 "total": total,
+                "started": started,
             }
         )
 
@@ -495,6 +504,7 @@ def clean():
 
             # delete all the outdated matches
             for doc in docs:
+                print(doc["date"])
                 db.collection(matchType).document(doc.id).delete()
                 db.collection("userinfo").document(uid).collection(
                     "registered"
