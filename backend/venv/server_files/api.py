@@ -5,9 +5,13 @@ OPTIMIZATIONS / IDEAS
 IMPORTANT!!!
 ORGANIZER UPDATED FINISHED STATUS AND WHO WON THE MATCH. VALIDATORS VALIDATE WHETHER THE WINNER IS LEGIT.
 IF MATCH IS NOT 'ONGOING' EVEN AFTER THE DATE HAS PASSED, AUTOMATICALLY THE MATCH WILL BE FINISHED AND 
-MONEY WILL BE REFUNDED TO ALL.
+MONEY WILL BE REFUNDED TO ALL. IF ALL IS LEGIT THEN MONEY FUNDED TO THE WINNER AND ORGANIZER AND
+AMOUNTGIVEN VARIABLE OF ORGANIZER IS UPDATED
 
+<DO IT LATER>
 CALL CLEAN API EVERYTIME THE USER VISITS ANY MATCH SECTION OR REGISTERED SECTION
+</DO IT LATER>
+
 
 ORGANIZER GETS A LIST OF PEOPLE WHO REGISTERED FOR HIS MATCH. THEIR UNIQUE ID IS THEIR EMAIL. NEVER EXPOSE UID!
 HE SELECTS WHO WON THE MATCH WHEN HE FINISHES THE MATCH. HE UPDATES IT AND THEN READ POINT ONE.
@@ -16,8 +20,8 @@ Organizer starts the match if eligible, further registration stops, ongoing mess
 Validator should be able to validate a match
 Validate organizers (KYC, BANK ACCOUNT, isverified tag add if they are verified)
 Database Cleanup (After every call to view matches, registered matches, always clean the database)
-Backend to calculate organizer ratings
-Backend to calculate user, organizer levels
+Backend to calculate organizer ratings based on [number of matches he conducted successfully / (total matches)] * 5
+Backend to calculate organizer levels based on prizes given
 Backend to collect and distribute money
 Organizer account delete
 Customer Care chat feature, account related assistance, monetary related assistance
