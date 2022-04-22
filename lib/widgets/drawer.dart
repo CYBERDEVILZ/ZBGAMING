@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
 import 'package:zbgaming/model/usermodel.dart';
+import 'package:zbgaming/pages/history.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/utils/routes.dart';
 
@@ -82,7 +83,9 @@ class AfterLoginDrawer extends StatelessWidget {
                   ],
                 )),
             ListTile(
-              onTap: () {}, // leads to match history
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const History()));
+              }, // leads to match history
               leading: const Icon(Icons.history, color: Colors.black),
               trailing: const Icon(Icons.arrow_right, color: Colors.black),
               title: const Text(
