@@ -5,11 +5,9 @@ import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
 import 'package:zbgaming/pages/login.dart';
 import 'package:zbgaming/pages/organizer.dart';
-import 'package:zbgaming/pages/organizer_login.dart';
 import 'package:zbgaming/pages/organizer_signup.dart';
 import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/signup.dart';
-import 'package:zbgaming/pages/validators_sign_in.dart';
 import 'package:zbgaming/pages/valorant.dart';
 import 'package:zbgaming/utils/routes.dart';
 
