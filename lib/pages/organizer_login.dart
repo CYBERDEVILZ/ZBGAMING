@@ -36,11 +36,15 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
   void initState() {
     super.initState();
 
-    FirebaseAuth.instance.authStateChanges().listen((User? event) {
-      if (event?.uid != null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Organizer()));
-      }
-    });
+    if (mounted) {
+      FirebaseAuth.instance.authStateChanges().listen((User? event) {
+        if (event?.uid != null) {
+          context.read<OrganizerModel>().setuid(event?.uid);
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const Organizer()));
+        }
+      });
+    }
   }
 
   @override
@@ -51,9 +55,17 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
       if (mounted) setState(() {});
       if (_formKey.currentState!.validate()) {
         FirebaseAuth auth = FirebaseAuth.instance;
-        await auth.signInWithEmailAndPassword(email: email.text, password: passwd.text).then((value) async {
-          var data = await FirebaseFirestore.instance.collection("organizer").doc(auth.currentUser!.uid).get();
-          context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+        await auth
+            .signInWithEmailAndPassword(
+                email: email.text, password: passwd.text)
+            .then((value) async {
+          var data = await FirebaseFirestore.instance
+              .collection("organizer")
+              .doc(auth.currentUser!.uid)
+              .get();
+          context
+              .read<OrganizerModel>()
+              .setuid(FirebaseAuth.instance.currentUser!.uid);
           context.read<OrganizerModel>().setusername(data["username"]);
           context.read<OrganizerModel>().setemail(data["email"]);
           try {
@@ -67,10 +79,14 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
             context.read<OrganizerModel>().setimageurl(null);
           }
           await Fluttertoast.showToast(
-              msg: "Login successful!", backgroundColor: Colors.blue[700], textColor: Colors.white);
+              msg: "Login successful!",
+              backgroundColor: Colors.blue[700],
+              textColor: Colors.white);
           await Future.delayed(const Duration(seconds: 1));
           Navigator.pushAndRemoveUntil(
-              context, MaterialPageRoute(builder: (context) => const Organizer()), (route) => false);
+              context,
+              MaterialPageRoute(builder: (context) => const Organizer()),
+              (route) => false);
         }).catchError((onError) => /* Write code for error */ null);
       }
       isLoading = false;
@@ -87,7 +103,8 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
         if (email.text.isEmpty) {
           return "Email field cannot be empty";
         }
-        if (!RegExp("^[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]+\$").hasMatch(email.text)) {
+        if (!RegExp("^[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]+\$")
+            .hasMatch(email.text)) {
           return "Invalid Email";
         }
         return null;
@@ -159,7 +176,8 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
                     child: Align(
                       child: Text(
                         "Organize Amazing Tournaments",
-                        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       alignment: Alignment.bottomCenter,
                     )),
@@ -168,10 +186,16 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
               const SizedBox(height: 20),
 
               // Email Entry
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: emailEntry),
+              Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: emailEntry),
 
               // Password Entry
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), child: passwdEntry),
+              Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: passwdEntry),
 
               const SizedBox(height: 40),
 
@@ -195,7 +219,8 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
               const SizedBox(height: 30),
 
               // forgot password feature
-              const Text("Forgot Password", style: TextStyle(color: Colors.blue)),
+              const Text("Forgot Password",
+                  style: TextStyle(color: Colors.blue)),
 
               const SizedBox(height: 5),
 
@@ -215,7 +240,9 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
                     child: const Text(
                       "Create one",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue, decoration: TextDecoration.underline),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline),
                     ),
                   )
                 ],
