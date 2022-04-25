@@ -57,7 +57,7 @@ class _OrganizerState extends State<Organizer> {
                 MaterialPageRoute(builder: (context) => const OrganizerLogin()),
                 (route) => false);
           }
-        } else if (event?.uid != null) {
+        } else if (mounted && event?.uid != null) {
           if (Provider.of<OrganizerModel>(context, listen: false).uid == null) {
             await Navigator.pushAndRemoveUntil(
                 context,
