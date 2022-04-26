@@ -33,6 +33,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/home_page.dart';
 import 'package:provider/provider.dart';
+import 'package:zbgaming/pages/link_game.dart';
 import 'package:zbgaming/utils/apistring.dart';
 
 Map<String, Color> colorCodeForHeading = {
@@ -561,9 +562,12 @@ class _UserAccountState extends State<UserAccount> {
                                       levelAttrib],
                                   child: GestureDetector(
                                     // navigates to link page
-                                    onTap: () {
-                                      Fluttertoast.showToast(
-                                          msg: "Navigate the nigga");
+                                    onTap: () async {
+                                      await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => LinkGame(
+                                                  matchType: element)));
                                     },
                                     child: Text(
                                       "Link Now",
