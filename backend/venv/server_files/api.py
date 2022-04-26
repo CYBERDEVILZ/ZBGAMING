@@ -2,10 +2,15 @@
 OPTIMIZATIONS / IDEAS
 ---------------------
 
+IMPORTANT!!!
+ADD LINK FEATURE TO USERS (PARAMS: ID)
 
 IMPORTANT!!!
 AS AND WHEN USER REGISTERS FOR A MATCH, THE ORGANIZER IS PROVIED WITH THE LIST OF PEOPLE REGISTERED INCLUDING HIS NAME, HASHED UID AND IN GAME UID.
 THE ORGANIZER CAN THEN SEND A MASS NOTIFICATION TO ALL THE USER REGISTERED ABOUT THE DATE AND TIME AND DISCORD CHANNEL LINK TO THE REGISTERED USERS.
+
+IMPORTANT!!!
+VALIDATE ORGANIZER SIGNIN AS WELL
 
 IMPORTANT!!!
 ORGANIZER VERIFICATION
@@ -22,6 +27,9 @@ ORGANIZER UPDATED FINISHED STATUS AND WHO WON THE MATCH. VALIDATORS VALIDATE WHE
 IF MATCH IS NOT 'ONGOING' EVEN AFTER THE DATE HAS PASSED OR MATCH FOUND INVALID, AUTOMATICALLY THE MATCH STATUS WILL BE SET TO FINISHED, 
 MONEY WILL BE REFUNDED TO ALL AND WON VARIABLE SET TO 2. IF ALL IS LEGIT THEN MONEY FUNDED TO THE WINNER AND ORGANIZER AND
 AMOUNTGIVEN VARIABLE OF ORGANIZER IS UPDATED
+
+IMPORTANT!!!
+MAKE A CLOUD FUNCTION THAT CLEANS DATABASE.
 
 <DO IT LATER>
 CALL CLEAN API EVERYTIME THE USER VISITS ANY MATCH SECTION OR REGISTERED SECTION
@@ -166,6 +174,15 @@ def register():
             if userdata["isVerified"] == False:
                 return "Failed: User not verified"
 
+            # checking whether the user has linked his game account
+            ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
+            ids_dict = ids.to_dict()
+            if ids_dict == None:
+                return "Failed: Account not linked"
+            if ids_dict["id"] == None or ids_dict["id"] == "":
+                return "Failed: Account not linked"
+            
+
             # checking if matchuid exists
             matchData = db.collection(matchType.lower()).document(matchuid).get()
             matchData = matchData.to_dict()
@@ -221,6 +238,14 @@ def register():
             result = updateRegisteredTeams(transaction, ref)
 
             if result:
+
+                # add to match's registration list
+                ref.collection("registeredUsers").document().set({
+                    "email": userdata["email"],
+                    "username": userdata["username"],
+                    "IGID": ids_dict["id"]
+                })
+
                 
                 # add to registered
                 db.collection("userinfo").document(useruid).collection(

@@ -38,7 +38,7 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
 
     if (mounted) {
       FirebaseAuth.instance.authStateChanges().listen((User? event) {
-        if (event?.uid != null) {
+        if (mounted && event?.uid != null) {
           context.read<OrganizerModel>().setuid(event?.uid);
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const Organizer()));
