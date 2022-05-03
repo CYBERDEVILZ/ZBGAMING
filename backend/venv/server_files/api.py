@@ -14,10 +14,10 @@ VALIDATE ORGANIZER SIGNIN AS WELL
 
 IMPORTANT!!!
 ORGANIZER VERIFICATION
-IN ORDER TO CREATE MATCHES, THE ORGANIZER SHOULD BE VERIFIED.
+IN ORDER TO CREATE MATCHES, THE ORGANIZER SHOULD BE VERIFIED (KYC).
 IN ORDER TO START MATCH, THE ORGANIZER SHOULD PROVIDE THE YOUTUBE STREAM LINK FOR PAID MATCHES
 AFTER THE MATCH ENDS, A 24 HOUR WINDOW IS GIVEN FOR ANY REPORTS. IF REPORTS ARE RECEIVED THEN THE STREAM IS WATCHED BY VERIFIERS.
-IF SOMETHING IS OFF, LIKE WRONG LINK, CHEATING, MATCH STARTED EARLY, ETC, THE MATCH IS FORFEITED AND MONEY IS REFUNDED
+IF SOMETHING IS OFF, LIKE WRONG LINK, CHEATING, MATCH STARTED EARLY, ETC, THE MATCH IS FORFEITED AND MONEY IS REFUNDED.
 
 IMPORTANT!!!
 AFTER THE MATCH ENDS FOR USER, GIVE HIM AN OPTION TO REPORT FOR THE NEXT 24 HOURS. MAKE SURE TO MENTION, IF THE REPORT TURNS FALSE, YOU WILL BE BANNED
@@ -63,6 +63,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import razorpay
 import re
+import hashlib
 
 # FIREBASE INIT
 cred = credentials.Certificate("zbgaming-v1-firebase-adminsdk-2ozhj-4f38e5fc3e.json")
@@ -243,9 +244,9 @@ def register():
                 ref.collection("registeredUsers").document().set({
                     "email": userdata["email"],
                     "username": userdata["username"],
-                    "IGID": ids_dict["id"]
+                    "IGID": ids_dict["id"],
+                    "hashedID": hashlib.sha256(useruid.encode()).digest()
                 })
-
                 
                 # add to registered
                 db.collection("userinfo").document(useruid).collection(
