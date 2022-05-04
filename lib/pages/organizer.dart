@@ -11,7 +11,7 @@ import 'package:zbgaming/model/organizermodel.dart';
 import 'package:zbgaming/pages/add_matches.dart';
 import 'package:zbgaming/pages/organizer_account.dart';
 import 'package:zbgaming/pages/organizer_login.dart';
-import 'package:zbgaming/pages/organizer_signup.dart';
+import 'package:zbgaming/widgets/upcoming_matches.dart';
 
 class Organizer extends StatefulWidget {
   const Organizer({Key? key}) : super(key: key);
@@ -248,7 +248,7 @@ class _OrganizerState extends State<Organizer> {
               child: Container(
             child: const Text(
               "CS:GO",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             margin: const EdgeInsets.only(top: 5),
           )),
@@ -265,29 +265,7 @@ class _OrganizerState extends State<Organizer> {
                     height: 30,
                     child: FittedBox(child: CircularProgressIndicator()));
               }
-              return Container(
-                margin: const EdgeInsets.only(
-                    left: 5, right: 5, top: 5, bottom: 20),
-                child: Column(
-                    children: snapshot.data!.docs.isEmpty
-                        ? const [Text("No matches found")]
-                        : snapshot.data!.docs
-                            .map((DocumentSnapshot e) => Card(
-                                  child: ListTile(
-                                      leading: const Text("csgo"),
-                                      title: Text(e["name"]),
-                                      subtitle: Text(e["date"]
-                                          .toDate()
-                                          .toString()
-                                          .substring(0, 11)),
-                                      trailing: ElevatedButton(
-                                        // write code for starting the match
-                                        child: const Text("start"),
-                                        onPressed: () {},
-                                      )),
-                                ))
-                            .toList()),
-              );
+              return UpcomingMatch(snapshot: snapshot);
             },
           ),
 
@@ -296,7 +274,7 @@ class _OrganizerState extends State<Organizer> {
               child: Container(
             child: const Text(
               "Garena Free Fire",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             margin: const EdgeInsets.only(top: 5),
           )),
@@ -311,29 +289,7 @@ class _OrganizerState extends State<Organizer> {
                     height: 30,
                     child: FittedBox(child: CircularProgressIndicator()));
               }
-              return Container(
-                margin: const EdgeInsets.only(
-                    left: 5, right: 5, top: 5, bottom: 20),
-                child: Column(
-                    children: snapshot.data!.docs.isEmpty
-                        ? const [Text("No matches found")]
-                        : snapshot.data!.docs
-                            .map((DocumentSnapshot e) => Card(
-                                  child: ListTile(
-                                      leading: const Text("freefire"),
-                                      title: Text(e["name"]),
-                                      subtitle: Text(e["date"]
-                                          .toDate()
-                                          .toString()
-                                          .substring(0, 11)),
-                                      trailing: ElevatedButton(
-                                        // write code for starting the match
-                                        child: const Text("start"),
-                                        onPressed: () {},
-                                      )),
-                                ))
-                            .toList()),
-              );
+              return UpcomingMatch(snapshot: snapshot);
             },
           ),
 
@@ -342,7 +298,7 @@ class _OrganizerState extends State<Organizer> {
               child: Container(
             child: const Text(
               "Player Unknown Battlegrounds",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             margin: const EdgeInsets.only(top: 5),
           )),
@@ -357,29 +313,7 @@ class _OrganizerState extends State<Organizer> {
                     height: 30,
                     child: FittedBox(child: CircularProgressIndicator()));
               }
-              return Container(
-                margin: const EdgeInsets.only(
-                    left: 5, right: 5, top: 5, bottom: 20),
-                child: Column(
-                    children: snapshot.data!.docs.isEmpty
-                        ? const [Text("No matches found")]
-                        : snapshot.data!.docs
-                            .map((DocumentSnapshot e) => Card(
-                                  child: ListTile(
-                                      leading: const Text("pubg"),
-                                      title: Text(e["name"]),
-                                      subtitle: Text(e["date"]
-                                          .toDate()
-                                          .toString()
-                                          .substring(0, 11)),
-                                      trailing: ElevatedButton(
-                                        // write code for starting the match
-                                        child: const Text("start"),
-                                        onPressed: () {},
-                                      )),
-                                ))
-                            .toList()),
-              );
+              return UpcomingMatch(snapshot: snapshot);
             },
           ),
 
@@ -388,7 +322,7 @@ class _OrganizerState extends State<Organizer> {
               child: Container(
             child: const Text(
               "Valorant",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             margin: const EdgeInsets.only(top: 5),
           )),
@@ -405,29 +339,7 @@ class _OrganizerState extends State<Organizer> {
                     height: 30,
                     child: FittedBox(child: CircularProgressIndicator()));
               }
-              return Container(
-                margin: const EdgeInsets.only(
-                    left: 5, right: 5, top: 5, bottom: 20),
-                child: Column(
-                    children: snapshot.data!.docs.isEmpty
-                        ? const [Text("No matches found")]
-                        : snapshot.data!.docs
-                            .map((DocumentSnapshot e) => Card(
-                                  child: ListTile(
-                                      leading: const Text("valo"),
-                                      title: Text(e["name"]),
-                                      subtitle: Text(e["date"]
-                                          .toDate()
-                                          .toString()
-                                          .substring(0, 11)),
-                                      trailing: ElevatedButton(
-                                        // write code for starting the match
-                                        child: const Text("start"),
-                                        onPressed: () {},
-                                      )),
-                                ))
-                            .toList()),
-              );
+              return UpcomingMatch(snapshot: snapshot);
             },
           ),
         ]),
