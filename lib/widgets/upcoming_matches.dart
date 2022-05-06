@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zbgaming/pages/match_start.dart';
 import 'package:zbgaming/widgets/date_to_string.dart';
 
 class UpcomingMatch extends StatelessWidget {
-  const UpcomingMatch({Key? key, required this.snapshot}) : super(key: key);
+  const UpcomingMatch(
+      {Key? key, required this.snapshot, required this.matchType})
+      : super(key: key);
   final AsyncSnapshot<QuerySnapshot<Object?>> snapshot;
+  final String matchType;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +34,15 @@ class UpcomingMatch extends StatelessWidget {
                                 .dateToString(e["date"].toDate())),
                             trailing: ElevatedButton(
                               // write code for starting the match
-                              child: const Text("start"),
-                              onPressed: () {},
+                              child: const Text("show"),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MatchStart(
+                                            matchType: matchType,
+                                            matchuid: e.id)));
+                              },
                             )),
                       ))
                   .toList()),

@@ -265,7 +265,7 @@ class _OrganizerState extends State<Organizer> {
                     height: 30,
                     child: FittedBox(child: CircularProgressIndicator()));
               }
-              return UpcomingMatch(snapshot: snapshot);
+              return UpcomingMatch(matchType: "csgo", snapshot: snapshot);
             },
           ),
 
@@ -289,7 +289,7 @@ class _OrganizerState extends State<Organizer> {
                     height: 30,
                     child: FittedBox(child: CircularProgressIndicator()));
               }
-              return UpcomingMatch(snapshot: snapshot);
+              return UpcomingMatch(matchType: "freefire", snapshot: snapshot);
             },
           ),
 
@@ -313,7 +313,7 @@ class _OrganizerState extends State<Organizer> {
                     height: 30,
                     child: FittedBox(child: CircularProgressIndicator()));
               }
-              return UpcomingMatch(snapshot: snapshot);
+              return UpcomingMatch(matchType: "pubg", snapshot: snapshot);
             },
           ),
 
@@ -339,7 +339,7 @@ class _OrganizerState extends State<Organizer> {
                     height: 30,
                     child: FittedBox(child: CircularProgressIndicator()));
               }
-              return UpcomingMatch(snapshot: snapshot);
+              return UpcomingMatch(matchType: "valo", snapshot: snapshot);
             },
           ),
         ]),
