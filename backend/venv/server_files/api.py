@@ -3,9 +3,6 @@ OPTIMIZATIONS / IDEAS
 ---------------------
 
 IMPORTANT!!!
-Beautify organizer landing page
-
-IMPORTANT!!!
 ADD VALIDATION TO GAME ACCOUNT LINKING!
 
 IMPORTANT!!!
