@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zbgaming/pages/show_user_account.dart';
 
 class RegisteredUsers extends StatefulWidget {
   const RegisteredUsers(
@@ -39,7 +40,11 @@ class _RegisteredUsersState extends State<RegisteredUsers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Registered Users")),
+      appBar: AppBar(
+        title: const Text("Registered Users"),
+        centerTitle: true,
+        elevation: 0,
+      ),
       body: ListView(children: [
         StreamBuilder(
           stream: regUsers,
@@ -54,10 +59,19 @@ class _RegisteredUsersState extends State<RegisteredUsers> {
             }
             return Column(
                 children: snapshot.data!.docs.map((e) {
-              return Card(
-                child: ListTile(
-                  title: Text(e["username"]),
-                  subtitle: Text(e["IGID"]),
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: ((context) => const ShowUserAccount())));
+                },
+                child: Card(
+                  child: ListTile(
+                    title: Text(e["username"]),
+                    subtitle: Text("In-Game ID: " + e["IGID"]),
+                    trailing: const Icon(Icons.open_in_new),
+                  ),
                 ),
               );
             }).toList());

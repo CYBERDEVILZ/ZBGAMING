@@ -12,20 +12,25 @@ class MatchStart extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Match Analysis"),
+          centerTitle: true,
+          elevation: 0,
+        ),
         body: ListView(children: [
-          ListTile(
-            title: const Text("Users Registered"),
-            trailing: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => RegisteredUsers(
-                              matchType: matchType,
-                              matchuid: matchuid,
-                            )));
-              },
-              child: const Icon(Icons.open_in_new),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => RegisteredUsers(
+                            matchType: matchType,
+                            matchuid: matchuid,
+                          )));
+            },
+            child: const ListTile(
+              title: Text("Users Registered"),
+              trailing: Icon(Icons.open_in_new),
             ),
           )
         ]),

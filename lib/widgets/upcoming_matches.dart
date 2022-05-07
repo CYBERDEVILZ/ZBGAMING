@@ -14,7 +14,8 @@ class UpcomingMatch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(minHeight: 100),
-      color: Colors.blueGrey[100],
+      decoration: BoxDecoration(
+          color: Colors.blueGrey[100], borderRadius: BorderRadius.circular(10)),
       margin: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 20),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -27,23 +28,27 @@ class UpcomingMatch extends StatelessWidget {
                   )
                 ]
               : snapshot.data!.docs
-                  .map((DocumentSnapshot e) => Card(
-                        child: ListTile(
-                            title: Text(e["name"]),
-                            subtitle: Text(DateToString()
-                                .dateToString(e["date"].toDate())),
-                            trailing: ElevatedButton(
-                              // write code for starting the match
-                              child: const Text("show"),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MatchStart(
-                                            matchType: matchType,
-                                            matchuid: e.id)));
-                              },
-                            )),
+                  .map((DocumentSnapshot e) => Padding(
+                        padding: const EdgeInsets.only(
+                            left: 8, right: 8, top: 4, bottom: 4),
+                        child: Card(
+                          child: ListTile(
+                              title: Text(e["name"]),
+                              subtitle: Text(DateToString()
+                                  .dateToString(e["date"].toDate())),
+                              trailing: ElevatedButton(
+                                // write code for starting the match
+                                child: const Text("show"),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => MatchStart(
+                                              matchType: matchType,
+                                              matchuid: e.id)));
+                                },
+                              )),
+                        ),
                       ))
                   .toList()),
     );
