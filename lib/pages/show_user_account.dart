@@ -5,6 +5,19 @@ class ShowUserAccount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: SingleChildScrollView(
+          child: Column(
+        children: [
+          Image.asset(
+            "assets/images/zbunker-app-banner-upsidedown-short.png",
+            fit: BoxFit.fitWidth,
+          ),
+          const CircleAvatar(
+            maxRadius: 70,
+          )
+        ],
+      )),
+    );
   }
 }

@@ -112,6 +112,7 @@ def userSignup():
                                 "imageurl": imageurl,
                                 "level": 0,
                                 "isVerified": isVerified,
+                                "hashedID": hashlib.sha256(docId.encode()).digest()
                             }
                         )
 

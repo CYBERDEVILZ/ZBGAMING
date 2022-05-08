@@ -30,7 +30,7 @@ class MatchStart extends StatelessWidget {
             },
             child: const ListTile(
               title: Text("Users Registered"),
-              trailing: Icon(Icons.open_in_new),
+              trailing: Icon(Icons.arrow_right),
             ),
           )
         ]),
