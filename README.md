@@ -1,6 +1,6 @@
 # ZBGaming
 
-**ZBunker Gaming** aka **ZBGaming** evolved with only one motive: To make **India** a **Super Gaming Hub**. Gone are the days when studies only matter. This is modern India, modern people, modern lifestyle and modern beliefs. Gaming is not a boon, it requires immense amount of psychomotor skills, patience, skills, determination and the right set of mentality. It's not just a sport, its a way of being.
+**ZBunker Gaming** aka **ZBGaming** evolved with only one motive: To make **India** a **Super Gaming Hub**. Gone are the days when studies only matter. This is modern India, modern people, modern lifestyle and modern beliefs. Gaming is not a boon, it requires immense amount of psychomotor skills, patience, determination and the right set of mentality. It's not just a sport, its a way of being.
 
 ZBgaming is an application to host matches and tournaments to find the right talents who can raise the bar for the next generation of gamers. Win tournaments, earn prizes and survive the leaderboard!
 
