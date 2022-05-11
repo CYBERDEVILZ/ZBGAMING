@@ -8,6 +8,7 @@ import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/pages/organizer_login.dart';
 import 'package:zbgaming/pages/organizer_signup.dart';
 import 'package:zbgaming/pages/pubg.dart';
+import 'package:zbgaming/pages/show_user_account.dart';
 import 'package:zbgaming/pages/signup.dart';
 import 'package:zbgaming/pages/valorant.dart';
 import 'package:zbgaming/utils/routes.dart';
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // home: const HomePage(),
-      home: const OrganizerLogin(),
+      home: const ShowUserAccount(),
+      // home: const OrganizerLogin(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",
       routes: {
