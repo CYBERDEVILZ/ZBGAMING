@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class ShadowedContainer extends StatelessWidget {
   const ShadowedContainer(
-      {Key? key, required this.textWidget, this.colorBottom, this.colorTop})
+      {Key? key, required this.anyWidget, this.colorBottom, this.colorTop})
       : super(key: key);
 
-  final Text textWidget;
+  final Widget anyWidget;
   final Color? colorBottom;
   final Color? colorTop;
 
@@ -20,7 +20,7 @@ class ShadowedContainer extends StatelessWidget {
             color: colorBottom ?? const Color.fromARGB(255, 36, 234, 248),
             constraints: const BoxConstraints(minHeight: 50),
             width: MediaQuery.of(context).size.width,
-            child: textWidget,
+            child: anyWidget,
           ),
           Positioned(
             bottom: 5,
@@ -32,7 +32,7 @@ class ShadowedContainer extends StatelessWidget {
               color: colorTop ?? const Color.fromARGB(255, 7, 133, 155),
               width: MediaQuery.of(context).size.width,
               constraints: const BoxConstraints(minHeight: 50),
-              child: textWidget,
+              child: anyWidget,
             ),
           ),
         ]),
