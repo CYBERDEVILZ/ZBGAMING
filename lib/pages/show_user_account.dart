@@ -1,8 +1,35 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zbgaming/widgets/custom_colorful_container.dart';
 
-class ShowUserAccount extends StatelessWidget {
-  const ShowUserAccount({Key? key}) : super(key: key);
+List<String> maWon = [
+  "sldkfjskldf",
+  "slkjfslkdf",
+  "lskjdflskdfj",
+  "lskdjfslkdfj",
+  "lskdjfslkdfj",
+  "lskdjfslkdfj",
+  "lskdjfslkdfj",
+  "lskdjfslkdfj",
+];
+
+class ShowUserAccount extends StatefulWidget {
+  const ShowUserAccount({Key? key, required this.hashedId}) : super(key: key);
+  final Blob hashedId;
+
+  @override
+  State<ShowUserAccount> createState() => _ShowUserAccountState();
+}
+
+class _ShowUserAccountState extends State<ShowUserAccount> {
+  bool isLoading = false;
+
+  void fetchData() async {}
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +77,7 @@ class ShowUserAccount extends StatelessWidget {
                     const SizedBox(height: 20),
                     RichText(
                         text: const TextSpan(
-                            text: "Matches Won: ",
+                            text: "Total Matches Won: ",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -60,10 +87,84 @@ class ShowUserAccount extends StatelessWidget {
                               text: "32",
                               style: TextStyle(fontWeight: FontWeight.w300))
                         ])),
+                    const SizedBox(height: 20),
+                    RichText(
+                        textAlign: TextAlign.center,
+                        text: const TextSpan(
+                            text: "Amounts Won: ",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                            children: [
+                              TextSpan(
+                                  text: "12000000",
+                                  style: TextStyle(fontWeight: FontWeight.w300))
+                            ])),
                   ],
                 ),
               ),
             ),
+            const SizedBox(height: 30),
+            ShadowedContainer(
+                anyWidget: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Matches Won",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  ...maWon.map((element) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                          width: double.infinity,
+                          color: Colors.white,
+                          padding: const EdgeInsets.all(8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const CircleAvatar(),
+                              Expanded(
+                                  child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Tournament name",
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("Date here"),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text("Amount won here"),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              )),
+                            ],
+                          )),
+                    );
+                  }).toList(),
+                ],
+              ),
+            )),
+            const SizedBox(height: 20),
           ],
         )),
       ),

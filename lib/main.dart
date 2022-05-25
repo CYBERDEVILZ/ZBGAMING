@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // home: const HomePage(),
-      // home: const ShowUserAccount(),
       home: const OrganizerLogin(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",

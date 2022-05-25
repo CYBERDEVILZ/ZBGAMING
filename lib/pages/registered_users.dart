@@ -64,7 +64,8 @@ class _RegisteredUsersState extends State<RegisteredUsers> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: ((context) => const ShowUserAccount())));
+                          builder: ((context) =>
+                              ShowUserAccount(hashedId: e["hashedID"]))));
                 },
                 child: Card(
                   child: ListTile(
