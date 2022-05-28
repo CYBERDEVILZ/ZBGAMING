@@ -51,6 +51,45 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
       imgurl = data[0]["imageurl"];
       level = data[0]["level"];
 
+      // calculating user level
+      await FirebaseFirestore.instance
+          .collection("userinfo")
+          .doc(data[0].id)
+          .collection("history")
+          .where("paid", isNotEqualTo: 0)
+          .get()
+          .then((value) {
+        int participation = 0;
+        int won = 0;
+        if (value.docs.isEmpty) {
+          level = 0;
+        } else {
+          participation = (value.docs.length) * 20;
+          List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = value.docs;
+          docs.map((e) {
+            int wonMatches = e["won"];
+            if (wonMatches == 1) {
+              int paid = e["paid"];
+              if (paid == 1) {
+                won += 300;
+              }
+              if (paid == 2) {
+                won += 500;
+              }
+              if (paid == 3) {
+                won += 1500;
+              }
+              if (paid == 4) {
+                won += 2000;
+              } else {
+                won += 0;
+              }
+            }
+          });
+          level = won + participation;
+        }
+      });
+
       if (level != null) {
         if (level! <= 5000) {
           userLevel = "ROOKIE";
