@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/widgets/custom_colorful_container.dart';
 
 List<String> maWon = [
@@ -22,9 +23,53 @@ class ShowUserAccount extends StatefulWidget {
 }
 
 class _ShowUserAccountState extends State<ShowUserAccount> {
-  bool isLoading = false;
+  bool isLoading = true;
+  bool isMatchesLoading = true;
+  String? name;
+  String? imgurl;
+  int? level;
+  int? matchesWon;
+  List<QueryDocumentSnapshot<Map<String, dynamic>>>? totalMatchesWon;
 
-  void fetchData() async {}
+  void fetchData() async {
+    await FirebaseFirestore.instance
+        .collection("userinfo")
+        .where("hashedID", isEqualTo: widget.hashedId)
+        .get()
+        .then((value) async {
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> data = value.docs;
+      if (data.length != 1) {
+        Fluttertoast.showToast(msg: "Some error occurred");
+        Navigator.pop(context);
+      }
+      name = data[0]["username"];
+      imgurl = data[0]["imageurl"];
+      level = data[0]["level"];
+
+      await FirebaseFirestore.instance
+          .collection("userinfo")
+          .doc(data[0].id)
+          .collection("history")
+          .where("won", isEqualTo: 1)
+          .get()
+          .then((value) {
+        totalMatchesWon = value.docs;
+        setState(() {
+          isMatchesLoading = false;
+        });
+      }).catchError((onError) {
+        Fluttertoast.showToast(msg: "Some error occurred");
+        isMatchesLoading = false;
+        setState(() {});
+      });
+    }).catchError((onError) {
+      Fluttertoast.showToast(msg: "Some error occurred");
+      Navigator.pop(context);
+      isMatchesLoading = false;
+      isLoading = false;
+      setState(() {});
+    });
+  }
 
   @override
   void initState() {
