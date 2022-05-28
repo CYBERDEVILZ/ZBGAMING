@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
+import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/custom_colorful_container.dart';
 
 List<String> maWon = [
@@ -29,6 +32,8 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
   String? imgurl;
   int? level;
   int? matchesWon;
+  String? userLevel;
+
   List<QueryDocumentSnapshot<Map<String, dynamic>>>? totalMatchesWon;
 
   void fetchData() async {
@@ -46,6 +51,21 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
       imgurl = data[0]["imageurl"];
       level = data[0]["level"];
 
+      if (level != null) {
+        if (level! <= 5000) {
+          userLevel = "ROOKIE";
+        } else if (level! <= 20000) {
+          userLevel = "VETERAN";
+        } else if (level! >= 20001) {
+          userLevel = "ELITE";
+        } else {
+          userLevel = null;
+        }
+      }
+
+      isLoading = false;
+      setState(() {});
+
       await FirebaseFirestore.instance
           .collection("userinfo")
           .doc(data[0].id)
@@ -54,9 +74,8 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
           .get()
           .then((value) {
         totalMatchesWon = value.docs;
-        setState(() {
-          isMatchesLoading = false;
-        });
+        isMatchesLoading = false;
+        setState(() {});
       }).catchError((onError) {
         Fluttertoast.showToast(msg: "Some error occurred");
         isMatchesLoading = false;
@@ -65,15 +84,13 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
     }).catchError((onError) {
       Fluttertoast.showToast(msg: "Some error occurred");
       Navigator.pop(context);
-      isMatchesLoading = false;
-      isLoading = false;
-      setState(() {});
     });
   }
 
   @override
   void initState() {
     super.initState();
+    fetchData();
   }
 
   @override
@@ -82,136 +99,146 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 2, 5, 26),
         body: SingleChildScrollView(
-            child: Column(
-          children: [
-            Image.asset(
-              "assets/images/zbunker-app-banner-upsidedown-short.png",
-              fit: BoxFit.fitWidth,
-            ),
-            const CircleAvatar(
-              maxRadius: 70,
-            ),
-            const SizedBox(height: 30),
-            const ShadowedContainer(
-              anyWidget: Text(
-                "CYBERDEVILZ",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.white),
-              ),
-            ),
-            const SizedBox(height: 40),
-            ShadowedContainer(
-              anyWidget: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Column(
-                  children: [
-                    RichText(
-                        text: const TextSpan(
-                            text: "Level: ",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
+                    children: [
+                      Image.asset(
+                        "assets/images/zbunker-app-banner-upsidedown-short.png",
+                        fit: BoxFit.fitWidth,
+                      ),
+                      const CircleAvatar(
+                        maxRadius: 70,
+                      ),
+                      const SizedBox(height: 30),
+                      ShadowedContainer(
+                        anyWidget: Text(
+                          name!,
+                          style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      ShadowedContainer(
+                        anyWidget: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Column(
                             children: [
-                          TextSpan(
-                              text: "VETERAN",
-                              style: TextStyle(fontWeight: FontWeight.w300))
-                        ])),
-                    const SizedBox(height: 20),
-                    RichText(
-                        text: const TextSpan(
-                            text: "Total Matches Won: ",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                            children: [
-                          TextSpan(
-                              text: "32",
-                              style: TextStyle(fontWeight: FontWeight.w300))
-                        ])),
-                    const SizedBox(height: 20),
-                    RichText(
-                        textAlign: TextAlign.center,
-                        text: const TextSpan(
-                            text: "Amounts Won: ",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                            children: [
-                              TextSpan(
-                                  text: "12000000",
-                                  style: TextStyle(fontWeight: FontWeight.w300))
-                            ])),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            ShadowedContainer(
-                anyWidget: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Matches Won",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 20),
-                  ...maWon.map((element) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                          width: double.infinity,
-                          color: Colors.white,
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const CircleAvatar(),
-                              Expanded(
-                                  child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Tournament name",
-                                      style: TextStyle(
-                                          fontSize: 17,
+                              RichText(
+                                  text: TextSpan(
+                                      text: "Level: ",
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
                                           fontWeight: FontWeight.bold),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text("Date here"),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text("Amount won here"),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              )),
+                                    TextSpan(
+                                        text: userLevel,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w300))
+                                  ])),
+                              const SizedBox(height: 20),
+                              RichText(
+                                  text: const TextSpan(
+                                      text: "Total Matches Won: ",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                      children: [
+                                    TextSpan(
+                                        text: "32",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w300))
+                                  ])),
+                              const SizedBox(height: 20),
+                              RichText(
+                                  textAlign: TextAlign.center,
+                                  text: const TextSpan(
+                                      text: "Amounts Won: ",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                      children: [
+                                        TextSpan(
+                                            text: "12000000",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w300))
+                                      ])),
                             ],
-                          )),
-                    );
-                  }).toList(),
-                ],
-              ),
-            )),
-            const SizedBox(height: 20),
-          ],
-        )),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      ShadowedContainer(
+                          anyWidget: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Matches Won",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 20),
+                            ...maWon.map((element) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                    width: double.infinity,
+                                    color: Colors.white,
+                                    padding: const EdgeInsets.all(8),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const CircleAvatar(),
+                                        Expanded(
+                                            child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Tournament name",
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text("Date here"),
+                                                  SizedBox(width: 10),
+                                                  Expanded(
+                                                    child:
+                                                        Text("Amount won here"),
+                                                  )
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ],
+                                    )),
+                              );
+                            }).toList(),
+                          ],
+                        ),
+                      )),
+                      const SizedBox(height: 20),
+                    ],
+                  )),
       ),
     );
   }
