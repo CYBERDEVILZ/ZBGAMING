@@ -1,21 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart';
-import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/custom_colorful_container.dart';
 
-List<String> maWon = [
-  "sldkfjskldf",
-  "slkjfslkdf",
-  "lskjdflskdfj",
-  "lskdjfslkdfj",
-  "lskdjfslkdfj",
-  "lskdjfslkdfj",
-  "lskdjfslkdfj",
-  "lskdjfslkdfj",
-];
+import '../widgets/Date_to_string.dart';
 
 class ShowUserAccount extends StatefulWidget {
   const ShowUserAccount({Key? key, required this.hashedId}) : super(key: key);
@@ -31,10 +19,11 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
   String? name;
   String? imgurl;
   int? level;
-  int? matchesWon;
+  int matchesWon = 0;
+  int amountWon = 0;
   String? userLevel;
 
-  List<QueryDocumentSnapshot<Map<String, dynamic>>>? totalMatchesWon;
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> totalMatchesWon = [];
 
   void fetchData() async {
     await FirebaseFirestore.instance
@@ -63,56 +52,71 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
         int won = 0;
         if (value.docs.isEmpty) {
           level = 0;
+          isLoading = false;
+          setState(() {});
         } else {
           participation = (value.docs.length) * 20;
           List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = value.docs;
-          docs.map((e) {
-            int wonMatches = e["won"];
+
+          for (int i = 0; i < docs.length; i++) {
+            int wonMatches = docs[i]["won"];
             if (wonMatches == 1) {
-              int paid = e["paid"];
+              int paid = docs[i]["paid"];
               if (paid == 1) {
                 won += 300;
+                amountWon += 2400;
               }
               if (paid == 2) {
                 won += 500;
+                amountWon += 12000;
               }
               if (paid == 3) {
                 won += 1500;
+                amountWon += 24000;
               }
               if (paid == 4) {
                 won += 2000;
+                amountWon += 120000;
               } else {
                 won += 0;
+                amountWon += 0;
               }
             }
-          });
+          }
+
           level = won + participation;
+          isLoading = false;
+          setState(() {});
         }
+
+        if (level != null) {
+          if (level! <= 5000) {
+            userLevel = "ROOKIE";
+          } else if (level! <= 20000) {
+            userLevel = "VETERAN";
+          } else if (level! >= 20001) {
+            userLevel = "ELITE";
+          } else {
+            userLevel = null;
+          }
+        }
+      }).catchError((onError) {
+        Fluttertoast.showToast(msg: "Something went wrong");
+        isLoading = false;
+        setState(() {});
       });
 
-      if (level != null) {
-        if (level! <= 5000) {
-          userLevel = "ROOKIE";
-        } else if (level! <= 20000) {
-          userLevel = "VETERAN";
-        } else if (level! >= 20001) {
-          userLevel = "ELITE";
-        } else {
-          userLevel = null;
-        }
-      }
-
-      isLoading = false;
-      setState(() {});
-
+      // getting won matches
       await FirebaseFirestore.instance
           .collection("userinfo")
           .doc(data[0].id)
           .collection("history")
           .where("won", isEqualTo: 1)
+          .where("paid", isNotEqualTo: 0)
           .get()
           .then((value) {
         totalMatchesWon = value.docs;
+        matchesWon = totalMatchesWon.length;
         isMatchesLoading = false;
         setState(() {});
       }).catchError((onError) {
@@ -122,7 +126,6 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
       });
     }).catchError((onError) {
       Fluttertoast.showToast(msg: "Some error occurred");
-      Navigator.pop(context);
     });
   }
 
@@ -180,31 +183,31 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                                   ])),
                               const SizedBox(height: 20),
                               RichText(
-                                  text: const TextSpan(
+                                  text: TextSpan(
                                       text: "Total Matches Won: ",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
                                       children: [
                                     TextSpan(
-                                        text: "32",
-                                        style: TextStyle(
+                                        text: "$matchesWon",
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.w300))
                                   ])),
                               const SizedBox(height: 20),
                               RichText(
                                   textAlign: TextAlign.center,
-                                  text: const TextSpan(
+                                  text: TextSpan(
                                       text: "Amounts Won: ",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
                                       children: [
                                         TextSpan(
-                                            text: "12000000",
-                                            style: TextStyle(
+                                            text: "$amountWon",
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w300))
                                       ])),
                             ],
@@ -212,69 +215,91 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      ShadowedContainer(
-                          anyWidget: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              "Matches Won",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 20),
-                            ...maWon.map((element) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                    width: double.infinity,
-                                    color: Colors.white,
-                                    padding: const EdgeInsets.all(8),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const CircleAvatar(),
-                                        Expanded(
-                                            child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
+                      isMatchesLoading
+                          ? CircularProgressIndicator()
+                          : ShadowedContainer(
+                              anyWidget: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "Matches Won",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  ...totalMatchesWon.map((element) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                          width: double.infinity,
+                                          color: Colors.white,
+                                          padding: const EdgeInsets.all(8),
+                                          child: Row(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                CrossAxisAlignment.center,
                                             children: [
-                                              Text(
-                                                "Tournament name",
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text("Date here"),
-                                                  SizedBox(width: 10),
-                                                  Expanded(
-                                                    child:
-                                                        Text("Amount won here"),
-                                                  )
-                                                ],
-                                              )
+                                              const CircleAvatar(),
+                                              Expanded(
+                                                  child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      element["name"],
+                                                      style: const TextStyle(
+                                                          fontSize: 17,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(DateToString()
+                                                            .dateToString(
+                                                                element['date']
+                                                                    .toDate())),
+                                                        const SizedBox(
+                                                            width: 10),
+                                                        Expanded(
+                                                          child: Text(
+                                                            element["paid"] == 1
+                                                                ? "Rs 2400"
+                                                                : element["paid"] ==
+                                                                        2
+                                                                    ? "Rs 12000"
+                                                                    : element["paid"] ==
+                                                                            3
+                                                                        ? "Rs 24000"
+                                                                        : element["paid"] ==
+                                                                                4
+                                                                            ? "Rs 120000"
+                                                                            : "Rs Null",
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              )),
                                             ],
-                                          ),
-                                        )),
-                                      ],
-                                    )),
-                              );
-                            }).toList(),
-                          ],
-                        ),
-                      )),
+                                          )),
+                                    );
+                                  }).toList(),
+                                ],
+                              ),
+                            )),
                       const SizedBox(height: 20),
                     ],
                   )),
