@@ -149,9 +149,24 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                         "assets/images/zbunker-app-banner-upsidedown-short.png",
                         fit: BoxFit.fitWidth,
                       ),
-                      const CircleAvatar(
-                        maxRadius: 70,
-                      ),
+                      Stack(clipBehavior: Clip.none, children: [
+                        const CircleAvatar(
+                          maxRadius: 70,
+                          backgroundColor: Color.fromARGB(255, 36, 234, 248),
+                        ),
+                        Positioned(
+                          bottom: 5,
+                          right: 5,
+                          left: -5,
+                          child: CircleAvatar(
+                            maxRadius: 70,
+                            backgroundColor:
+                                const Color.fromARGB(255, 7, 133, 155),
+                            foregroundImage:
+                                imgurl == null ? null : NetworkImage(imgurl!),
+                          ),
+                        ),
+                      ]),
                       const SizedBox(height: 30),
                       ShadowedContainer(
                         anyWidget: Text(
@@ -216,7 +231,7 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                       ),
                       const SizedBox(height: 30),
                       isMatchesLoading
-                          ? CircularProgressIndicator()
+                          ? const CircularProgressIndicator()
                           : ShadowedContainer(
                               anyWidget: Padding(
                               padding: const EdgeInsets.all(8.0),
