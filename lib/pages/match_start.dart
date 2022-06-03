@@ -32,6 +32,12 @@ class MatchStart extends StatelessWidget {
               title: Text("Users Registered"),
               trailing: Icon(Icons.arrow_right),
             ),
+          ),
+          Column(
+            children: [
+              ElevatedButton(
+                  onPressed: () {}, child: const Text("START MATCH")),
+            ],
           )
         ]),
       ),

@@ -10,9 +10,6 @@ IMPORTANT!!!
 ADD VALIDATION TO GAME ACCOUNT LINKING!
 
 IMPORTANT!!!
-ADD VIEW REGISTERED USERS IN MATCH REGISTER PAGE
-
-IMPORTANT!!!
 THE ORGANIZER CAN THEN SEND A MASS NOTIFICATION TO ALL THE USER REGISTERED ABOUT THE DATE AND TIME AND DISCORD CHANNEL LINK TO THE REGISTERED USERS.
 
 IMPORTANT!!!
@@ -41,11 +38,8 @@ MAKE A CLOUD FUNCTION THAT CLEANS DATABASE.
 CALL CLEAN API EVERYTIME THE USER VISITS ANY MATCH SECTION OR REGISTERED SECTION
 </DO IT LATER>
 
-
-ORGANIZER GETS A LIST OF PEOPLE WHO REGISTERED FOR HIS MATCH. THEIR UNIQUE ID IS THEIR EMAIL. NEVER EXPOSE UID!
-HE SELECTS WHO WON THE MATCH WHEN HE FINISHES THE MATCH. HE UPDATES IT AND THEN READ POINT ONE.
-
-Organizer starts the match if eligible, further registration stops, ongoing message shown. If finished, finished message shown
+Organizer starts the match if the required minimum number of people have joined (80%), further registration stops, ongoing message shown, 
+joining details sent as push notification to each people who have registered.
 Validator should be able to validate a match
 Validate organizers (KYC, BANK ACCOUNT, isverified tag add if they are verified)
 Database Cleanup (After every call to view matches, registered matches, always clean the database)
@@ -447,9 +441,6 @@ def validate():
         
 
 
-    
-
-
 # CREATE MATCHES
 @app.route("/api/create")
 # date, fee, match, name, skill, solo, reg=0, special, uid
@@ -662,6 +653,24 @@ def userLevelCalculate():
         return "Failed"
 
 
+@app.route("/api/startMatch")
+def startMatch():
+    matchUid = request.args.get('muid')
+    matchType = request.args.get("mType")
+    matchType = matchType.lower()
+
+    if matchType == "pubg":
+        data = db.collection(matchType).document(matchUid).get().to_dict()
+        if data == None:
+            return "Failed"
+        if data["reg"] < 80:
+            return "Failed: Not enough registrations"
+        db.collection(matchType).document(matchUid).update({
+            "started": 1
+        })
+        return "Success"
+    else:
+        return "Failed"
 
     
 
