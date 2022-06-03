@@ -344,14 +344,14 @@ class _OrganizerState extends State<Organizer> {
           ),
         ]),
 
-        bottomNavigationBar:
-            BottomNavigationBar(items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: "haha"),
-          BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: "hoh")
-        ]),
+        // bottomNavigationBar:
+        //     BottomNavigationBar(items: const <BottomNavigationBarItem>[
+        //   BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: "haha"),
+        //   BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: "hoh")
+        // ]),
 
         // floating action button
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
         floatingActionButton: FloatingActionButton(
           elevation: 0,
           // add matches page
