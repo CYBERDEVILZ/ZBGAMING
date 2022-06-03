@@ -39,46 +39,48 @@ class _RegisteredUsersState extends State<RegisteredUsers> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Registered Users"),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: ListView(children: [
-        StreamBuilder(
-          stream: regUsers,
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return const Text("An error occurred");
-            }
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
-                  height: 30,
-                  child: FittedBox(child: CircularProgressIndicator()));
-            }
-            return Column(
-                children: snapshot.data!.docs.map((e) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: ((context) =>
-                              ShowUserAccount(hashedId: e["hashedID"]))));
-                },
-                child: Card(
-                  child: ListTile(
-                    title: Text(e["username"]),
-                    subtitle: Text("In-Game ID: " + e["IGID"]),
-                    trailing: const Icon(Icons.open_in_new),
-                  ),
-                ),
-              );
-            }).toList());
-          },
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Registered Users"),
+          centerTitle: true,
+          elevation: 0,
         ),
-      ]),
+        body: ListView(children: [
+          StreamBuilder(
+            stream: regUsers,
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return const Text("An error occurred");
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(
+                    height: 30,
+                    child: FittedBox(child: CircularProgressIndicator()));
+              }
+              return Column(
+                  children: snapshot.data!.docs.map((e) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: ((context) =>
+                                ShowUserAccount(hashedId: e["hashedID"]))));
+                  },
+                  child: Card(
+                    child: ListTile(
+                      title: Text(e["username"]),
+                      subtitle: Text("In-Game ID: " + e["IGID"]),
+                      trailing: const Icon(Icons.open_in_new),
+                    ),
+                  ),
+                );
+              }).toList());
+            },
+          ),
+        ]),
+      ),
     );
   }
 }

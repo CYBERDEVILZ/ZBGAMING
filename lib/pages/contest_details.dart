@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
+import 'package:zbgaming/pages/registered_users.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/Date_to_string.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
@@ -186,6 +187,19 @@ class _ContestDetailsState extends State<ContestDetails> {
                         color: Colors.black.withOpacity(0.5)),
                   )
                 ],
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegisteredUsers(
+                                  matchType: widget.matchType,
+                                  matchuid: widget.uid)));
+                    },
+                    child: const Text("View Registered Users")),
               )
             ]),
 
