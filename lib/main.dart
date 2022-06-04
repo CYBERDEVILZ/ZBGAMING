@@ -4,6 +4,7 @@ import 'package:zbgaming/pages/create_match.dart';
 import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
 import 'package:zbgaming/pages/login.dart';
+import 'package:zbgaming/pages/match_start.dart';
 import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/pages/organizer_login.dart';
 import 'package:zbgaming/pages/organizer_signup.dart';
@@ -26,6 +27,7 @@ void main() async {
     ChangeNotifierProvider(create: (_) => UserModel()),
     ChangeNotifierProvider(create: (_) => OrganizerModel()),
     ChangeNotifierProvider(create: (_) => DetailProvider()),
+    ChangeNotifierProvider(create: (_) => StartMatchIndicatorNotifier()),
   ], child: const MyApp()));
 }
 

@@ -663,10 +663,31 @@ def startMatch():
         data = db.collection(matchType).document(matchUid).get().to_dict()
         if data == None:
             return "Failed"
+        if data["started"] != 0:
+            return "Failed: Match cannot be started"
         if data["reg"] < 80:
             return "Failed: Not enough registrations"
         db.collection(matchType).document(matchUid).update({
             "started": 1
+        })
+        return "Success"
+    else:
+        return "Failed"
+
+@app.route("/api/stopMatch")
+def stopMatch():
+    matchUid = request.args.get('muid')
+    matchType = request.args.get("mType")
+    matchType = matchType.lower()
+
+    if matchType == "pubg":
+        data = db.collection(matchType).document(matchUid).get().to_dict()
+        if data == None:
+            return "Failed"
+        if data["started"] != 1:
+            return "Failed: Match cannot be started"
+        db.collection(matchType).document(matchUid).update({
+            "started": 2
         })
         return "Success"
     else:
