@@ -32,7 +32,7 @@ class _MatchStartState extends State<MatchStart> {
   }
 
   // start match logic
-  Future<void> startTheMatch() async {
+  Future<void> startTheMatch(BuildContext context) async {
     await get(Uri.parse(
             ApiEndpoints.baseUrl + ApiEndpoints.startMatch + "?muid=${widget.matchuid}&mType=${widget.matchType}"))
         .then((value) {
@@ -106,7 +106,7 @@ class _MatchStartState extends State<MatchStart> {
                               0) {
                             isStartMatchLoading = true;
                             setState(() {});
-                            await startTheMatch();
+                            await startTheMatch(context);
                           }
 
                           // if match needs to be stopped
