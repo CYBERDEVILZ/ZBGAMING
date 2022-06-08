@@ -104,9 +104,7 @@ class _UserAccountState extends State<UserAccount> {
     if (mounted) {
       setState(() {});
     }
-    await get(Uri.parse(ApiEndpoints.baseUrl +
-            ApiEndpoints.userLevelCalculate +
-            "?uid=${_auth.currentUser!.uid}"))
+    await get(Uri.parse(ApiEndpoints.baseUrl + ApiEndpoints.userLevelCalculate + "?uid=${_auth.currentUser!.uid}"))
         .then((value) async {
       if (value.statusCode != 200) {
         Fluttertoast.showToast(msg: "Something went wrong :(");
@@ -117,11 +115,9 @@ class _UserAccountState extends State<UserAccount> {
       }
     });
 
-    await FirebaseFirestore.instance
-        .collection("userinfo")
-        .doc(_auth.currentUser!.uid)
-        .get()
-        .then((value) {
+    await _auth.currentUser!.reload();
+
+    await FirebaseFirestore.instance.collection("userinfo").doc(_auth.currentUser!.uid).get().then((value) {
       name = value["username"];
       imageurl = value["imageurl"];
       email = value["email"];
@@ -174,8 +170,7 @@ class _UserAccountState extends State<UserAccount> {
 
     _auth.userChanges().listen((event) {
       if (event?.uid == null) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const HomePage()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
       } else {
         if (mounted) setState(() {});
       }
@@ -189,14 +184,12 @@ class _UserAccountState extends State<UserAccount> {
   }
 
   void imageUpload() async {
-    XFile? image = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, maxHeight: 250, maxWidth: 250);
+    XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 250, maxWidth: 250);
     if (image != null) {
       isImageLoad = true;
       if (mounted) setState(() {});
       await FirebaseStorage.instance
-          .ref(
-              "zbgaming/users/images/${FirebaseAuth.instance.currentUser?.uid}/profile.jpg")
+          .ref("zbgaming/users/images/${FirebaseAuth.instance.currentUser?.uid}/profile.jpg")
           .putFile(File(image.path))
           .then((p0) async {
         if (p0.state == TaskState.success) {
@@ -285,15 +278,12 @@ class _UserAccountState extends State<UserAccount> {
     // Level Widget
     Widget levelWidget = Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           // if level == null
           level == null
               ? Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.grey),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey),
                   margin: const EdgeInsets.only(top: 5),
                   child: const Text(
                     "Unidentified",
@@ -307,10 +297,7 @@ class _UserAccountState extends State<UserAccount> {
                       child: const Text(
                         "Rookie",
                         style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic),
+                            fontSize: 15, color: Colors.blue, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                       ))
 
                   // if level == veteran
@@ -341,16 +328,12 @@ class _UserAccountState extends State<UserAccount> {
 
                           // if level == invalid
                           : Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.red),
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.red),
                               margin: const EdgeInsets.only(top: 5),
                               child: const Text(
                                 "Invalid",
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.white),
+                                style: TextStyle(fontSize: 15, color: Colors.white),
                               )),
           Container(
             height: 20,
@@ -365,18 +348,14 @@ class _UserAccountState extends State<UserAccount> {
                       fit: BoxFit.fitHeight,
                       child: Text(
                         "$level",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w300,
-                            color: colorCodeForHeading[levelAttrib]),
+                        style: TextStyle(fontWeight: FontWeight.w300, color: colorCodeForHeading[levelAttrib]),
                       ),
                     ),
                   ),
                 ),
                 Text(
                   "pts",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: colorCodeForHeading[levelAttrib]),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: colorCodeForHeading[levelAttrib]),
                 )
               ],
             ),
@@ -392,17 +371,14 @@ class _UserAccountState extends State<UserAccount> {
         ));
 
     // Email Widget
-    Widget emailWidget =
-        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+    Widget emailWidget = Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Container(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width - 16 - 100,
         ),
         child: Text(
           email == null ? "null" : email!,
-          style: TextStyle(
-              color: colorCodeForText[levelAttrib],
-              fontWeight: FontWeight.w300),
+          style: TextStyle(color: colorCodeForText[levelAttrib], fontWeight: FontWeight.w300),
         ),
       ),
       const SizedBox(width: 10),
@@ -417,19 +393,13 @@ class _UserAccountState extends State<UserAccount> {
               onTap: () async {
                 isVerifying = true;
                 if (mounted) setState(() {});
-                await _auth.currentUser
-                    ?.sendEmailVerification()
-                    .then((value) async {
+                await _auth.currentUser?.sendEmailVerification().then((value) async {
                   await Fluttertoast.showToast(
-                      msg: "Verify mail and login again",
-                      textColor: Colors.white,
-                      backgroundColor: Colors.blue);
+                      msg: "Verify mail and login again", textColor: Colors.white, backgroundColor: Colors.blue);
                   await _auth.signOut();
                 }).catchError((onError) {
                   Fluttertoast.showToast(
-                      msg: "Something went wrong.",
-                      textColor: Colors.white,
-                      backgroundColor: Colors.blue);
+                      msg: "Something went wrong.", textColor: Colors.white, backgroundColor: Colors.blue);
                 });
 
                 isVerifying = false;
@@ -439,13 +409,10 @@ class _UserAccountState extends State<UserAccount> {
                   height: 18,
                   width: 80,
                   alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
-                      border: Border.all(color: Colors.blue)),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(3), border: Border.all(color: Colors.blue)),
                   child: isVerifying
-                      ? const SizedBox(
-                          width: 18,
-                          child: LinearProgressIndicator(color: Colors.blue))
+                      ? const SizedBox(width: 18, child: LinearProgressIndicator(color: Colors.blue))
                       : const Text(
                           " verify email ",
                           style: TextStyle(color: Colors.blue, fontSize: 12),
@@ -458,32 +425,25 @@ class _UserAccountState extends State<UserAccount> {
             ? [
                 Text(
                   "Null",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      color: colorCodeForHeading[levelAttrib]),
+                  style: TextStyle(fontWeight: FontWeight.w300, color: colorCodeForHeading[levelAttrib]),
                 ),
               ]
             : isKYCVerified!
                 ? [
                     Text(
                       "Verified",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: colorCodeForHeading[levelAttrib]),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: colorCodeForHeading[levelAttrib]),
                     ),
                     Text(
                       "User",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w300,
-                          color: colorCodeForHeading[levelAttrib]),
+                      style: TextStyle(fontWeight: FontWeight.w300, color: colorCodeForHeading[levelAttrib]),
                     )
                   ]
                 : [
                     GestureDetector(
                         // send user to verification page
                         onTap: () async {
-                          Fluttertoast.showToast(
-                              msg: "Navigate to user verification page");
+                          Fluttertoast.showToast(msg: "Navigate to user verification page");
                         },
                         child: Container(
                             height: 18,
@@ -491,13 +451,10 @@ class _UserAccountState extends State<UserAccount> {
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(3),
-                                border: Border.all(
-                                    color: colorCodeForHeading[levelAttrib]!)),
+                                border: Border.all(color: colorCodeForHeading[levelAttrib]!)),
                             child: Text(
                               " verify user ",
-                              style: TextStyle(
-                                  color: colorCodeForHeading[levelAttrib],
-                                  fontSize: 12),
+                              style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 12),
                             )))
                   ]);
 
@@ -510,17 +467,11 @@ class _UserAccountState extends State<UserAccount> {
           children: [
             Text(
               "Link",
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w100,
-                  color: colorCodeForHeading[levelAttrib]),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w100, color: colorCodeForHeading[levelAttrib]),
             ),
             Text(
               "Accounts",
-              style: TextStyle(
-                  fontSize: 30,
-                  color: colorCodeForHeading[levelAttrib],
-                  fontWeight: FontWeight.w300),
+              style: TextStyle(fontSize: 30, color: colorCodeForHeading[levelAttrib], fontWeight: FontWeight.w300),
             ),
           ],
         ),
@@ -536,9 +487,7 @@ class _UserAccountState extends State<UserAccount> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           element,
-                          style: TextStyle(
-                              color:
-                                  colorCodeForButtonTextCumCanvas[levelAttrib]),
+                          style: TextStyle(color: colorCodeForButtonTextCumCanvas[levelAttrib]),
                         ),
                       ),
                       trailing:
@@ -549,30 +498,23 @@ class _UserAccountState extends State<UserAccount> {
                                   onTap: () {},
                                   child: Icon(
                                     Icons.open_in_new,
-                                    color: colorCodeForButtonTextCumCanvas[
-                                        levelAttrib],
+                                    color: colorCodeForButtonTextCumCanvas[levelAttrib],
                                   ),
                                 )
                               :
                               // if linked_id == false
                               Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5, vertical: 3),
-                                  color: colorCodeForButtonTextCumCanvas[
-                                      levelAttrib],
+                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                                  color: colorCodeForButtonTextCumCanvas[levelAttrib],
                                   child: GestureDetector(
                                     // navigates to link page
                                     onTap: () async {
-                                      await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => LinkGame(
-                                                  matchType: element)));
+                                      await Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) => LinkGame(matchType: element)));
                                     },
                                     child: Text(
                                       "Link Now",
-                                      style: TextStyle(
-                                          color: colorCodeForText[levelAttrib]),
+                                      style: TextStyle(color: colorCodeForText[levelAttrib]),
                                     ),
                                   ),
                                 )),
@@ -590,26 +532,18 @@ class _UserAccountState extends State<UserAccount> {
           children: [
             Text(
               "Bank",
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w100,
-                  color: colorCodeForHeading[levelAttrib]),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w100, color: colorCodeForHeading[levelAttrib]),
             ),
             Text(
               "Information",
-              style: TextStyle(
-                  fontSize: 30,
-                  color: colorCodeForHeading[levelAttrib],
-                  fontWeight: FontWeight.w300),
+              style: TextStyle(fontSize: 30, color: colorCodeForHeading[levelAttrib], fontWeight: FontWeight.w300),
             ),
           ],
         ),
         const SizedBox(height: 10),
         bankStatus == null
             ? Text("Couldn't retreive data",
-                style: TextStyle(
-                    color: colorCodeForHeading[levelAttrib],
-                    fontWeight: FontWeight.w300))
+                style: TextStyle(color: colorCodeForHeading[levelAttrib], fontWeight: FontWeight.w300))
             : bankStatus == true
                 ? Container()
                 : Container(),
@@ -627,8 +561,7 @@ class _UserAccountState extends State<UserAccount> {
         style: TextStyle(color: Colors.red),
       ),
       style: ButtonStyle(
-          fixedSize: MaterialStateProperty.all(
-              Size(MediaQuery.of(context).size.width, 50)),
+          fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 50)),
           overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0)),
           side: MaterialStateProperty.all(const BorderSide(color: Colors.red))),
     );
@@ -636,18 +569,14 @@ class _UserAccountState extends State<UserAccount> {
     // Delete Modal
     Widget deleteModal = Container(
       padding: const EdgeInsets.all(20),
-      decoration:
-          BoxDecoration(color: colorCodeForButtonTextCumCanvas[levelAttrib]),
+      decoration: BoxDecoration(color: colorCodeForButtonTextCumCanvas[levelAttrib]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("Warning!",
-              style: TextStyle(
-                  color: colorCodeForHeading[levelAttrib], fontSize: 25)),
+          Text("Warning!", style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 25)),
           const SizedBox(height: 10),
-          Text(
-              "You are about to delete your account. All your information will be deleted from our database.",
+          Text("You are about to delete your account. All your information will be deleted from our database.",
               style: TextStyle(color: colorCodeForText[levelAttrib])),
           Text("This action cannot be reversed once initiated.",
               style: TextStyle(color: colorCodeForText[levelAttrib])),
@@ -666,79 +595,63 @@ class _UserAccountState extends State<UserAccount> {
                               style: TextStyle(fontSize: 20),
                               textAlign: TextAlign.center,
                             ),
-                            content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // password field
-                                  TextField(
-                                    controller: passValue,
-                                    textInputAction: TextInputAction.next,
-                                    decoration: const InputDecoration(
-                                        label: Text("Password")),
-                                    obscureText: true,
-                                  ),
+                            content: Column(mainAxisSize: MainAxisSize.min, children: [
+                              // password field
+                              TextField(
+                                controller: passValue,
+                                textInputAction: TextInputAction.next,
+                                decoration: const InputDecoration(label: Text("Password")),
+                                obscureText: true,
+                              ),
 
-                                  // submit button
-                                  OutlinedButton(
-                                      // reauthenticate user
-                                      onPressed: () async {
-                                        AuthCredential credential =
-                                            EmailAuthProvider.credential(
-                                                email: Provider.of<UserModel>(
-                                                        context,
-                                                        listen: false)
-                                                    .email!,
-                                                password: passValue.text);
-                                        if (passValue.text.isNotEmpty) {
-                                          await FirebaseAuth
-                                              .instance.currentUser!
-                                              .reauthenticateWithCredential(
-                                                  credential)
-                                              .then((value) async {
-                                            Navigator.pop(context);
+                              // submit button
+                              OutlinedButton(
+                                  // reauthenticate user
+                                  onPressed: () async {
+                                    AuthCredential credential = EmailAuthProvider.credential(
+                                        email: Provider.of<UserModel>(context, listen: false).email!,
+                                        password: passValue.text);
+                                    if (passValue.text.isNotEmpty) {
+                                      await FirebaseAuth.instance.currentUser!
+                                          .reauthenticateWithCredential(credential)
+                                          .then((value) async {
+                                        Navigator.pop(context);
 
-                                            // delete userinfo data
-                                            try {
-                                              await FirebaseFirestore.instance
-                                                  .collection("userinfo")
-                                                  .doc(FirebaseAuth.instance
-                                                      .currentUser!.uid)
-                                                  .delete();
-                                            } catch (e) {
-                                              return null;
-                                            }
-
-                                            try {
-                                              // delete storage data
-                                              await FirebaseStorage.instance
-                                                  .ref(
-                                                      "zbgaming/users/images/${FirebaseAuth.instance.currentUser!.uid}/profile.jpg")
-                                                  .delete();
-                                            } catch (e) {
-                                              null;
-                                            }
-
-                                            // delete auth data
-                                            await FirebaseAuth
-                                                .instance.currentUser!
-                                                .delete()
-                                                .catchError((onError) {
-                                              Fluttertoast.showToast(
-                                                  msg: onError.toString());
-                                            });
-                                          }).catchError((e) {
-                                            Fluttertoast.showToast(
-                                                msg: "Couldn't Reauthenticate");
-
-                                            Navigator.pop(context);
-                                          });
-                                        } else {
-                                          Fluttertoast.showToast(
-                                              msg: "Password cannot be empty");
+                                        // delete userinfo data
+                                        try {
+                                          await FirebaseFirestore.instance
+                                              .collection("userinfo")
+                                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                                              .delete();
+                                        } catch (e) {
+                                          return null;
                                         }
-                                      },
-                                      child: const Text("Submit"))
-                                ]),
+
+                                        try {
+                                          // delete storage data
+                                          await FirebaseStorage.instance
+                                              .ref(
+                                                  "zbgaming/users/images/${FirebaseAuth.instance.currentUser!.uid}/profile.jpg")
+                                              .delete();
+                                        } catch (e) {
+                                          null;
+                                        }
+
+                                        // delete auth data
+                                        await FirebaseAuth.instance.currentUser!.delete().catchError((onError) {
+                                          Fluttertoast.showToast(msg: onError.toString());
+                                        });
+                                      }).catchError((e) {
+                                        Fluttertoast.showToast(msg: "Couldn't Reauthenticate");
+
+                                        Navigator.pop(context);
+                                      });
+                                    } else {
+                                      Fluttertoast.showToast(msg: "Password cannot be empty");
+                                    }
+                                  },
+                                  child: const Text("Submit"))
+                            ]),
                           ));
                 },
                 child: const Text("Delete"),
@@ -758,8 +671,7 @@ class _UserAccountState extends State<UserAccount> {
                   style: ButtonStyle(
                       overlayColor: MaterialStateProperty.all(null),
                       foregroundColor: MaterialStateProperty.all(Colors.red),
-                      side: MaterialStateProperty.all(
-                          const BorderSide(color: Colors.red))))
+                      side: MaterialStateProperty.all(const BorderSide(color: Colors.red))))
             ],
           )
         ],
@@ -782,8 +694,7 @@ class _UserAccountState extends State<UserAccount> {
         style: TextStyle(color: Colors.white),
       ),
       style: ButtonStyle(
-        fixedSize: MaterialStateProperty.all(
-            Size(MediaQuery.of(context).size.width, 50)),
+        fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 50)),
         backgroundColor: MaterialStateProperty.all(Colors.red),
         elevation: MaterialStateProperty.all(0),
       ),

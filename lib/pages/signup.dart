@@ -50,7 +50,7 @@ class _SignUpState extends State<SignUp> {
               emailController.text +
               "&docId=" +
               FirebaseAuth.instance.currentUser!.uid +
-              "&tokenId=" +
+              "&idToken=" +
               idToken))
           .then((value) async {
         if (value.statusCode == 200) {
