@@ -35,6 +35,12 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     // submit data to firestore
     Future<void> submitData() async {
+      String idToken = "";
+      await FirebaseAuth.instance.currentUser!.getIdToken().then((value) => idToken = value);
+      if (idToken == "") {
+        Fluttertoast.showToast(msg: "Error occurred");
+        await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
+      }
       await get(Uri.parse(ApiEndpoints.baseUrl +
               ApiEndpoints.userSignup +
               "?" +
@@ -43,11 +49,13 @@ class _SignUpState extends State<SignUp> {
               "&email=" +
               emailController.text +
               "&docId=" +
-              FirebaseAuth.instance.currentUser!.uid))
+              FirebaseAuth.instance.currentUser!.uid +
+              "&tokenId=" +
+              idToken))
           .then((value) async {
         if (value.statusCode == 200) {
-          Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue[700], textColor: Colors.white);
           if (value.body == "Success") {
+            Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue[700], textColor: Colors.white);
             // add data to usermodel to reduce number of reads to firestore
             context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
             context.read<UserModel>().setusername(usernameController.text);
@@ -55,6 +63,10 @@ class _SignUpState extends State<SignUp> {
             context.read<UserModel>().setemail(emailController.text);
             Navigator.pushAndRemoveUntil(
                 context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+          } else {
+            Fluttertoast.showToast(
+                msg: "Something went wrong", backgroundColor: Colors.blue[700], textColor: Colors.white);
+            await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
           }
         } else {
           Fluttertoast.showToast(

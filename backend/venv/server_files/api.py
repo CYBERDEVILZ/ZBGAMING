@@ -2,6 +2,9 @@
 OPTIMIZATIONS / IDEAS
 ---------------------
 
+IMPORTANT!!!
+DELETING USER DOESNT NECESSARY DELETE SUBCOLLECTIONS BRUH! DELETE THEM AS WELL
+
 IMPORTANT!!! 
 ASK THE ORGANIZER TO ENTER YOUTUBE STREAM LINK. A PUSH NOTIFICATION WILL BE SENT TO PLAYERS TELLING THEM THAT
 THE MATCH WILL START SOON, SO BE READY AND CONTACT THE ORGANIZER.
@@ -81,20 +84,25 @@ ONE WAY TEMPORARY CHAT SECTION FOR USERS REGISTERED FOR A MATCH. ALL ONE WAY DIS
 
 
 from datetime import datetime, timedelta
+import json
 from flask import Flask
 from flask import request
 import firebase_admin
 from firebase_admin import credentials
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 import razorpay
 import re
 import hashlib
+
+import requests
 
 # FIREBASE INIT
 cred = credentials.Certificate("zbgaming-v1-firebase-adminsdk-2ozhj-4f38e5fc3e.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 app = Flask(__name__)
+
+REST_API_VERIFY_EMAIL = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyApP0fP9W-HngWhu-qtEqJtzHE4EHMTaFw"
 
 # RAZORPAY INIT
 secret_key = "C7IHXyYq0nsDlWQYUcRKGzaH"
@@ -121,6 +129,7 @@ def userSignup():
     username = request.args.get("username")
     email = request.args.get("email")
     docId = request.args.get("docId")
+    idToken = request.args.get("idToken")
     isVerified = False
     imageurl = None
 
@@ -131,6 +140,18 @@ def userSignup():
                 if len(docs) == 0:
                     docs = db.collection("organizer").where("email", "==", email).get()
                     if len(docs) == 0:
+
+                        # sending email verification link
+                        data = json.dumps({
+                            "requestType": "VERIFY_EMAIL",
+                            "idToken": idToken
+                        })
+                        r = requests.post(url=REST_API_VERIFY_EMAIL, data=data)
+                        print(r.text)
+                        if r.status_code != 200:
+                            return "Failed"
+
+                        # sending data to cloud firestore
                         db.collection("userinfo").document(docId).set(
                             {
                                 "username": username,
@@ -141,8 +162,9 @@ def userSignup():
                                 "hashedID": hashlib.sha256(docId.encode()).digest()
                             }
                         )
-
                         return "Success"
+                        
+                        
 
     return "Failed"
 
