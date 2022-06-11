@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/src/provider.dart';
 
 import 'package:zbgaming/model/usermodel.dart';
+import 'package:zbgaming/pages/organizer_login.dart';
 import 'package:zbgaming/utils/routes.dart';
 
 // Notes for me.
@@ -51,7 +52,7 @@ class _LoginState extends State<Login> {
           Navigator.pop(context);
         }).catchError((e) async {
           Fluttertoast.showToast(msg: "Some error occurred");
-          if (mounted && FirebaseAuth.instance.currentUser!.uid.isNotEmpty) {
+          if (mounted && FirebaseAuth.instance.currentUser != null) {
             await FirebaseAuth.instance.signOut();
           }
         });
@@ -203,6 +204,15 @@ class _LoginState extends State<Login> {
                   )
                 ],
               ),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: ((context) => const OrganizerLogin())));
+                    },
+                    child: const Text(">>> Login as Organizer")),
+              )
             ],
           ),
         )));
