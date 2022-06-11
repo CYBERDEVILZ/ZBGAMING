@@ -169,7 +169,7 @@ class _UserAccountState extends State<UserAccount> {
     super.initState();
 
     _auth.userChanges().listen((event) {
-      if (event?.uid == null) {
+      if (mounted && event?.uid == null) {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
       } else {
         if (mounted) setState(() {});
