@@ -608,6 +608,7 @@ class _UserAccountState extends State<UserAccount> {
                               OutlinedButton(
                                   // reauthenticate user
                                   onPressed: () async {
+                                    context.read<ButtonLoader>().setButtonLoading(true);
                                     AuthCredential credential = EmailAuthProvider.credential(
                                         email: Provider.of<UserModel>(context, listen: false).email!,
                                         password: passValue.text);
@@ -615,14 +616,90 @@ class _UserAccountState extends State<UserAccount> {
                                       await FirebaseAuth.instance.currentUser!
                                           .reauthenticateWithCredential(credential)
                                           .then((value) async {
+                                        context.read<ButtonLoader>().setButtonLoading(false);
                                         Navigator.pop(context);
 
-                                        // delete userinfo data
+                                        // delete data
                                         try {
+                                          // delete userinfo data
                                           await FirebaseFirestore.instance
                                               .collection("userinfo")
                                               .doc(FirebaseAuth.instance.currentUser!.uid)
                                               .delete();
+
+                                          // delete history data
+                                          await FirebaseFirestore.instance
+                                              .collection("userinfo")
+                                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                                              .collection("history")
+                                              .get()
+                                              .then((value) async {
+                                            List<QueryDocumentSnapshot<Map<String, dynamic>>> history = value.docs;
+                                            for (int i = 0; i < history.length; i++) {
+                                              await FirebaseFirestore.instance
+                                                  .collection("userinfo")
+                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                  .collection("history")
+                                                  .doc(history[i].id)
+                                                  .delete();
+                                            }
+                                          });
+
+                                          // delete linkedAccounts data
+                                          await FirebaseFirestore.instance
+                                              .collection("userinfo")
+                                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                                              .collection("linkedAccounts")
+                                              .get()
+                                              .then((value) async {
+                                            List<QueryDocumentSnapshot<Map<String, dynamic>>> linkedAccounts =
+                                                value.docs;
+                                            for (int i = 0; i < linkedAccounts.length; i++) {
+                                              await FirebaseFirestore.instance
+                                                  .collection("userinfo")
+                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                  .collection("linkedAccounts")
+                                                  .doc(linkedAccounts[i].id)
+                                                  .delete();
+                                            }
+                                          });
+
+                                          // delete registered data
+                                          await FirebaseFirestore.instance
+                                              .collection("userinfo")
+                                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                                              .collection("registered")
+                                              .get()
+                                              .then((value) async {
+                                            List<QueryDocumentSnapshot<Map<String, dynamic>>> registered = value.docs;
+                                            for (int i = 0; i < registered.length; i++) {
+                                              await FirebaseFirestore.instance
+                                                  .collection("userinfo")
+                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                  .collection("registered")
+                                                  .doc(registered[i].id)
+                                                  .delete();
+                                            }
+                                          });
+
+                                          // delete favOrganizers data
+                                          await FirebaseFirestore.instance
+                                              .collection("userinfo")
+                                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                                              .collection("favOrganizers")
+                                              .get()
+                                              .then((value) async {
+                                            List<QueryDocumentSnapshot<Map<String, dynamic>>> favOrganizers =
+                                                value.docs;
+                                            for (int i = 0; i < favOrganizers.length; i++) {
+                                              await FirebaseFirestore.instance
+                                                  .collection("userinfo")
+                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                  .collection("favOrganizers")
+                                                  .doc(favOrganizers[i].id)
+                                                  .delete();
+                                            }
+                                          });
                                         } catch (e) {
                                           return null;
                                         }
@@ -643,14 +720,20 @@ class _UserAccountState extends State<UserAccount> {
                                         });
                                       }).catchError((e) {
                                         Fluttertoast.showToast(msg: "Couldn't Reauthenticate");
-
+                                        context.read<ButtonLoader>().setButtonLoading(false);
                                         Navigator.pop(context);
                                       });
                                     } else {
                                       Fluttertoast.showToast(msg: "Password cannot be empty");
+                                      context.read<ButtonLoader>().setButtonLoading(false);
                                     }
+                                    context.read<ButtonLoader>().setButtonLoading(false);
                                   },
-                                  child: const Text("Submit"))
+                                  child: context.watch<ButtonLoader>().buttonLoading
+                                      ? const CircularProgressIndicator(
+                                          color: Colors.blue,
+                                        )
+                                      : const Text("Submit"))
                             ]),
                           ));
                 },
@@ -739,5 +822,15 @@ class _UserAccountState extends State<UserAccount> {
               ),
             ),
     );
+  }
+}
+
+class ButtonLoader extends ChangeNotifier {
+  bool _isButtonLoading = false;
+  get buttonLoading => _isButtonLoading;
+
+  void setButtonLoading(bool a) {
+    _isButtonLoading = a;
+    notifyListeners();
   }
 }

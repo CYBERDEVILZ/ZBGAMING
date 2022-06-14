@@ -11,6 +11,7 @@ import 'package:zbgaming/pages/organizer_signup.dart';
 import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/show_user_account.dart';
 import 'package:zbgaming/pages/signup.dart';
+import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/pages/valorant.dart';
 import 'package:zbgaming/utils/routes.dart';
 
@@ -28,6 +29,7 @@ void main() async {
     ChangeNotifierProvider(create: (_) => OrganizerModel()),
     ChangeNotifierProvider(create: (_) => DetailProvider()),
     ChangeNotifierProvider(create: (_) => StartMatchIndicatorNotifier()),
+    ChangeNotifierProvider(create: (_) => ButtonLoader()),
   ], child: const MyApp()));
 }
 
