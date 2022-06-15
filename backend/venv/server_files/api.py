@@ -2,18 +2,12 @@
 OPTIMIZATIONS / IDEAS
 ---------------------
 
-IMPORTANT!!!
-MAKE API FOR VERIFICATION OF USERID
-
-IMPORTANT!!!
-ORGANIZER CAN POST SCOREBOARD ON HIS PAGE
-
-IMPORTANT!!!
-DELETING USER DOESNT NECESSARY DELETE SUBCOLLECTIONS BRUH! DELETE THEM AS WELL
-
 IMPORTANT!!! 
 ASK THE ORGANIZER TO ENTER YOUTUBE STREAM LINK. A PUSH NOTIFICATION WILL BE SENT TO PLAYERS TELLING THEM THAT
 THE MATCH WILL START SOON, SO BE READY AND CONTACT THE ORGANIZER.
+
+IMPORTANT!!!
+USER GETS MATCH ROOM INFO (ROOM ID AND PASS) ON NOTIFICATIONS. ALSO GETS ADDED TO A CHAT ROOM WHERE ONLY THE ORGANIZER CAN CHAT
 
 IMPORTANT!!!
 ON CONTEST DETAILS PAGE, WHEN THE USER REGISTERS, PROVIDE HIM WITH THE LINK TO JOIN DISCORD OR WHATSAPP GROUP LINK WHERE
@@ -31,6 +25,9 @@ THE ORGANIZER CAN THEN SEND A MASS NOTIFICATION TO ALL THE USER REGISTERED ABOUT
 
 IMPORTANT!!!
 VALIDATE ORGANIZER SIGNIN AS WELL
+
+IMPORTANT!!!
+ORGANIZER CAN POST SCOREBOARD ON HIS PAGE
 
 IMPORTANT!!!
 ORGANIZER VERIFICATION
@@ -713,7 +710,16 @@ def userLevelCalculate():
 def startMatch():
     matchUid = request.args.get('muid')
     matchType = request.args.get("mType")
+    streamLink = request.args.get('streamLink')
     matchType = matchType.lower()
+
+    if streamLink == None:
+        return "Failed: Invalid URL"
+
+    streamLink = streamLink.strip()
+
+    if streamLink == "":
+        return "Failed: Invalid URL"
 
     if matchType == "pubg":
         data = db.collection(matchType).document(matchUid).get().to_dict()
@@ -724,7 +730,8 @@ def startMatch():
         if data["reg"] < 80:
             return "Failed: Not enough registrations"
         db.collection(matchType).document(matchUid).update({
-            "started": 1
+            "started": 1,
+            "streamLink": streamLink
         })
         return "Success"
     else:
@@ -741,7 +748,7 @@ def stopMatch():
         if data == None:
             return "Failed"
         if data["started"] != 1:
-            return "Failed: Match cannot be started"
+            return "Failed: Something went wrong"
         db.collection(matchType).document(matchUid).update({
             "started": 2
         })

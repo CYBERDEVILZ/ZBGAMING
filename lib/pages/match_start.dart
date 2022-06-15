@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -31,20 +33,70 @@ class _MatchStartState extends State<MatchStart> {
     setState(() {});
   }
 
+  // pop-up to ask for youtube stream link
+  Future<String?> showAlertDialog(BuildContext context) async {
+    String? cancelled;
+    TextEditingController streamLinkController = TextEditingController();
+    TextFormField streamLink = TextFormField(
+      controller: streamLinkController,
+      decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Enter valid URL"),
+    );
+
+    Widget cancelButton = OutlinedButton(
+      child: const Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    Widget submitButton = OutlinedButton(
+      child: const Text("Submit"),
+      onPressed: () {
+        if (streamLinkController.text.isEmpty) {
+          Fluttertoast.showToast(msg: "Field Cannot be empty", backgroundColor: Colors.blue);
+        } else {
+          cancelled = streamLinkController.text;
+          Navigator.pop(context);
+        }
+      },
+    );
+
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Submit YouTube Stream Link"),
+            content: Form(child: streamLink),
+            actions: [
+              submitButton,
+              cancelButton,
+            ],
+          );
+        });
+
+    return cancelled;
+  }
+
   // start match logic
   Future<void> startTheMatch(BuildContext context) async {
-    await get(Uri.parse(
-            ApiEndpoints.baseUrl + ApiEndpoints.startMatch + "?muid=${widget.matchuid}&mType=${widget.matchType}"))
-        .then((value) {
-      if (value.statusCode != 200) {
-        Fluttertoast.showToast(msg: "Some error occurred", backgroundColor: Colors.blue);
-      } else if (value.body == "Success") {
-        Fluttertoast.showToast(msg: "Success", backgroundColor: Colors.blue);
-        context.read<StartMatchIndicatorNotifier>().setStartMatchIndicator(1);
-      } else {
-        Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue);
-      }
-    });
+    // youtube stream link to prevent cheating
+    String? link = await showAlertDialog(context);
+    if (link != null) {
+      // after provided with link, proceed to start the match
+      await get(Uri.parse(ApiEndpoints.baseUrl +
+              ApiEndpoints.startMatch +
+              "?muid=${widget.matchuid}&mType=${widget.matchType}&streamLink=$link"))
+          .then((value) {
+        if (value.statusCode != 200) {
+          Fluttertoast.showToast(msg: "Some error occurred", backgroundColor: Colors.blue);
+        } else if (value.body == "Success") {
+          Fluttertoast.showToast(msg: "Success", backgroundColor: Colors.blue);
+          context.read<StartMatchIndicatorNotifier>().setStartMatchIndicator(1);
+        } else {
+          Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue);
+        }
+      });
+    }
   }
 
   // stop match logic
