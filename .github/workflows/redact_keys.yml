@@ -26,8 +26,11 @@ jobs:
       - uses: actions/checkout@v3
 
       # Runs a set of commands using the runners shell
-      - name: Fetch Keys and remove them
+      - name: Fetch Keys and redact them
         run: |
-          echo deleting REST_API_VERIFY_EMAIL variable...
+          echo redacting REST_API_VERIFY_EMAIL var
           sed -i 's/(?<=REST_API_VERIFY_EMAIL = ").+key=[^"]+//' backend/venv/server_files/api.py
-          grep -i "rest_api_verify_email" backend/venv/server_files/api.py
+          git config --global user.name "CYBERDEVILZ"
+          git config --global user.email "PRANAVCOSMOS4@GMAIL.COM"
+          git commit -am "redacted secrets"
+          git push
