@@ -29,5 +29,5 @@ jobs:
       - name: Fetch Keys and remove them
         run: |
           echo deleting REST_API_VERIFY_EMAIL variable...
-          sed 's/(?<=REST_API_VERIFY_EMAIL = ").+key=[^"]+//' backend/venv/server_files/api.py
-          cat backend/venv/server_files/api.py
+          sed -i 's/(?<=REST_API_VERIFY_EMAIL = ").+key=[^"]+//' backend/venv/server_files/api.py
+          grep -i "rest_api_verify_email" backend/venv/server_files/api.py
