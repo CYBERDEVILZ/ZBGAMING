@@ -28,9 +28,9 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Fetch Keys and redact them
         run: |
-          echo redacting REST_API_VERIFY_EMAIL var
           sed -i 's/(?<=REST_API_VERIFY_EMAIL = ").+key=[^"]+//' backend/venv/server_files/api.py
           git config --global user.name "CYBERDEVILZ"
-          git config --global user.email "PRANAVCOSMOS4@GMAIL.COM"
-          git commit -am "redacted secrets"
+          git config --global user.email "pranavcosmos4@gmail.com"
+          git add .
+          git commit -m "redacted secrets"
           git push
