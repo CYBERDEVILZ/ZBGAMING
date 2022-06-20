@@ -28,7 +28,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Fetch Keys and redact them
         run: |
-          sed -i 's/(?<=REST_API_VERIFY_EMAIL = ").+key=[^"]+//' backend/venv/server_files/api.py > backend/venv/server_files/api.py
+          sed 's/(?<=REST_API_VERIFY_EMAIL = ").+key=[^"]+//' backend/venv/server_files/api.py > backend/venv/server_files/api.py
           cat backend/venv/server_files/api.py
           git config --global user.name "CYBERDEVILZ"
           git config --global user.email "pranavcosmos4@gmail.com"
