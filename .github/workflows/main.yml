@@ -32,6 +32,6 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          sed -i 's/(?<=REST_API_VERIFY_EMAIL = ").+key=[^"]+//'
+          sed -i 's/(?<=REST_API_VERIFY_EMAIL = ").+key=[^"]+//' backend/venv/server_files/api.py
           git status
           echo test, and deploy your project.
