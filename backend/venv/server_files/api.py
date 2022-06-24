@@ -117,10 +117,10 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 app = Flask(__name__)
 
-REST_API_VERIFY_EMAIL = ""
+REST_API_VERIFY_EMAIL = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyApP0fP9W-HngWhu-qtEqJtzHE4EHMTaFw"
 
 # RAZORPAY INIT
-secret_key = ""
+secret_key = "C7IHXyYq0nsDlWQYUcRKGzaH"
 client = razorpay.Client(auth=("rzp_test_rKi9TFV4sMHvz2", secret_key))
 
 # FUNCTIONS
