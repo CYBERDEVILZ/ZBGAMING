@@ -120,7 +120,7 @@ app = Flask(__name__)
 REST_API_VERIFY_EMAIL = ""
 
 # RAZORPAY INIT
-secret_key = "C7IHXyYq0nsDlWQYUcRKGzaH"
+secret_key = ""
 client = razorpay.Client(auth=("rzp_test_rKi9TFV4sMHvz2", secret_key))
 
 # FUNCTIONS
