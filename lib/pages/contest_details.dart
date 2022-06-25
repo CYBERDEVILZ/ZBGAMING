@@ -107,10 +107,7 @@ class _ContestDetailsState extends State<ContestDetails> {
   @override
   void initState() {
     super.initState();
-    documentStream = FirebaseFirestore.instance
-        .collection(widget.matchType)
-        .doc(widget.uid)
-        .snapshots();
+    documentStream = FirebaseFirestore.instance.collection(widget.matchType).doc(widget.uid).snapshots();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
@@ -152,9 +149,7 @@ class _ContestDetailsState extends State<ContestDetails> {
           children: [
             const SizedBox(height: 10),
             Text(widget.name,
-                textAlign: TextAlign.start,
-                textScaleFactor: 2,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+                textAlign: TextAlign.start, textScaleFactor: 2, style: const TextStyle(fontWeight: FontWeight.bold)),
 
             const SizedBox(height: 5),
 
@@ -162,9 +157,7 @@ class _ContestDetailsState extends State<ContestDetails> {
               // date of tournament
               Text(
                 dateString.dateToString(widget.date),
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black.withOpacity(0.5)),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
               ),
 
               const SizedBox(width: 20),
@@ -172,8 +165,7 @@ class _ContestDetailsState extends State<ContestDetails> {
               // teams registered
               Row(
                 children: [
-                  Icon(Icons.people_alt,
-                      size: 20, color: Colors.black.withOpacity(0.5)),
+                  Icon(Icons.people_alt, size: 20, color: Colors.black.withOpacity(0.5)),
                   Text(
                     " ${widget.regTeams}/",
                     textScaleFactor: 1.1,
@@ -182,9 +174,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                   Text(
                     "${widget.totalTeams}",
                     textScaleFactor: 1.1,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black.withOpacity(0.5)),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
                   )
                 ],
               ),
@@ -195,9 +185,8 @@ class _ContestDetailsState extends State<ContestDetails> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => RegisteredUsers(
-                                  matchType: widget.matchType,
-                                  matchuid: widget.uid)));
+                              builder: (context) =>
+                                  RegisteredUsers(matchType: widget.matchType, matchuid: widget.uid)));
                     },
                     child: const Text("View Registered Users")),
               )
@@ -206,162 +195,119 @@ class _ContestDetailsState extends State<ContestDetails> {
             const Divider(height: 50),
 
             // match format
-            const Align(
-                child: Text("Match Format",
-                    textScaleFactor: 1.5,
-                    style: TextStyle(color: Colors.black))),
+            const Align(child: Text("Match Format", textScaleFactor: 1.5, style: TextStyle(color: Colors.black))),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
               child: Container(
-                padding:
-                    const EdgeInsets.only(top: 3, left: 3, right: 3, bottom: 3),
+                padding: const EdgeInsets.only(top: 3, left: 3, right: 3, bottom: 3),
                 decoration: const BoxDecoration(color: Colors.blue),
                 child: Container(
                   color: Colors.white,
                   padding: const EdgeInsets.only(top: 5),
                   child: Column(
                     children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            SizedBox(
-                              width: 100,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: widget.team
-                                    ? [
-                                        const Icon(Icons.people_alt,
-                                            size: 25, color: Colors.purple),
-                                        const SizedBox(width: 5),
-                                        const Text("Team based\n",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12,
-                                                color: Colors.purple))
-                                      ]
-                                    : const [
-                                        Icon(Icons.person,
-                                            size: 25, color: Colors.purple),
-                                        SizedBox(width: 5),
-                                        Text("Solo based\n",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12,
-                                                color: Colors.purple))
-                                      ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: Column(
-                                children: widget.tournament
-                                    ? [
-                                        Icon(Icons.account_tree_sharp,
-                                            size: 25, color: Colors.blue[800]),
-                                        const SizedBox(width: 5),
-                                        Text("Tournament\n",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12,
-                                                color: Colors.blue[800]))
-                                      ]
-                                    : [
-                                        Icon(Icons.play_arrow,
-                                            size: 25, color: Colors.blue[800]),
-                                        const SizedBox(width: 5),
-                                        Text("Single Match\n",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12,
-                                                color: Colors.blue[800]))
-                                      ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: widget.skill == 0
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                        SizedBox(
+                          width: 100,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: widget.team
+                                ? [
+                                    const Icon(Icons.people_alt, size: 25, color: Colors.purple),
+                                    const SizedBox(width: 5),
+                                    const Text("Team based\n",
+                                        textAlign: TextAlign.center,
+                                        style:
+                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
+                                  ]
+                                : const [
+                                    Icon(Icons.person, size: 25, color: Colors.purple),
+                                    SizedBox(width: 5),
+                                    Text("Solo based\n",
+                                        textAlign: TextAlign.center,
+                                        style:
+                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.purple))
+                                  ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: Column(
+                            children: widget.tournament
+                                ? [
+                                    Icon(Icons.account_tree_sharp, size: 25, color: Colors.blue[800]),
+                                    const SizedBox(width: 5),
+                                    Text("Tournament\n",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
+                                  ]
+                                : [
+                                    Icon(Icons.play_arrow, size: 25, color: Colors.blue[800]),
+                                    const SizedBox(width: 5),
+                                    Text("Single Match\n",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue[800]))
+                                  ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: widget.skill == 0
+                                ? const [
+                                    Icon(Icons.flash_off, size: 25, color: Colors.teal),
+                                    SizedBox(width: 5),
+                                    Text("Rookie +\n",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                  ]
+                                : widget.skill == 1
                                     ? const [
-                                        Icon(Icons.flash_off,
-                                            size: 25, color: Colors.teal),
+                                        Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                         SizedBox(width: 5),
-                                        Text("Rookie +\n",
+                                        Text("Veteran +\n",
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12,
-                                                color: Colors.teal))
+                                                fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
                                       ]
-                                    : widget.skill == 1
+                                    : widget.skill == 2
                                         ? const [
-                                            Icon(Icons.flash_on,
-                                                size: 25, color: Colors.teal),
+                                            Icon(Icons.flash_on, size: 25, color: Colors.teal),
                                             SizedBox(width: 5),
-                                            Text("Veteran +\n",
+                                            Text("Only Master\nElites",
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12,
-                                                    color: Colors.teal))
+                                                    fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
                                           ]
-                                        : widget.skill == 2
-                                            ? const [
-                                                Icon(Icons.flash_on,
-                                                    size: 25,
-                                                    color: Colors.teal),
-                                                SizedBox(width: 5),
-                                                Text("Only Master\nElites",
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 12,
-                                                        color: Colors.teal))
-                                              ]
-                                            : const [
-                                                Icon(Icons.flash_on,
-                                                    size: 25,
-                                                    color: Colors.teal),
-                                                SizedBox(width: 5),
-                                                Text("error occurred",
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 12,
-                                                        color: Colors.teal))
-                                              ],
-                              ),
-                            ),
-                          ]),
+                                        : const [
+                                            Icon(Icons.flash_on, size: 25, color: Colors.teal),
+                                            SizedBox(width: 5),
+                                            Text("error occurred",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold, fontSize: 12, color: Colors.teal))
+                                          ],
+                          ),
+                        ),
+                      ]),
                       const SizedBox(height: 10),
                       Align(
                         child: Column(
                           children: widget.rewards != 0
                               ? const [
-                                  Icon(Icons.attach_money_outlined,
-                                      size: 25, color: Colors.red),
+                                  Icon(Icons.attach_money_outlined, size: 25, color: Colors.red),
                                   SizedBox(width: 5),
                                   Text("Rewards available",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                          color: Colors.red))
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
                                 ]
                               : const [
-                                  Icon(Icons.money_off,
-                                      size: 25, color: Colors.red),
+                                  Icon(Icons.money_off, size: 25, color: Colors.red),
                                   SizedBox(width: 5),
                                   Text("No Rewards",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                          color: Colors.red))
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))
                                 ],
                         ),
                       ),
@@ -374,8 +320,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                               height: 90,
                               padding: const EdgeInsets.all(3),
                               width: MediaQuery.of(context).size.width,
-                              decoration:
-                                  const BoxDecoration(color: Colors.blue),
+                              decoration: const BoxDecoration(color: Colors.blue),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -388,9 +333,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                     child: FittedBox(
                                       child: Text(
                                         "\u20b9 $amount or more",
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
+                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                         textScaleFactor: 4,
                                       ),
                                     ),
@@ -410,17 +353,12 @@ class _ContestDetailsState extends State<ContestDetails> {
             // organizer details
             const Padding(
               padding: EdgeInsets.only(bottom: 5.0),
-              child: Text("Organized By:",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
+              child: Text("Organized By:", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
             ),
             GestureDetector(
               onTap: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            OrganizerInfo(organizerId: widget.ouid)));
+                    context, MaterialPageRoute(builder: (context) => OrganizerInfo(organizerId: widget.ouid)));
               },
               child: OrganizerCard(
                 ouid: widget.ouid,
@@ -430,9 +368,7 @@ class _ContestDetailsState extends State<ContestDetails> {
             const SizedBox(height: 30),
 
             // rules
-            const Text("Rules",
-                style: TextStyle(fontWeight: FontWeight.bold),
-                textScaleFactor: 1.7),
+            const Text("Rules", style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 1.7),
             Container(
               padding: const EdgeInsets.all(5),
               color: Colors.white,
@@ -452,9 +388,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text("Requirements",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
-                          textScaleFactor: 1.7),
+                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white), textScaleFactor: 1.7),
                       Requirements(),
                     ])),
 
@@ -506,8 +440,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                     'key': 'rzp_test_rKi9TFV4sMHvz2',
                     'amount': fee! * 100, //in the smallest currency sub-unit.
                     'name': 'ZBGaming',
-                    'order_id':
-                        value.body, // Generate order_id using Orders API
+                    'order_id': value.body, // Generate order_id using Orders API
                     'description': 'Registration Fees',
                     'timeout': 300, // in seconds
                   };
@@ -553,47 +486,35 @@ class _ContestDetailsState extends State<ContestDetails> {
                       child: widget.rewards != 0
                           ? Text(
                               "\u20b9 $fee",
-                              style: const TextStyle(
-                                  fontSize: 30,
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
                             )
                           : const Text(
                               "FREE",
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
                             ),
                     ),
                   )),
                   Padding(
                     padding: const EdgeInsets.only(left: 15),
-                    child:
-                        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                    child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                       stream: documentStream,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
-                              snapshot) {
+                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
                         if (snapshot.hasError) {
                           return ElevatedButton(
-                            onPressed: () {},
+                            onPressed: null,
                             child: const Text('Something went wrong'),
                             style: ButtonStyle(
-                                fixedSize: MaterialStateProperty.all(
-                                    const Size(150, 50)),
+                                fixedSize: MaterialStateProperty.all(const Size(150, 50)),
                                 elevation: MaterialStateProperty.all(0)),
                           );
                         }
 
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
                           return ElevatedButton(
-                            onPressed: () {},
+                            onPressed: null,
                             child: const Text("Loading"),
                             style: ButtonStyle(
-                                fixedSize: MaterialStateProperty.all(
-                                    const Size(150, 50)),
+                                fixedSize: MaterialStateProperty.all(const Size(150, 50)),
                                 elevation: MaterialStateProperty.all(0)),
                           );
                         }
@@ -610,16 +531,15 @@ class _ContestDetailsState extends State<ContestDetails> {
                         }
                         return ElevatedButton(
                           // register button
-                          onPressed:
-                              FirebaseAuth.instance.currentUser?.uid == null
+                          onPressed: FirebaseAuth.instance.currentUser?.uid == null
+                              ? null
+                              : widget.regTeams == widget.totalTeams
                                   ? null
-                                  : widget.regTeams == widget.totalTeams
+                                  : isRegistered
                                       ? null
-                                      : isRegistered
-                                          ? null
-                                          : () {
-                                              register();
-                                            },
+                                      : () {
+                                          register();
+                                        },
                           child: isLoading
                               ? const CircularProgressIndicator(
                                   color: Colors.white,
@@ -632,8 +552,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                       : text!,
                                   textScaleFactor: 1.3),
                           style: ButtonStyle(
-                              fixedSize: MaterialStateProperty.all(
-                                  const Size(150, 50)),
+                              fixedSize: MaterialStateProperty.all(const Size(150, 50)),
                               elevation: MaterialStateProperty.all(0)),
                         );
                       },
@@ -651,8 +570,7 @@ class _ContestDetailsState extends State<ContestDetails> {
 
 // banner image
 class BannerImage extends StatefulWidget {
-  const BannerImage({Key? key, required this.ouid, required this.matchType})
-      : super(key: key);
+  const BannerImage({Key? key, required this.ouid, required this.matchType}) : super(key: key);
   final String ouid;
   final String matchType;
 
@@ -670,8 +588,7 @@ class _BannerImageState extends State<BannerImage> {
 
   // download and use banner
   void downloadBanner() async {
-    Reference storage = FirebaseStorage.instance
-        .ref("zbgaming/organizers/images/$ouid/banner.jpg");
+    Reference storage = FirebaseStorage.instance.ref("zbgaming/organizers/images/$ouid/banner.jpg");
     await storage.getDownloadURL().then((value) {
       imageurl = value;
       setState(() {});
@@ -707,8 +624,7 @@ class _BannerImageState extends State<BannerImage> {
                 return Center(
                   child: CircularProgressIndicator(
                     value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
+                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
                         : null,
                   ),
                 );
