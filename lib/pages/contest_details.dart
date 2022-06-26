@@ -537,9 +537,11 @@ class _ContestDetailsState extends State<ContestDetails> {
                                   ? null
                                   : isRegistered
                                       ? null
-                                      : () {
-                                          register();
-                                        },
+                                      : a != 0
+                                          ? null
+                                          : () {
+                                              register();
+                                            },
                           child: isLoading
                               ? const CircularProgressIndicator(
                                   color: Colors.white,
