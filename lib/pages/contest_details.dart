@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -410,13 +411,17 @@ class _ContestDetailsState extends State<ContestDetails> {
       else {
         // if free register then and there
         if (widget.rewards == 0) {
-          if (widget.regTeams < widget.totalTeams) {
+          String? token = await FirebaseMessaging.instance.getToken();
+
+          if (widget.regTeams < widget.totalTeams && token != null) {
             await get(Uri.parse(ApiEndpoints.baseUrl +
                     ApiEndpoints.register +
-                    "?matchType=${widget.matchType}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchuid=${widget.uid}"))
+                    "?matchType=${widget.matchType}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchuid=${widget.uid}&token=$token"))
                 .then((value) {
               if (value.statusCode == 200) {
                 Fluttertoast.showToast(msg: value.body);
+                isRegistered = true;
+                setState(() {});
               } else {
                 Fluttertoast.showToast(msg: "Something went wrong");
               }

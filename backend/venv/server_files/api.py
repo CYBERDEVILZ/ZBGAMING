@@ -103,12 +103,11 @@ import json
 from flask import Flask
 from flask import request
 import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore, auth
+from firebase_admin import credentials, messaging
+from firebase_admin import firestore
 import razorpay
 import re
 import hashlib
-
 import requests
 
 # FIREBASE INIT
@@ -219,6 +218,19 @@ def organizerSignup():
 
     return "Failed"
 
+def sampleNotification(token):
+
+    # See documentation on defining a message payload.
+    message = messaging.Message(
+        data={
+            'score': '850',
+            'time': '2:45',
+        },
+        token=token,
+    )
+    response = messaging.send(message)
+    print("successssssss woooohooooooooooooooooooo", response)
+        
 
 # REGISTER 
 @app.route("/api/register")
@@ -226,8 +238,9 @@ def register():
     matchType = request.args.get("matchType")
     matchuid = request.args.get("matchuid")
     useruid = request.args.get("useruid")
+    token = request.args.get("token")
 
-    if matchuid != None and useruid != None and matchType != None:
+    if matchuid != None and useruid != None and matchType != None and token != None:
         if matchType.lower() == "pubg":
 
             # checking whether user is verified (KYC)
@@ -264,6 +277,7 @@ def register():
             # if all conditions passed, then check for valid matchuid
             ref = db.collection("pubg").document(matchuid)
             ref_obj = ref.get().to_dict()
+
             try:
                 date = ref_obj["date"]
                 matchType = "pubg"
@@ -292,7 +306,7 @@ def register():
                 total = snapshot.get("total")
                 try:
                     if reg < total:
-                        transaction.update(ref, {"reg": reg + 1})
+                        transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
                         return True
                     else:
                         return False
@@ -322,6 +336,9 @@ def register():
                 db.collection("userinfo").document(useruid).collection("history").document(
                     matchuid
                 ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": 0, "skill": skill})
+
+                sampleNotification(token)
+
                 return "Success"
             else:
                 return "Failed"
@@ -338,8 +355,9 @@ def paidRegister():
     matchType = request.args.get("matchType")
     matchuid = request.args.get("matchuid")
     useruid = request.args.get("useruid")
+    token = request.args.get("token")
 
-    if matchuid != None and useruid != None and matchType != None:
+    if matchuid != None and useruid != None and matchType != None and token != None:
         amount = None
         if matchType.lower() == "pubg":
 
