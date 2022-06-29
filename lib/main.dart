@@ -54,6 +54,8 @@ class _MyAppState extends State<MyApp> {
     // initialize firebase messaging
     _messaging = FirebaseMessaging.instance;
 
+    _messaging.getInitialMessage();
+
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // iOS specific
@@ -67,7 +69,9 @@ class _MyAppState extends State<MyApp> {
     // if permissions are granted
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print("received a message bruh!");
+        if (message.notification != null) {
+          print("received a message bruh!");
+        }
       });
     }
   }

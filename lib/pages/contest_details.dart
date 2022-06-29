@@ -420,7 +420,9 @@ class _ContestDetailsState extends State<ContestDetails> {
                 .then((value) {
               if (value.statusCode == 200) {
                 Fluttertoast.showToast(msg: value.body);
-                isRegistered = true;
+                if (value.body == "Success") {
+                  isRegistered = true;
+                }
                 setState(() {});
               } else {
                 Fluttertoast.showToast(msg: "Something went wrong");

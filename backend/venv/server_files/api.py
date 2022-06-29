@@ -4,23 +4,16 @@ OPTIMIZATIONS / IDEAS
 
 IMPORTANT!!! 
 ASK THE ORGANIZER TO ENTER YOUTUBE STREAM LINK. A PUSH NOTIFICATION WILL BE SENT TO PLAYERS TELLING THEM THAT
-THE MATCH WILL START SOON, SO BE READY AND CONTACT THE ORGANIZER.
+THE MATCH WILL START SOON, SO BE READY AND PREPARE YOURSELF
 
 IMPORTANT!!!
-DISABLE ONGOING BUTTON FOR LOGGED IN USERS
+USER GETS MATCH ROOM INFO (ROOM ID AND PASS) ON NOTIFICATIONS. ALSO GETS ADDED TO A CHAT ROOM WHERE ONLY THE ORGANIZER CAN CHAT
 
 IMPORTANT!!!
 FRONTEND FOR LINKED ACCOUNTS NOT COMPLETED.
 
 IMPORTANT!!!
 VERIFIED USER NOT CHECKING VALUE FROM DATABASE
-
-IMPORTANT!!!
-USER GETS MATCH ROOM INFO (ROOM ID AND PASS) ON NOTIFICATIONS. ALSO GETS ADDED TO A CHAT ROOM WHERE ONLY THE ORGANIZER CAN CHAT
-
-IMPORTANT!!!
-ON CONTEST DETAILS PAGE, WHEN THE USER REGISTERS, PROVIDE HIM WITH THE LINK TO JOIN DISCORD OR WHATSAPP GROUP LINK WHERE
-DETAILS ABOUT MATCH WILL TAKE PLACE. THE USER WILL USE THIS TO JOIN THE WHATSAPP GROUP OR DISCORD CHANNEL.
 
 IMPORTANT!!!
 DESIGN SPECIFIC: I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN SHORT. MAKE SURE TO REPLACE THE ORIGINAL WITH SHORT AND 
@@ -217,19 +210,6 @@ def organizerSignup():
                         return "Success"
 
     return "Failed"
-
-def sampleNotification(token):
-
-    # See documentation on defining a message payload.
-    message = messaging.Message(
-        data={
-            'score': '850',
-            'time': '2:45',
-        },
-        token=token,
-    )
-    response = messaging.send(message)
-    print("successssssss woooohooooooooooooooooooo", response)
         
 
 # REGISTER 
@@ -336,9 +316,6 @@ def register():
                 db.collection("userinfo").document(useruid).collection("history").document(
                     matchuid
                 ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": 0, "skill": skill})
-
-                sampleNotification(token)
-
                 return "Success"
             else:
                 return "Failed"
@@ -346,7 +323,6 @@ def register():
             return "Failed"
 
     return "Failed"
-
 
 # CREATE ORDER
 # Only creates order for the client  
@@ -732,7 +708,7 @@ def userLevelCalculate():
     except:
         return "Failed"
 
-
+# START MATCH LOGIC
 @app.route("/api/startMatch")
 def startMatch():
     matchUid = request.args.get('muid')
@@ -748,31 +724,40 @@ def startMatch():
     if streamLink == "":
         return "Failed: Invalid URL"
 
-    if matchType == "pubg":
+    try:
         data = db.collection(matchType).document(matchUid).get().to_dict()
         if data == None:
             return "Failed"
+        
         if data["started"] != 0:
             return "Failed: Match cannot be started"
         if data["reg"] < 80:
             return "Failed: Not enough registrations"
+            
+        userMessageTokens = data["userMessageTokens"]
+        name = data["name"]
+        for token in userMessageTokens:
+            try:
+                message = messaging.Message(notification=messaging.Notification(title="Are You Ready for the Battle?", body=f"Your registered match '{name}' will begin in a few minutes! Visit the chat room to know more!"), token=token)
+                messaging.send(message)
+            except:
+                pass
         db.collection(matchType).document(matchUid).update({
             "started": 1,
             "streamLink": streamLink
         })
-
-
         return "Success"
-    else:
+    except:
         return "Failed"
 
+# STOP MATCH LOGIC
 @app.route("/api/stopMatch")
 def stopMatch():
     matchUid = request.args.get('muid')
     matchType = request.args.get("mType")
     matchType = matchType.lower()
 
-    if matchType == "pubg":
+    try:
         data = db.collection(matchType).document(matchUid).get().to_dict()
         if data == None:
             return "Failed"
@@ -781,10 +766,16 @@ def stopMatch():
         db.collection(matchType).document(matchUid).update({
             "started": 2
         })
+        userMessageTokens = data["userMessageTokens"]
+        name = data["name"]
+        for token in userMessageTokens:
+            try:
+                message = messaging.Message(notification=messaging.Notification(title="Match ended", body=f"Your registered match '{name}' has ended. Congratulations to the winner!"), token=token)
+                messaging.send(message)
+            except:
+                pass
         return "Success"
-    else:
+    except:
         return "Failed"
-
-    
 
 app.run(debug=True)
