@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:zbgaming/pages/show_user_account.dart';
 
 class RegisteredUsers extends StatefulWidget {
-  const RegisteredUsers(
-      {Key? key, required this.matchType, required this.matchuid})
-      : super(key: key);
+  const RegisteredUsers({Key? key, required this.matchType, required this.matchuid}) : super(key: key);
 
   final String matchType;
   final String matchuid;
@@ -16,6 +14,7 @@ class RegisteredUsers extends StatefulWidget {
 
 class _RegisteredUsersState extends State<RegisteredUsers> {
   bool isLoading = false;
+  int? reg;
 
   late Stream<QuerySnapshot<Map<String, dynamic>>> regUsers;
 
@@ -27,6 +26,10 @@ class _RegisteredUsersState extends State<RegisteredUsers> {
         .doc(widget.matchuid)
         .collection("registeredUsers")
         .snapshots();
+    regUsers.listen((event) {
+      reg = event.size;
+      setState(() {});
+    });
     isLoading = false;
     setState(() {});
   }
@@ -42,7 +45,7 @@ class _RegisteredUsersState extends State<RegisteredUsers> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Registered Users"),
+          title: Text("Registered Users ($reg)"),
           centerTitle: true,
           elevation: 0,
         ),
@@ -54,19 +57,14 @@ class _RegisteredUsersState extends State<RegisteredUsers> {
                 return const Text("An error occurred");
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                    height: 30,
-                    child: FittedBox(child: CircularProgressIndicator()));
+                return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
               }
               return Column(
                   children: snapshot.data!.docs.map((e) {
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: ((context) =>
-                                ShowUserAccount(hashedId: e["hashedID"]))));
+                        context, MaterialPageRoute(builder: ((context) => ShowUserAccount(hashedId: e["hashedID"]))));
                   },
                   child: Card(
                     child: ListTile(

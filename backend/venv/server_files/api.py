@@ -4,23 +4,16 @@ OPTIMIZATIONS / IDEAS
 
 IMPORTANT!!! 
 ASK THE ORGANIZER TO ENTER YOUTUBE STREAM LINK. A PUSH NOTIFICATION WILL BE SENT TO PLAYERS TELLING THEM THAT
-THE MATCH WILL START SOON, SO BE READY AND CONTACT THE ORGANIZER.
+THE MATCH WILL START SOON, SO BE READY AND PREPARE YOURSELF
 
 IMPORTANT!!!
-DISABLE ONGOING BUTTON FOR LOGGED IN USERS
+USER GETS MATCH ROOM INFO (ROOM ID AND PASS) ON NOTIFICATIONS. ALSO GETS ADDED TO A CHAT ROOM WHERE ONLY THE ORGANIZER CAN CHAT
 
 IMPORTANT!!!
 FRONTEND FOR LINKED ACCOUNTS NOT COMPLETED.
 
 IMPORTANT!!!
 VERIFIED USER NOT CHECKING VALUE FROM DATABASE
-
-IMPORTANT!!!
-USER GETS MATCH ROOM INFO (ROOM ID AND PASS) ON NOTIFICATIONS. ALSO GETS ADDED TO A CHAT ROOM WHERE ONLY THE ORGANIZER CAN CHAT
-
-IMPORTANT!!!
-ON CONTEST DETAILS PAGE, WHEN THE USER REGISTERS, PROVIDE HIM WITH THE LINK TO JOIN DISCORD OR WHATSAPP GROUP LINK WHERE
-DETAILS ABOUT MATCH WILL TAKE PLACE. THE USER WILL USE THIS TO JOIN THE WHATSAPP GROUP OR DISCORD CHANNEL.
 
 IMPORTANT!!!
 DESIGN SPECIFIC: I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN SHORT. MAKE SURE TO REPLACE THE ORIGINAL WITH SHORT AND 
@@ -103,12 +96,11 @@ import json
 from flask import Flask
 from flask import request
 import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore, auth
+from firebase_admin import credentials, messaging
+from firebase_admin import firestore
 import razorpay
 import re
 import hashlib
-
 import requests
 
 # FIREBASE INIT
@@ -117,10 +109,10 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 app = Flask(__name__)
 
-REST_API_VERIFY_EMAIL = ""
+REST_API_VERIFY_EMAIL = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyApP0fP9W-HngWhu-qtEqJtzHE4EHMTaFw"
 
 # RAZORPAY INIT
-secret_key = ""
+secret_key = "C7IHXyYq0nsDlWQYUcRKGzaH"
 client = razorpay.Client(auth=("rzp_test_rKi9TFV4sMHvz2", secret_key))
 
 # FUNCTIONS
@@ -218,7 +210,7 @@ def organizerSignup():
                         return "Success"
 
     return "Failed"
-
+        
 
 # REGISTER 
 @app.route("/api/register")
@@ -226,8 +218,9 @@ def register():
     matchType = request.args.get("matchType")
     matchuid = request.args.get("matchuid")
     useruid = request.args.get("useruid")
+    token = request.args.get("token")
 
-    if matchuid != None and useruid != None and matchType != None:
+    if matchuid != None and useruid != None and matchType != None and token != None:
         if matchType.lower() == "pubg":
 
             # checking whether user is verified (KYC)
@@ -264,6 +257,7 @@ def register():
             # if all conditions passed, then check for valid matchuid
             ref = db.collection("pubg").document(matchuid)
             ref_obj = ref.get().to_dict()
+
             try:
                 date = ref_obj["date"]
                 matchType = "pubg"
@@ -292,7 +286,7 @@ def register():
                 total = snapshot.get("total")
                 try:
                     if reg < total:
-                        transaction.update(ref, {"reg": reg + 1})
+                        transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
                         return True
                     else:
                         return False
@@ -330,7 +324,6 @@ def register():
 
     return "Failed"
 
-
 # CREATE ORDER
 # Only creates order for the client  
 @app.route("/api/createOrder")
@@ -338,8 +331,9 @@ def paidRegister():
     matchType = request.args.get("matchType")
     matchuid = request.args.get("matchuid")
     useruid = request.args.get("useruid")
+    token = request.args.get("token")
 
-    if matchuid != None and useruid != None and matchType != None:
+    if matchuid != None and useruid != None and matchType != None and token != None:
         amount = None
         if matchType.lower() == "pubg":
 
@@ -714,7 +708,7 @@ def userLevelCalculate():
     except:
         return "Failed"
 
-
+# START MATCH LOGIC
 @app.route("/api/startMatch")
 def startMatch():
     matchUid = request.args.get('muid')
@@ -730,31 +724,40 @@ def startMatch():
     if streamLink == "":
         return "Failed: Invalid URL"
 
-    if matchType == "pubg":
+    try:
         data = db.collection(matchType).document(matchUid).get().to_dict()
         if data == None:
             return "Failed"
+        
         if data["started"] != 0:
             return "Failed: Match cannot be started"
         if data["reg"] < 80:
             return "Failed: Not enough registrations"
+            
+        userMessageTokens = data["userMessageTokens"]
+        name = data["name"]
+        for token in userMessageTokens:
+            try:
+                message = messaging.Message(notification=messaging.Notification(title="Are You Ready for the Battle?", body=f"Your registered match '{name}' will begin in a few minutes! Visit the chat room to know more!"), token=token)
+                messaging.send(message)
+            except:
+                pass
         db.collection(matchType).document(matchUid).update({
             "started": 1,
             "streamLink": streamLink
         })
-
-
         return "Success"
-    else:
+    except:
         return "Failed"
 
+# STOP MATCH LOGIC
 @app.route("/api/stopMatch")
 def stopMatch():
     matchUid = request.args.get('muid')
     matchType = request.args.get("mType")
     matchType = matchType.lower()
 
-    if matchType == "pubg":
+    try:
         data = db.collection(matchType).document(matchUid).get().to_dict()
         if data == None:
             return "Failed"
@@ -763,10 +766,16 @@ def stopMatch():
         db.collection(matchType).document(matchUid).update({
             "started": 2
         })
+        userMessageTokens = data["userMessageTokens"]
+        name = data["name"]
+        for token in userMessageTokens:
+            try:
+                message = messaging.Message(notification=messaging.Notification(title="Match ended", body=f"Your registered match '{name}' has ended. Congratulations to the winner!"), token=token)
+                messaging.send(message)
+            except:
+                pass
         return "Success"
-    else:
+    except:
         return "Failed"
-
-    
 
 app.run(debug=True)
