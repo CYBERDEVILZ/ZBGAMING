@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:zbgaming/pages/match_updates.dart';
 import 'package:zbgaming/pages/create_match.dart';
 import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
@@ -10,7 +11,6 @@ import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/pages/organizer_login.dart';
 import 'package:zbgaming/pages/organizer_signup.dart';
 import 'package:zbgaming/pages/pubg.dart';
-import 'package:zbgaming/pages/show_user_account.dart';
 import 'package:zbgaming/pages/signup.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/pages/valorant.dart';
@@ -86,6 +86,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: const HomePage(),
+      // home: const MatchUpdates(notificationid: "sldkfjslkdf"),
       // home: const OrganizerLogin(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",

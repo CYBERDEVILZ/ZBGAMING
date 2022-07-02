@@ -74,11 +74,11 @@ class _ContestDetailsState extends State<ContestDetails> {
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    Fluttertoast.showToast(msg: "Fail");
+    Fluttertoast.showToast(msg: "Failure in handling payment");
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
-    Fluttertoast.showToast(msg: "Wallet");
+    Fluttertoast.showToast(msg: "Failure in handling external wallet");
   }
 
   final Razorpay _razorpay = Razorpay();
@@ -401,6 +401,7 @@ class _ContestDetailsState extends State<ContestDetails> {
     void register() async {
       isLoading = true;
       setState(() {});
+      bool a = false;
 
       //check the auth status
       if (FirebaseAuth.instance.currentUser?.uid == null) {
@@ -436,12 +437,14 @@ class _ContestDetailsState extends State<ContestDetails> {
         // else accept payment
         else {
           if (widget.regTeams < widget.totalTeams) {
+            String? token = await FirebaseMessaging.instance.getToken();
+
             await get(Uri.parse(ApiEndpoints.baseUrl +
                     ApiEndpoints.createOrder +
-                    "?matchType=${widget.matchType}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchuid=${widget.uid}"))
+                    "?matchType=${widget.matchType}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchuid=${widget.uid}&token=$token"))
                 .then((value) {
               if (value.statusCode == 200) {
-                if (value.body.isNotEmpty) {
+                if (!value.body.contains("Failed")) {
                   Fluttertoast.showToast(msg: "order created");
                   Map<String, dynamic> checkout = {
                     'key': 'rzp_test_rKi9TFV4sMHvz2',
@@ -453,7 +456,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                   };
                   _razorpay.open(checkout);
                 } else {
-                  Fluttertoast.showToast(msg: "Failed to create order");
+                  Fluttertoast.showToast(msg: value.body);
                 }
               } else {
                 Fluttertoast.showToast(msg: "Something went wrong");

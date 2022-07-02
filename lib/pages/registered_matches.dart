@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/pages/contest_details.dart';
+import 'package:zbgaming/pages/match_updates.dart';
 import 'package:zbgaming/widgets/Date_to_string.dart';
 import 'package:zbgaming/widgets/not_signed_in.dart';
 
@@ -113,12 +114,18 @@ class _BuildTilesState extends State<BuildTiles> {
                     )),
                 title: Text(data[index]["name"]),
                 subtitle: Text(dateObject.dateToString(data[index]["date"].toDate())),
+                onTap: () {
+                  fetchAndNavigate(data[index]);
+                },
                 trailing: IconButton(
-                  icon: const Icon(Icons.open_in_new, color: Colors.blue),
+                  icon: const Icon(Icons.chat, color: Colors.blue),
 
                   // fetch data and navigate to contest details
                   onPressed: () {
-                    fetchAndNavigate(data[index]);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MatchUpdates(notificationid: data[index]["notificationId"])));
                   },
                 ),
               );

@@ -4,6 +4,9 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
+IMPORTANT!!!
+PAYMENT SYSTEM NOT WORKING IDK WHYY!!?
+
 IMPORTANT!!! 
 ASK THE ORGANIZER TO ENTER YOUTUBE STREAM LINK. A PUSH NOTIFICATION WILL BE SENT TO PLAYERS TELLING THEM THAT
 THE MATCH WILL START SOON, SO BE READY AND PREPARE.
@@ -12,7 +15,7 @@ IMPORTANT!!!
 I HAVE USED TOKENS FOR PUSH NOTIFICATION. CONVERT THEM INTO TOPICS FOR FASTER SENDING. OR USE BACKGROUND WORKER (LEAST PREFERRED)
 
 IMPORTANT!!!
-USER GETS MATCH ROOM INFO (ROOM ID AND PASS) ON NOTIFICATIONS. ALSO GETS ADDED TO A CHAT ROOM WHERE ONLY THE ORGANIZER CAN CHAT
+USER GETS MATCH ROOM INFO (ROOM ID AND PASS) ON NOTIFICATIONS. ALSO GETS ADDED TO A NOTIFICATION ROOM.
 
 IMPORTANT!!!
 ORGANIZER UPDATES FINISHED STATUS AND WHO WON (UID) IN THE DB. VALIDATORS VALIDATE WHETHER THE WINNER IS LEGIT IFF REPORTS POUR IN.
@@ -56,23 +59,18 @@ MAKE A CLOUD FUNCTION THAT CLEANS DATABASE.
 CALL CLEAN API EVERYTIME THE USER VISITS ANY MATCH SECTION OR REGISTERED SECTION
 </DO IT LATER>
 
-Organizer starts the match if the required minimum number of people have joined (80%), further registration stops, ongoing message shown, 
-joining details sent as push notification to each people who have registered.
 Validator should be able to validate a match
-Validate organizers (KYC, BANK ACCOUNT, isverified tag add if they are verified)
 Database Cleanup (After every call to view matches, registered matches, always clean the database)
 Backend to calculate organizer ratings based on [number of matches he conducted successfully / (total matches)] * 5
 Backend to calculate organizer levels based on prizes given
-Backend to collect and distribute money
 Organizer account delete
 Customer Care chat feature, account related assistance, monetary related assistance
-Add report functionality
-
-AFTER MATCH GETS OVER, ORGANIZER UPDATES WHO WON AND VALIDATOR CHECKS THE UPDATION
-OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
 
 
 ########################## DESIGN SECTION ###############################
+
+IMPORTANT!!!
+DISABLE REGISTER BUTTON FOR INELIGIBLE USERS BASED ON SKILL
 
 IMPORTANT!!!
 FRONTEND FOR LINKED ACCOUNTS NOT COMPLETED.
@@ -92,7 +90,7 @@ NOTIFICATION SECTION WHERE HE RECEIVES INFO ABOUT MATCH DETAILS FOR WHICH HE REG
 
 ONE WAY TEMPORARY CHAT SECTION FOR USERS REGISTERED FOR A MATCH. ALL ONE WAY DISCUSSION WILL BE TAKEN PLACE THERE
 
-
+OPTIMIZE USER LEVEL CALCULATION AS WELL AS ORGANIZER LEVEL CALCULATION (IF EXISTS)
 
 
 """
@@ -247,40 +245,37 @@ def register():
                 return "Failed: Account not linked"
             
 
-            # checking if matchuid exists
-            matchData = db.collection(matchType.lower()).document(matchuid).get()
-            matchData = matchData.to_dict()
-            if matchData == None:
-                return "Failed: Match Doesn't Exist"
-
             # checking for already registered..
-            user = (
+            registeredMatches = (
                 db.collection("userinfo").document(useruid).collection("registered").get()
             )
-            user = [user.id for user in user]
-            if matchuid in user:
+            matchId = [match.id for match in registeredMatches]
+            if matchuid in matchId:
                 return "Failed: Already registered"
 
-            # if all conditions passed, then check for valid matchuid
+            # checking if matchuid exists
             ref = db.collection("pubg").document(matchuid)
             ref_obj = ref.get().to_dict()
+            if ref_obj == None:
+                return "Failed: Match Doesn't Exist"
 
-            try:
-                date = ref_obj["date"]
-                matchType = "pubg"
-                uid = matchuid
-                name = ref_obj["name"]
-                paid = ref_obj["fee"]
-                skill = ref_obj["skill"]
-                started = ref_obj["started"]
-            except:
-                return "Failed: No such match"
+            date = ref_obj["date"]
+            matchType = "pubg"
+            uid = matchuid
+            name = ref_obj["name"]
+            paid = ref_obj["fee"]
+            skill = ref_obj["skill"]
+            started = ref_obj["started"]
+            notifId = ref_obj["notificationId"]
             
             if paid != 0:
                 return "Failed: Can't register for free"
 
             if started != 0:
                 return "Failed: This match is no longer accepting registration"
+            
+            if userdata["level"] < skill:
+                return "Failed: Don't have enough skill"
             
 
             # retrieve the total registered and increase it by one [USE TRANSACTION!]
@@ -316,7 +311,7 @@ def register():
                 db.collection("userinfo").document(useruid).collection(
                     "registered"
                 ).document(matchuid).set(
-                    {"date": date, "matchType": matchType, "name": name, "uid": uid}
+                    {"date": date, "matchType": matchType, "name": name, "uid": uid, "notificationId": notifId}
                 )
 
                 # add to history
@@ -378,12 +373,13 @@ def paidRegister():
             if paid == 1:
                 amount = 100 * 100
             elif paid == 2:
-                amount == 500 * 100
+                amount = 500 * 100
             elif paid == 3:
                 amount = 1000 * 100
             elif paid == 4:
                 amount = 2000 * 100
             else:
+                
                 return "Failed: Price mismatch"
 
             DATA = {
@@ -399,9 +395,9 @@ def paidRegister():
             return order_id
             
         else: 
-            return "Failed"
+            return "Failed: matchType doesn't exist"
 
-    return "Failed" 
+    return "Failed: Request parameters missing" 
 
 
 # ORDER VALIDATION AND PAID REGISTRATION
@@ -456,6 +452,7 @@ def validate():
                     name = ref_obj["name"]
                     paid = ref_obj["fee"]
                     skill = ref_obj["skill"]
+                    notifId = ref_obj["notificationId"]
                 except:
                     return "Failed: No such match"
                 
@@ -484,7 +481,7 @@ def validate():
                     db.collection("userinfo").document(useruid).collection(
                         "registered"
                     ).document(matchuid).set(
-                        {"date": date, "matchType": matchType, "name": name, "uid": uid}
+                        {"date": date, "matchType": matchType, "name": name, "uid": uid, "notificationId": notifId}
                     )
 
                     # add to history
@@ -574,6 +571,12 @@ def create():
             if fee == 3 or fee == 4:
                 return "Failed"
 
+        # for notification room
+        secret_key = "shinra_tensei"
+        datething = str(datetime.now())
+        toHash = uid+secret_key+datething
+        hashedValue = hashlib.sha256(toHash.encode()).digest()
+
         db.collection(matchType.lower()).document().set(
             {
                 "date": date,
@@ -587,6 +590,7 @@ def create():
                 "reg": 0,
                 "total": total,
                 "started": started,
+                "notificationId": hashedValue
             }
         )
 
