@@ -10,6 +10,19 @@ class MatchUpdates extends StatefulWidget {
 }
 
 class _MatchUpdatesState extends State<MatchUpdates> {
+  bool isLoading = false;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> chatData;
+
+  @override
+  void initState() {
+    super.initState();
+    chatData = FirebaseFirestore.instance
+        .collection("chats")
+        .where("notificationId", isEqualTo: widget.notificationid)
+        .limit(1)
+        .snapshots();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -21,24 +34,24 @@ class _MatchUpdatesState extends State<MatchUpdates> {
           ),
           body: Padding(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 64.0),
-            child: ListView(
-              reverse: true,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                const NotificationBubble(
-                  text: "sldkfjlskdjfsdl",
-                  date: "3:15 pm",
-                ),
-                const NotificationBubble(
-                  text: "sldkfjlskdjfsdl",
-                  date: "3:15 pm",
-                ),
-                const NotificationBubble(
-                  text: "sldkfjlskdjfsdlkjsd\nlaksjdlsdkfjasdfsfsdfsdfksdjfhsdkfhsdkjfhskjfshdkjfhsdkjhsdfkjsdhfkjsdfh",
-                  date: "3:00 pm",
-                ),
-              ],
-            ),
+            child: StreamBuilder(
+                stream: chatData,
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    const CircularProgressIndicator();
+                  }
+                  if (!snapshot.hasData) {
+                    return const Text("No Data");
+                  }
+                  return ListView(physics: const BouncingScrollPhysics(), children: <Widget>[
+                    ...(snapshot.data!.docs.first["chats"]
+                        .map((obj) => NotificationBubble(text: obj["message"], date: obj["time"]))
+                        .toList())
+                  ]);
+                }),
           )),
     );
   }
@@ -47,7 +60,7 @@ class _MatchUpdatesState extends State<MatchUpdates> {
 class NotificationBubble extends StatelessWidget {
   const NotificationBubble({Key? key, required this.text, required this.date}) : super(key: key);
   final String text;
-  final String date;
+  final Timestamp date;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +77,7 @@ class NotificationBubble extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Organizer Name",
+                "Organizer",
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[900]),
               ),
               const SizedBox(height: 3),
@@ -76,7 +89,7 @@ class NotificationBubble extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    date,
+                    date.toDate().hour.toString(),
                     style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
                   )
                 ],

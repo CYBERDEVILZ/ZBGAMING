@@ -103,6 +103,8 @@ from flask import request
 import firebase_admin
 from firebase_admin import credentials, messaging
 from firebase_admin import firestore
+from pytz import timezone
+import pytz
 import razorpay
 import re
 import hashlib
@@ -318,6 +320,7 @@ def register():
                 db.collection("userinfo").document(useruid).collection("history").document(
                     matchuid
                 ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill})
+
                 return "Success"
             else:
                 return "Failed"
@@ -593,6 +596,11 @@ def create():
                 "notificationId": hashedValue
             }
         )
+
+        db.collection("chats").document().set({
+            "notificationId": hashedValue,
+            "chats": [{"message": "Thank You all for joining this match!", "time": datetime.now(timezone(zone="Asia/Kolkata"))}]
+        })
 
         return "Success"
     else:
