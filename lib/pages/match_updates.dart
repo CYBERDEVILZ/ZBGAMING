@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zbgaming/widgets/date_to_string.dart';
 
 class MatchUpdates extends StatefulWidget {
   const MatchUpdates({Key? key, required this.notificationid}) : super(key: key);
@@ -46,11 +47,15 @@ class _MatchUpdatesState extends State<MatchUpdates> {
                   if (!snapshot.hasData) {
                     return const Text("No Data");
                   }
-                  return ListView(physics: const BouncingScrollPhysics(), children: <Widget>[
-                    ...(snapshot.data!.docs.first["chats"]
-                        .map((obj) => NotificationBubble(text: obj["message"], date: obj["time"]))
-                        .toList())
-                  ]);
+                  try {
+                    return ListView(physics: const BouncingScrollPhysics(), children: <Widget>[
+                      ...(snapshot.data!.docs.first["chats"]
+                          .map((obj) => NotificationBubble(text: obj["message"], date: obj["time"]))
+                          .toList())
+                    ]);
+                  } catch (e) {
+                    return const Text("No Updates to Show");
+                  }
                 }),
           )),
     );
@@ -89,7 +94,12 @@ class NotificationBubble extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    date.toDate().hour.toString(),
+                    DateToString().dateToString(date.toDate()),
+                    style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    date.toDate().toIso8601String().substring(11, 16),
                     style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
                   )
                 ],

@@ -4,9 +4,6 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
-IMPORTANT!!!
-PAYMENT SYSTEM NOT WORKING IDK WHYY!!?
-
 IMPORTANT!!! 
 ASK THE ORGANIZER TO ENTER YOUTUBE STREAM LINK. A PUSH NOTIFICATION WILL BE SENT TO PLAYERS TELLING THEM THAT
 THE MATCH WILL START SOON, SO BE READY AND PREPARE.
@@ -491,7 +488,20 @@ def validate():
                     db.collection("userinfo").document(useruid).collection("history").document(
                         matchuid
                     ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill})
-                    return "Registration Successful!"
+
+                    # for notification room
+                    secret_key = "shinra_tensei"
+                    datething = str(datetime.now())
+                    toHash = uid+secret_key+datething
+                    hashedValue = hashlib.sha256(toHash.encode()).digest()
+
+                    db.collection("chats").document().set({
+                        "notificationId": hashedValue,
+                        "chats": [{"message": "Thank You all for joining this match!", "time": datetime.now(timezone(zone="Asia/Kolkata"))}]
+                    })
+
+
+                    return "Success"
                 else:
                     return "Failed"
             else: 

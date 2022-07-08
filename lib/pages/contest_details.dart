@@ -401,7 +401,6 @@ class _ContestDetailsState extends State<ContestDetails> {
     void register() async {
       isLoading = true;
       setState(() {});
-      bool a = false;
 
       //check the auth status
       if (FirebaseAuth.instance.currentUser?.uid == null) {
