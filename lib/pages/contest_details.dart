@@ -52,6 +52,7 @@ class ContestDetails extends StatefulWidget {
 class _ContestDetailsState extends State<ContestDetails> {
   bool isLoading = false;
   bool isRegistered = false;
+  String? token;
   DateToString dateString = DateToString();
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
@@ -60,7 +61,7 @@ class _ContestDetailsState extends State<ContestDetails> {
     Fluttertoast.showToast(msg: "Payment Success");
     await get(Uri.parse(ApiEndpoints.baseUrl +
             ApiEndpoints.validateOrder +
-            "?order_id=${response.orderId}&razorpay_signature=${response.signature}&razorpay_payment_id=${response.paymentId}&matchuid=${widget.uid}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchType=${widget.matchType}&secretKey=DO_NOT_TAMPER_THIS_REQUEST"))
+            "?order_id=${response.orderId}&razorpay_signature=${response.signature}&razorpay_payment_id=${response.paymentId}&matchuid=${widget.uid}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchType=${widget.matchType}&token=$token&secretKey=DO_NOT_TAMPER_THIS_REQUEST"))
         .then((value) {
       if (value.statusCode == 200) {
         Fluttertoast.showToast(msg: value.body);
@@ -103,6 +104,10 @@ class _ContestDetailsState extends State<ContestDetails> {
     setState(() {});
   }
 
+  void getToken() async {
+    token = await FirebaseMessaging.instance.getToken();
+  }
+
   late Stream<DocumentSnapshot<Map<String, dynamic>>> documentStream;
 
   @override
@@ -113,6 +118,7 @@ class _ContestDetailsState extends State<ContestDetails> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     areYouRegistered();
+    getToken();
   }
 
   @override
@@ -411,8 +417,6 @@ class _ContestDetailsState extends State<ContestDetails> {
       else {
         // if free register then and there
         if (widget.rewards == 0) {
-          String? token = await FirebaseMessaging.instance.getToken();
-
           if (widget.regTeams < widget.totalTeams && token != null) {
             await get(Uri.parse(ApiEndpoints.baseUrl +
                     ApiEndpoints.register +

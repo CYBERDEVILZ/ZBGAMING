@@ -92,6 +92,7 @@ OPTIMIZE USER LEVEL CALCULATION AS WELL AS ORGANIZER LEVEL CALCULATION (IF EXIST
 
 from datetime import datetime, timedelta
 import json
+from lib2to3.pytree import Base
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -358,6 +359,14 @@ def paidRegister():
             if matchuid in user:
                 return "Failed: Already registered"
 
+             # checking whether the user has linked his game account
+            ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
+            ids_dict = ids.to_dict()
+            if ids_dict == None:
+                return "Failed: Account not linked"
+            if ids_dict["id"] == None or ids_dict["id"] == "":
+                return "Failed: Account not linked"
+
             # if all conditions passed, then check for valid matchuid
             ref = db.collection("pubg").document(matchuid)
             ref_obj = ref.get().to_dict()
@@ -406,6 +415,7 @@ def validate():
     matchType = request.args.get("matchType")
     matchuid = request.args.get("matchuid")
     useruid = request.args.get("useruid")
+    token = request.args.get("token")
 
     verifyStatus = client.utility.verify_payment_signature({
    'razorpay_order_id': order_id,
@@ -414,7 +424,7 @@ def validate():
    })
 
     if verifyStatus:
-        if matchuid != None and useruid != None and matchType != None:
+        if matchuid != None and useruid != None and matchType != None and token!=None:
             if matchType.lower() == "pubg":
 
                 # checking whether user is verified (KYC)
@@ -438,6 +448,14 @@ def validate():
                 user = [user.id for user in user]
                 if matchuid in user:
                     return "Failed: Already registered"
+
+                # checking whether the user has linked his game account
+                ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
+                ids_dict = ids.to_dict()
+                if ids_dict == None:
+                    return "Failed: Account not linked"
+                if ids_dict["id"] == None or ids_dict["id"] == "":
+                    return "Failed: Account not linked"
 
                 # if all conditions passed, then check for valid matchuid
                 ref = db.collection("pubg").document(matchuid)
@@ -463,7 +481,7 @@ def validate():
                     total = snapshot.get("total")
                     try:
                         if reg < total:
-                            transaction.update(ref, {"reg": reg + 1})
+                            transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
                             return True
                         else:
                             return False
@@ -480,6 +498,14 @@ def validate():
                     ).document(matchuid).set(
                         {"date": date, "matchType": matchType, "name": name, "uid": uid, "notificationId": notifId}
                     )
+
+                    # add to match's registration list
+                    ref.collection("registeredUsers").document().set({
+                        "email": userdata["email"],
+                        "username": userdata["username"],
+                        "IGID": ids_dict["id"],
+                        "hashedID": hashlib.sha256(useruid.encode()).digest()
+                    })
 
                     # add to history
                     db.collection("userinfo").document(useruid).collection("history").document(
@@ -742,6 +768,7 @@ def startMatch():
     streamLink = request.args.get('streamLink')
     matchType = matchType.lower()
 
+
     if streamLink == None:
         return "Failed: Invalid URL"
 
@@ -753,7 +780,7 @@ def startMatch():
     try:
         data = db.collection(matchType).document(matchUid).get().to_dict()
         if data == None:
-            return "Failed"
+            return "Failed: No such match"
         
         if data["started"] != 0:
             return "Failed: Match cannot be started"
@@ -762,11 +789,14 @@ def startMatch():
             
         userMessageTokens = data["userMessageTokens"]
         name = data["name"]
+        notifId = data["notificationId"]
         for token in userMessageTokens:
+            print(token)
             try:
-                message = messaging.Message(notification=messaging.Notification(title="Are You Ready for the Battle?", body=f"Your registered match '{name}' will begin in a few minutes! Visit the chat room to know more!"), token=token)
+                message = messaging.Message(notification=messaging.Notification(title="Are You Ready for the Battle?", body=f"Your registered match '{name}' will begin in a few minutes! Visit the chat room to know more!"), token=token, data={"route": "/registeredMatches"})
                 messaging.send(message)
-            except:
+            except BaseException as err:
+                print(f"an error occurred: {err}")
                 pass
         db.collection(matchType).document(matchUid).update({
             "started": 1,
@@ -774,7 +804,7 @@ def startMatch():
         })
         return "Success"
     except:
-        return "Failed"
+        return "Failed: Something went wrong"
 
 # STOP MATCH LOGIC
 @app.route("/api/stopMatch")

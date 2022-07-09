@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
@@ -24,9 +26,31 @@ class _HomePageState extends State<HomePage> {
 
   bool isLogged = false;
 
+  void registerNotification() async {
+    // initialize firebase app
+    Firebase.initializeApp();
+
+    // initialize firebase messaging
+    FirebaseMessaging.instance.getInitialMessage();
+
+    // foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {}
+    });
+
+    // When the app is in the background and opened
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      if (message.data != null) {
+        Navigator.of(context).pushNamed(message.data["route"]);
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+
+    registerNotification();
 
     // subscribe to userchanges
     FirebaseAuth.instance.authStateChanges().listen((User? event) async {

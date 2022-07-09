@@ -11,6 +11,7 @@ import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/pages/organizer_login.dart';
 import 'package:zbgaming/pages/organizer_signup.dart';
 import 'package:zbgaming/pages/pubg.dart';
+import 'package:zbgaming/pages/registered_matches.dart';
 import 'package:zbgaming/pages/signup.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/pages/valorant.dart';
@@ -21,9 +22,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'model/organizermodel.dart';
 import 'model/usermodel.dart';
 import 'pages/home_page.dart';
-
-// handling background notifications
-Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,41 +43,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late final FirebaseMessaging _messaging;
-
-  void registerNotification() async {
-    // initialize firebase app
-    Firebase.initializeApp();
-
-    // initialize firebase messaging
-    _messaging = FirebaseMessaging.instance;
-
-    _messaging.getInitialMessage();
-
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    // iOS specific
-    NotificationSettings settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      provisional: false,
-      sound: true,
-    );
-
-    // if permissions are granted
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        if (message.notification != null) {
-          print("received a message bruh!");
-        }
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    registerNotification();
   }
 
   @override
@@ -100,6 +66,7 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.home: (context) => const HomePage(),
         AppRoutes.signup: (context) => const SignUp(),
         AppRoutes.organizerSignUp: (context) => const OrganizerSignUp(),
+        AppRoutes.registeredMatches: (context) => RegisteredMatches()
       },
     );
   }

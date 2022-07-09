@@ -9,4 +9,5 @@ class AppRoutes {
   static String organizer = "/organizer";
   static String home = "/home";
   static String organizerSignUp = "/organizer-signup";
+  static String registeredMatches = "/registeredMatches";
 }
