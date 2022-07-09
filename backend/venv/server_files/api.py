@@ -789,7 +789,6 @@ def startMatch():
             
         userMessageTokens = data["userMessageTokens"]
         name = data["name"]
-        notifId = data["notificationId"]
         for token in userMessageTokens:
             print(token)
             try:
