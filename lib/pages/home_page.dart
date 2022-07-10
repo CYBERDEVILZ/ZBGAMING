@@ -31,16 +31,22 @@ class _HomePageState extends State<HomePage> {
     Firebase.initializeApp();
 
     // initialize firebase messaging
-    FirebaseMessaging.instance.getInitialMessage();
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) {
+        if (message.data["route"] != null) {
+          Navigator.of(context).pushNamed(message.data["route"]);
+        }
+      }
+    });
 
     // foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {}
     });
 
-    // When the app is in the background and opened
+    // When the app is in the background and message is opened
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      if (message.data != null) {
+      if (message.data["route"] != null) {
         Navigator.of(context).pushNamed(message.data["route"]);
       }
     });

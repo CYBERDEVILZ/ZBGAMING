@@ -1,14 +1,12 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:zbgaming/pages/match_updates.dart';
 import 'package:zbgaming/pages/create_match.dart';
 import 'package:zbgaming/pages/csgo.dart';
 import 'package:zbgaming/pages/freefire.dart';
 import 'package:zbgaming/pages/login.dart';
 import 'package:zbgaming/pages/match_start.dart';
 import 'package:zbgaming/pages/organizer.dart';
-import 'package:zbgaming/pages/organizer_login.dart';
 import 'package:zbgaming/pages/organizer_signup.dart';
 import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
@@ -42,18 +40,22 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
+// when you receive message in background and app is terminated
+Future<void> backgroundMessage(RemoteMessage message) async {
+  print("received background message!");
+}
+
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    FirebaseMessaging.onBackgroundMessage(backgroundMessage);
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: const HomePage(),
-      // home: const MatchUpdates(notificationid: "sldkfjslkdf"),
-      // home: const OrganizerLogin(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",
       routes: {
