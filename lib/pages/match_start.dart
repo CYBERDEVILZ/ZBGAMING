@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:zbgaming/pages/registered_users.dart';
+import 'package:zbgaming/pages/send_messages.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:provider/provider.dart';
 
@@ -21,11 +22,13 @@ class MatchStart extends StatefulWidget {
 class _MatchStartState extends State<MatchStart> {
   bool isStartMatchLoading = false;
   bool loading = true;
+  late Blob notificationId;
 
   // fetching the start match indicator to decide whether to start or stop match
   void fetchStartMatchIndicator() async {
     await FirebaseFirestore.instance.collection(widget.matchType).doc(widget.matchuid).get().then((value) {
       context.read<StartMatchIndicatorNotifier>().setStartMatchIndicator(value["started"]);
+      notificationId = value["notificationId"];
     }).catchError((onError) {
       Fluttertoast.showToast(msg: "Some error occurred", backgroundColor: Colors.blue);
     });
@@ -143,6 +146,20 @@ class _MatchStartState extends State<MatchStart> {
             },
             child: const ListTile(
               title: Text("Users Registered"),
+              trailing: Icon(Icons.arrow_right),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SendMessages(
+                            notificationid: notificationId,
+                          )));
+            },
+            child: const ListTile(
+              title: Text("Send Message"),
               trailing: Icon(Icons.arrow_right),
             ),
           ),
