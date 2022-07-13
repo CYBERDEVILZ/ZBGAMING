@@ -13,6 +13,7 @@ import 'package:zbgaming/pages/registered_matches.dart';
 import 'package:zbgaming/pages/signup.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/pages/valorant.dart';
+import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/utils/routes.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +25,7 @@ import 'pages/home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  NotificationService.initialize();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserModel()),
     ChangeNotifierProvider(create: (_) => OrganizerModel()),

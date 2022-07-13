@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
+import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/widgets/drawer.dart';
 import 'package:zbgaming/widgets/exit_pop_up.dart';
 import 'package:zbgaming/widgets/favorite_organizer.dart';
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     // foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {}
+      NotificationService.display(message);
     });
 
     // When the app is in the background and message is opened
