@@ -25,7 +25,6 @@ import 'pages/home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  NotificationService.initialize();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => UserModel()),
     ChangeNotifierProvider(create: (_) => OrganizerModel()),
@@ -51,6 +50,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    NotificationService.initialize(context);
     FirebaseMessaging.onBackgroundMessage(backgroundMessage);
   }
 
