@@ -45,19 +45,9 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
       context,
       MaterialPageRoute(
           builder: (context) => ContestDetails(
-              date: widget.date,
-              name: widget.name,
-              rewards: widget.rewards,
-              regTeams: widget.regTeams,
-              skill: widget.skill,
-              special: widget.special,
-              team: widget.team,
-              totalTeams: widget.totalTeams,
-              tournament: widget.tournament,
               // match uid
               uid: widget.uid,
               // organizer uid
-              ouid: widget.ouid,
               matchType: widget.matchType)),
     );
   }

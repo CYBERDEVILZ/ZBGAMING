@@ -6,7 +6,7 @@ OPTIMIZATIONS / IDEAS
 
 IMPORTANT!!!
 STOP MATCH LOGIC
-ORGANIZER STOPS THE MATCH WHERE HE IS PROMPTED TO ENTER THE UID OF THE WINNER.
+ORGANIZER STOPS THE MATCH. HE IS FORCED TO SELECT A WINNER FROM THE REGISTERED USERS. AFTER SELECTING THE WINNER,
 A PUSH NOTIFICATION IS SENT WHICH REDIRECTS THE USER TO THE CONTEST DETAILS PAGE WHERE HE HAS AN OPTION TO REPORT AND ALSO SEE THE WINNER OF THE MATCH.
 VALIDATORS VALIDATE WHETHER THE WINNER IS LEGIT IFF REPORTS POUR IN.
 
@@ -822,7 +822,7 @@ def stopMatch():
         name = data["name"]
         for token in userMessageTokens:
             try:
-                message = messaging.Message(notification=messaging.Notification(title="Match ended", body=f"Your registered match '{name}' has ended. Congratulations to the winner!"), token=token)
+                message = messaging.Message(notification=messaging.Notification(title="Match ended", body=f"Your registered match '{name}' has ended. Congratulations to the winner!"), token=token, data={"routename": "contest-details", "matchuid": matchUid, "matchtype": matchType.lower()})
                 messaging.send(message)
             except:
                 pass

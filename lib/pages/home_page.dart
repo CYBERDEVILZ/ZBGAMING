@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
+import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
 import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/widgets/drawer.dart';
@@ -50,6 +51,11 @@ class _HomePageState extends State<HomePage> {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       if (message.data["route"] != null) {
         Navigator.of(context).pushNamed(message.data["route"]);
+      } else if (message.data["routename"] == "contest-details" &&
+          message.data["matchuid"] != null &&
+          message.data["matchtype"] != null) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ContestDetails(uid: message.data["matchuid"], matchType: message.data["matchtype"])));
       }
     });
   }

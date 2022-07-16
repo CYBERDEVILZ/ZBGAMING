@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:zbgaming/pages/registered_users.dart';
+import 'package:zbgaming/pages/select_winner.dart';
 import 'package:zbgaming/pages/send_messages.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:provider/provider.dart';
@@ -104,6 +105,11 @@ class _MatchStartState extends State<MatchStart> {
 
   // stop match logic
   Future<void> stopTheMatch() async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: ((context) => SelectWinner(matchType: widget.matchType, matchUid: widget.matchuid))));
+    return;
     await get(Uri.parse(
             ApiEndpoints.baseUrl + ApiEndpoints.stopMatch + "?muid=${widget.matchuid}&mType=${widget.matchType}"))
         .then((value) {

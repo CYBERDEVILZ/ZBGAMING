@@ -75,21 +75,7 @@ class _BuildTilesState extends State<BuildTiles> {
       // fetch data about tournament and navigate
       await FirebaseFirestore.instance.collection(matchType).doc(data["uid"]).get().then((value) {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ContestDetails(
-                    special: value["special"],
-                    name: value["name"],
-                    team: value["solo"],
-                    tournament: value["match"],
-                    skill: value["skill"],
-                    date: value["date"].toDate(),
-                    rewards: value["fee"],
-                    regTeams: value["reg"],
-                    totalTeams: 100,
-                    uid: value.id,
-                    ouid: value["uid"],
-                    matchType: matchType)));
+            context, MaterialPageRoute(builder: (context) => ContestDetails(uid: value.id, matchType: matchType)));
       }).catchError((onError) {
         Fluttertoast.showToast(msg: "An error occurred");
       });
