@@ -155,8 +155,7 @@ class _MatchStartState extends State<MatchStart> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => SendMessages(
-                            notificationid: notificationId,
-                          )));
+                          notificationid: notificationId, matchType: widget.matchType, matchUid: widget.matchuid)));
             },
             child: const ListTile(
               title: Text("Send Message"),

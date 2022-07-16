@@ -4,10 +4,6 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
-IMPORTANT!!! 
-ASK THE ORGANIZER TO ENTER YOUTUBE STREAM LINK. A PUSH NOTIFICATION WILL BE SENT TO PLAYERS TELLING THEM THAT
-THE MATCH WILL START SOON, SO BE READY AND PREPARE.
-
 IMPORTANT!!!
 STOP MATCH LOGIC
 ORGANIZER STOPS THE MATCH WHERE HE IS PROMPTED TO ENTER THE UID OF THE WINNER.
@@ -833,5 +829,32 @@ def stopMatch():
         return "Success"
     except:
         return "Failed"
+
+# NOTIFICATION WHEN ORGANIZER SENDS MESSAGE
+@app.route("/api/receivedNotification")
+def receivedNotification():
+    muid = request.args.get("muid")
+    mtype = request.args.get("mtype")
+    
+    if muid != None and mtype != None:
+        mtype = mtype.lower()
+        data = db.collection(mtype).document(muid).get().to_dict()
+        if data == None:
+            return "Failed"
+        userMessageTokens = data["userMessageTokens"]
+        name = data["name"]
+        for token in userMessageTokens:
+            try:
+                message = messaging.Message(notification=messaging.Notification(title="You received a new message!", body=f"Organizers of '{name}' has sent you a message. Quickly check it out!"), token=token,data={"route": "/registeredMatches"})
+                messaging.send(message)
+            except:
+                pass
+        return "Success"
+    
+    return "success"
+        
+
+
+
 
 app.run(debug=True)

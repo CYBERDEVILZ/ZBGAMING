@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/date_to_string.dart';
 
 class SendMessages extends StatefulWidget {
-  const SendMessages({Key? key, required this.notificationid}) : super(key: key);
+  const SendMessages({Key? key, required this.notificationid, required this.matchType, required this.matchUid})
+      : super(key: key);
   final Blob notificationid;
+  final String matchType;
+  final String matchUid;
 
   @override
   State<SendMessages> createState() => _SendMessagesState();
@@ -101,6 +106,8 @@ class _SendMessagesState extends State<SendMessages> {
                                     ]),
                                   });
                                   messageController.clear();
+                                  await get(Uri.parse(ApiEndpoints.baseUrl +
+                                      "/api/receivedNotification?muid=${widget.matchUid}&mtype=${widget.matchType}"));
                                 }
                               },
                             )),
