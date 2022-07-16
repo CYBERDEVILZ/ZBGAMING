@@ -42,9 +42,7 @@ class MyApp extends StatefulWidget {
 }
 
 // when you receive message in background and app is terminated
-Future<void> backgroundMessage(RemoteMessage message) async {
-  print("received background message!");
-}
+Future<void> backgroundMessage(RemoteMessage message) async {}
 
 class _MyAppState extends State<MyApp> {
   @override

@@ -16,7 +16,6 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class ContestDetails extends StatefulWidget {
   const ContestDetails({Key? key, required this.uid, required this.matchType}) : super(key: key);
-  // uid of match
   final String uid;
   final String matchType;
 
@@ -103,15 +102,20 @@ class _ContestDetailsState extends State<ContestDetails> {
         .collection("registered")
         .get()
         .then((snapshots) {
-      List<QueryDocumentSnapshot<Map<String, dynamic>>> data = snapshots.docs;
-      for (int i = 0; i < data.length; i++) {
-        if (data[i].id == widget.uid) {
-          isRegistered = true;
+      try {
+        List<QueryDocumentSnapshot<Map<String, dynamic>>> data = snapshots.docs;
+        for (int i = 0; i < data.length; i++) {
+          if (data[i].id == widget.uid) {
+            print("oweurpowieproiweporiweporiweporiweporiweporiewporiewpor");
+            isRegistered = true;
+          }
         }
+      } catch (e) {
+        Fluttertoast.showToast(msg: "some error occurred");
       }
     });
     isLoading = false;
-    if (mounted) setState(() {});
+    setState(() {});
   }
 
   void getToken() async {

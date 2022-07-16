@@ -30,8 +30,7 @@ class NotificationService {
       await _localNotificationsPlugin.show(
           id, message.notification!.title, message.notification!.body, notificationDetails,
           payload: message.data["route"]);
-    } on Exception catch (e) {
-      print(e);
-    }
+      // ignore: empty_catches, unused_catch_clause
+    } on Exception catch (e) {}
   }
 }
