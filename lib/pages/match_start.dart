@@ -105,23 +105,24 @@ class _MatchStartState extends State<MatchStart> {
 
   // stop match logic
   Future<void> stopTheMatch() async {
-    await Navigator.push(
+    String? igid = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: ((context) => SelectWinner(matchType: widget.matchType, matchUid: widget.matchuid))));
-    return;
-    await get(Uri.parse(
-            ApiEndpoints.baseUrl + ApiEndpoints.stopMatch + "?muid=${widget.matchuid}&mType=${widget.matchType}"))
-        .then((value) {
-      if (value.statusCode != 200) {
-        Fluttertoast.showToast(msg: "Some error occurred", backgroundColor: Colors.blue);
-      } else if (value.body == "Success") {
-        Fluttertoast.showToast(msg: "Success", backgroundColor: Colors.blue);
-        context.read<StartMatchIndicatorNotifier>().setStartMatchIndicator(2);
-      } else {
-        Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue);
-      }
-    });
+    if (igid != null) {
+      await get(Uri.parse(
+              ApiEndpoints.baseUrl + ApiEndpoints.stopMatch + "?muid=${widget.matchuid}&mType=${widget.matchType}"))
+          .then((value) {
+        if (value.statusCode != 200) {
+          Fluttertoast.showToast(msg: "Some error occurred", backgroundColor: Colors.blue);
+        } else if (value.body == "Success") {
+          Fluttertoast.showToast(msg: "Success", backgroundColor: Colors.blue);
+          context.read<StartMatchIndicatorNotifier>().setStartMatchIndicator(2);
+        } else {
+          Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue);
+        }
+      });
+    }
   }
 
   @override
