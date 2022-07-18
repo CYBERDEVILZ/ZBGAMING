@@ -15,6 +15,7 @@ class _HistoryState extends State<History> {
       .collection('userinfo')
       .doc(FirebaseAuth.instance.currentUser?.uid)
       .collection('history')
+      .orderBy("date", descending: true)
       .snapshots();
 
   @override
