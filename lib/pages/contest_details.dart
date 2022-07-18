@@ -106,7 +106,6 @@ class _ContestDetailsState extends State<ContestDetails> {
         List<QueryDocumentSnapshot<Map<String, dynamic>>> data = snapshots.docs;
         for (int i = 0; i < data.length; i++) {
           if (data[i].id == widget.uid) {
-            print("oweurpowieproiweporiweporiweporiweporiweporiewporiewpor");
             isRegistered = true;
           }
         }
@@ -496,10 +495,10 @@ class _ContestDetailsState extends State<ContestDetails> {
     }
 
 // --------------- Return is Here --------------- //
-    return isLoading
-        ? const CircularProgressIndicator()
-        : Scaffold(
-            body: SingleChildScrollView(
+    return Scaffold(
+      body: isLoading
+          ? const CircularProgressIndicator()
+          : SingleChildScrollView(
               child: Column(
                 children: [
                   // banner image
@@ -604,7 +603,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                 ],
               ),
             ),
-          );
+    );
   }
 }
 
