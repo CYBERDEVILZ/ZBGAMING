@@ -56,6 +56,7 @@ class _SelectWinnerState extends State<SelectWinner> {
                 ElevatedButton(
                   onPressed: () async {
                     try {
+                      // fetch user with winner's hashedid
                       QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
                           .collection("userinfo")
                           .where("hashedID", isEqualTo: hashedID)
@@ -66,12 +67,21 @@ class _SelectWinnerState extends State<SelectWinner> {
                         Navigator.pop(context);
                       }
                       String id = data.docs[0].id;
+
+                      // update status to "won"
                       await FirebaseFirestore.instance
                           .collection("userinfo")
                           .doc(id)
                           .collection("history")
                           .doc(widget.matchUid)
                           .update({"won": 1});
+
+                      // update the same at contest detail page
+                      await FirebaseFirestore.instance
+                          .collection(widget.matchType)
+                          .doc(widget.matchUid)
+                          .update({"winnerhash": hashedID});
+
                       Navigator.pop(context);
                       Navigator.pop(context, id);
                     } catch (e) {

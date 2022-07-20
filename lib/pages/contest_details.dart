@@ -25,6 +25,7 @@ class ContestDetails extends StatefulWidget {
 
 class _ContestDetailsState extends State<ContestDetails> {
   bool isLoading = false;
+  bool isButtonLoading = false;
   bool isRegistered = false;
   String? token;
   DateToString dateString = DateToString();
@@ -39,11 +40,13 @@ class _ContestDetailsState extends State<ContestDetails> {
   int? totalTeams;
   // organizer id
   String? ouid;
+  Blob? winnerhash;
+  String? winnerName;
 
   void fetchMatchData() {
     isLoading = true;
     setState(() {});
-    FirebaseFirestore.instance.collection(widget.matchType).doc(widget.uid).snapshots().listen((value) {
+    FirebaseFirestore.instance.collection(widget.matchType).doc(widget.uid).snapshots().listen((value) async {
       try {
         special = value["special"];
         name = value["name"];
@@ -55,19 +58,31 @@ class _ContestDetailsState extends State<ContestDetails> {
         regTeams = value["reg"];
         totalTeams = value["total"];
         ouid = value["uid"];
+        try {
+          winnerhash = value["winnerhash"];
+          FirebaseFirestore.instance
+              .collection("userinfo")
+              .where("hashedID", isEqualTo: winnerhash)
+              .snapshots()
+              .listen((event) {
+            winnerName = event.docs[0]["username"];
+          });
+        } catch (e) {
+          winnerhash = null;
+        }
         isLoading = false;
         setState(() {});
       } catch (e) {
-        Fluttertoast.showToast(msg: "some error occurred", backgroundColor: Colors.blue);
+        Fluttertoast.showToast(msg: "something went wrong", backgroundColor: Colors.blue);
         Navigator.pop(context);
       }
     });
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    isLoading = true;
+    isButtonLoading = true;
     setState(() {});
-    Fluttertoast.showToast(msg: "Payment Success");
+    Fluttertoast.showToast(msg: "validating payment...");
     await get(Uri.parse(ApiEndpoints.baseUrl +
             ApiEndpoints.validateOrder +
             "?order_id=${response.orderId}&razorpay_signature=${response.signature}&razorpay_payment_id=${response.paymentId}&matchuid=${widget.uid}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchType=${widget.matchType}&token=$token&secretKey=DO_NOT_TAMPER_THIS_REQUEST"))
@@ -94,7 +109,7 @@ class _ContestDetailsState extends State<ContestDetails> {
   final Razorpay _razorpay = Razorpay();
 
   void areYouRegistered() async {
-    isLoading = true;
+    isButtonLoading = true;
     setState(() {});
     await FirebaseFirestore.instance
         .collection("userinfo")
@@ -110,10 +125,10 @@ class _ContestDetailsState extends State<ContestDetails> {
           }
         }
       } catch (e) {
-        Fluttertoast.showToast(msg: "some error occurred");
+        Fluttertoast.showToast(msg: "Something went wrong");
       }
     });
-    isLoading = false;
+    isButtonLoading = false;
     setState(() {});
   }
 
@@ -216,6 +231,24 @@ class _ContestDetailsState extends State<ContestDetails> {
                         child: const Text("View Registered Users")),
                   )
                 ]),
+
+                winnerhash == null
+                    ? Container()
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 32),
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              const Text(
+                                "Congratulations",
+                                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                              ),
+                              Text("Username: $winnerName"),
+                            ],
+                          ),
+                        ),
+                      ),
 
                 const Divider(height: 50),
 
@@ -425,7 +458,7 @@ class _ContestDetailsState extends State<ContestDetails> {
 
     // register button function
     void register() async {
-      isLoading = true;
+      isButtonLoading = true;
       setState(() {});
 
       //check the auth status
@@ -468,7 +501,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                 .then((value) {
               if (value.statusCode == 200) {
                 if (!value.body.contains("Failed")) {
-                  Fluttertoast.showToast(msg: "order created");
+                  Fluttertoast.showToast(msg: "redirecting you to payment gateway");
                   Map<String, dynamic> checkout = {
                     'key': 'rzp_test_rKi9TFV4sMHvz2',
                     'amount': fee! * 100, //in the smallest currency sub-unit.
@@ -490,14 +523,14 @@ class _ContestDetailsState extends State<ContestDetails> {
           }
         }
       }
-      isLoading = false;
+      isButtonLoading = false;
       setState(() {});
     }
 
 // --------------- Return is Here --------------- //
     return Scaffold(
       body: isLoading
-          ? const CircularProgressIndicator()
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Column(
                 children: [
@@ -579,7 +612,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                                 : () {
                                                     register();
                                                   },
-                                child: isLoading
+                                child: isButtonLoading
                                     ? const CircularProgressIndicator(
                                         color: Colors.white,
                                       )
