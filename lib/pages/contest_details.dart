@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:zbgaming/pages/registered_users.dart';
+import 'package:zbgaming/pages/show_user_account.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/Date_to_string.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
@@ -237,20 +238,40 @@ class _ContestDetailsState extends State<ContestDetails> {
                     : Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 32),
                         child: Container(
-                          alignment: Alignment.center,
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          color: Colors.blueGrey[900],
                           child: Column(
                             children: [
                               const Text(
-                                "Congratulations",
-                                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                                "🔥Match Winner🔥",
+                                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
                               ),
-                              Text("Username: $winnerName"),
+                              const SizedBox(height: 10),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ShowUserAccount(hashedId: winnerhash!)));
+                                  },
+                                  child: Text(
+                                    "$winnerName",
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(fontSize: 22, color: Color.fromARGB(255, 33, 212, 243)),
+                                  )),
+                              const SizedBox(height: 10),
+                              Text(
+                                "Click on the username to open profile page",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.blueGrey[700]),
+                              )
                             ],
                           ),
                         ),
                       ),
 
-                const Divider(height: 50),
+                const Divider(height: 20),
 
                 // match format
                 const Align(child: Text("Match Format", textScaleFactor: 1.5, style: TextStyle(color: Colors.black))),
