@@ -402,6 +402,17 @@ def paidRegister():
             response = client.order.create(data=DATA)
             order_id = response["id"]
 
+            # for notification room
+            secret_key = "shinra_tensei"
+            datething = str(datetime.now())
+            toHash = matchuid+secret_key+datething
+            hashedValue = hashlib.sha256(toHash.encode()).digest()
+
+            db.collection("chats").document().set({
+                "notificationId": hashedValue,
+                "chats": [{"message": "Thank You all for joining this match!", "time": datetime.now(timezone(zone="Asia/Kolkata"))}]
+            })
+
             # RETURNING ORDER FOR CHECKOUT
             return order_id
             
@@ -516,17 +527,6 @@ def validate():
                     db.collection("userinfo").document(useruid).collection("history").document(
                         matchuid
                     ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill})
-
-                    # for notification room
-                    secret_key = "shinra_tensei"
-                    datething = str(datetime.now())
-                    toHash = uid+secret_key+datething
-                    hashedValue = hashlib.sha256(toHash.encode()).digest()
-
-                    db.collection("chats").document().set({
-                        "notificationId": hashedValue,
-                        "chats": [{"message": "Thank You all for joining this match!", "time": datetime.now(timezone(zone="Asia/Kolkata"))}]
-                    })
 
 
                     return "Success"
