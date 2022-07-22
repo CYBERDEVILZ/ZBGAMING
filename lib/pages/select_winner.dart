@@ -107,57 +107,60 @@ class _SelectWinnerState extends State<SelectWinner> {
           elevation: 0,
           centerTitle: true,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(children: [
-            const SizedBox(height: 10),
-            // searchbox
-            TextFormField(
-              onChanged: (value) {
-                value == "" ? query = null : query = value;
-                setState(() {});
-              },
-              decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  label: const Text("Search using Game ID"),
-                  suffixIcon: IconButton(icon: const Icon(Icons.search), onPressed: () {})),
-            ),
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(children: [
+              const SizedBox(height: 10),
+              // searchbox
+              TextFormField(
+                onChanged: (value) {
+                  value == "" ? query = null : query = value;
+                  setState(() {});
+                },
+                decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    label: const Text("Search using Game ID"),
+                    suffixIcon: IconButton(icon: const Icon(Icons.search), onPressed: () {})),
+              ),
 
-            const SizedBox(height: 30),
-            // stream builder
-            StreamBuilder(
-                stream: data,
-                builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
-                  if (snapshot.hasError) {
-                    Fluttertoast.showToast(msg: "Some error occurred");
-                    return const Text("No data to show");
-                  }
-                  if (snapshot.hasData) {
-                    return Column(children: [
-                      ...snapshot.data!.docs.map((e) {
-                        return Card(
-                          shadowColor: Colors.blue,
-                          child: ListTile(
-                            title: Text(e["username"]),
-                            subtitle: Text("Game ID: ${e['IGID']}"),
-                            trailing: OutlinedButton(
-                              child: const Text("Winner"),
-                              onPressed: () {
-                                showDialogBox(e["username"], e["IGID"], e["hashedID"]);
-                              },
+              const SizedBox(height: 30),
+              // stream builder
+              StreamBuilder(
+                  stream: data,
+                  builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    if (snapshot.hasError) {
+                      Fluttertoast.showToast(msg: "Some error occurred");
+                      return const Text("No data to show");
+                    }
+                    if (snapshot.hasData) {
+                      return Column(children: [
+                        ...snapshot.data!.docs.map((e) {
+                          return Card(
+                            shadowColor: Colors.blue,
+                            child: ListTile(
+                              title: Text(e["username"]),
+                              subtitle: Text("Game ID: ${e['IGID']}"),
+                              trailing: OutlinedButton(
+                                child: const Text("Winner"),
+                                onPressed: () {
+                                  showDialogBox(e["username"], e["IGID"], e["hashedID"]);
+                                },
+                              ),
                             ),
-                          ),
-                        );
-                      }).toList()
-                    ]);
-                  } else {
-                    return const Text("No data to show");
-                  }
-                }),
-          ]),
+                          );
+                        }).toList()
+                      ]);
+                    } else {
+                      return const Text("No data to show");
+                    }
+                  }),
+            ]),
+          ),
         ),
       ),
     );
