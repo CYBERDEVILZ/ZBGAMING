@@ -4,6 +4,11 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
+SERIOUS ISSUE!!!
+IF SOMEONE FINDS THIS, WE ARE DEAD
+USER CAN EASILY REGISTER ANOTHER USER MULTIPLE TIMES BY JUST SENDING HIS UUID INSTEAD OF OURS. THIS OCCURS
+BECAUSE WE ARE CHECKING ONLY CLIENT DATABASE WHETHER HE IS REGISTERED OR NOT. CHECK REGISTERED USERS OF ORGANIZERS AS WELL
+
 IMPORTANT!!!
 ADD SEARCH USER FEATURE TO LOOK FOR PLAYERS BY OTHER USERS
 
@@ -247,10 +252,11 @@ def register():
                 return "Failed: Account not linked"
             
 
-            # checking for already registered..
+            # checking for already registered on user side..
             registeredMatches = (
                 db.collection("userinfo").document(useruid).collection("registered").get()
             )
+
             matchId = [match.id for match in registeredMatches]
             if matchuid in matchId:
                 return "Failed: Already registered"
