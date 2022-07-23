@@ -43,6 +43,8 @@ class _ContestDetailsState extends State<ContestDetails> {
   String? ouid;
   Blob? winnerhash;
   String? winnerName;
+  int? matchStarted;
+  bool cancelled = false;
 
   void fetchMatchData() async {
     isLoading = true;
@@ -59,6 +61,7 @@ class _ContestDetailsState extends State<ContestDetails> {
         rewards = value["fee"];
         regTeams = value["reg"];
         totalTeams = value["total"];
+        matchStarted = value["started"];
         ouid = value["uid"];
         try {
           winnerhash = value["winnerhash"];
@@ -71,6 +74,9 @@ class _ContestDetailsState extends State<ContestDetails> {
           });
         } catch (e) {
           winnerhash = null;
+          if (matchStarted == 2) {
+            cancelled = true;
+          }
         }
         isLoading = false;
         setState(() {});
@@ -604,109 +610,119 @@ class _ContestDetailsState extends State<ContestDetails> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              child: Column(
-                children: [
-                  // banner image
-                  BannerImage(ouid: ouid!, matchType: widget.matchType),
+              child: Stack(children: [
+                Column(
+                  children: [
+                    // banner image
+                    BannerImage(ouid: ouid!, matchType: widget.matchType),
 
-                  // contest details
-                  contestDetails,
+                    // contest details
+                    contestDetails,
 
-                  // register button and number of teams
-                  Container(
-                    height: 75,
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                            child: Container(
-                          alignment: Alignment.center,
-                          child: FittedBox(
-                            child: rewards != 0
-                                ? Text(
-                                    "\u20b9 $fee",
-                                    style:
-                                        const TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
-                                  )
-                                : const Text(
-                                    "FREE",
-                                    style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
-                                  ),
-                          ),
-                        )),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15),
-                          child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                            stream: documentStream,
-                            builder:
-                                (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
-                              if (snapshot.hasError) {
+                    // register button and number of teams
+                    Container(
+                      height: 75,
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                              child: Container(
+                            alignment: Alignment.center,
+                            child: FittedBox(
+                              child: rewards != 0
+                                  ? Text(
+                                      "\u20b9 $fee",
+                                      style: const TextStyle(
+                                          fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+                                    )
+                                  : const Text(
+                                      "FREE",
+                                      style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+                                    ),
+                            ),
+                          )),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15),
+                            child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                              stream: documentStream,
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+                                if (snapshot.hasError) {
+                                  return ElevatedButton(
+                                    onPressed: null,
+                                    child: const Text('Something went wrong'),
+                                    style: ButtonStyle(
+                                        fixedSize: MaterialStateProperty.all(const Size(150, 50)),
+                                        elevation: MaterialStateProperty.all(0)),
+                                  );
+                                }
+
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return ElevatedButton(
+                                    onPressed: null,
+                                    child: const Text("Loading"),
+                                    style: ButtonStyle(
+                                        fixedSize: MaterialStateProperty.all(const Size(150, 50)),
+                                        elevation: MaterialStateProperty.all(0)),
+                                  );
+                                }
+                                int a = snapshot.data!['started'];
+                                String? text;
+                                if (a == 0) {
+                                  text = "Register";
+                                }
+                                if (a == 1) {
+                                  text = "Ongoing";
+                                }
+                                if (a == 2) {
+                                  text = "Finished";
+                                }
                                 return ElevatedButton(
-                                  onPressed: null,
-                                  child: const Text('Something went wrong'),
+                                  // register button
+                                  onPressed: FirebaseAuth.instance.currentUser?.uid == null
+                                      ? null
+                                      : regTeams! == totalTeams!
+                                          ? null
+                                          : isRegistered
+                                              ? null
+                                              : a != 0
+                                                  ? null
+                                                  : () {
+                                                      register();
+                                                    },
+                                  child: isButtonLoading
+                                      ? const CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )
+                                      : Text(
+                                          a == 0
+                                              ? isRegistered
+                                                  ? "Registered"
+                                                  : text!
+                                              : text!,
+                                          textScaleFactor: 1.3),
                                   style: ButtonStyle(
                                       fixedSize: MaterialStateProperty.all(const Size(150, 50)),
                                       elevation: MaterialStateProperty.all(0)),
                                 );
-                              }
-
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return ElevatedButton(
-                                  onPressed: null,
-                                  child: const Text("Loading"),
-                                  style: ButtonStyle(
-                                      fixedSize: MaterialStateProperty.all(const Size(150, 50)),
-                                      elevation: MaterialStateProperty.all(0)),
-                                );
-                              }
-                              int a = snapshot.data!['started'];
-                              String? text;
-                              if (a == 0) {
-                                text = "Register";
-                              }
-                              if (a == 1) {
-                                text = "Ongoing";
-                              }
-                              if (a == 2) {
-                                text = "Finished";
-                              }
-                              return ElevatedButton(
-                                // register button
-                                onPressed: FirebaseAuth.instance.currentUser?.uid == null
-                                    ? null
-                                    : regTeams! == totalTeams!
-                                        ? null
-                                        : isRegistered
-                                            ? null
-                                            : a != 0
-                                                ? null
-                                                : () {
-                                                    register();
-                                                  },
-                                child: isButtonLoading
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                    : Text(
-                                        a == 0
-                                            ? isRegistered
-                                                ? "Registered"
-                                                : text!
-                                            : text!,
-                                        textScaleFactor: 1.3),
-                                style: ButtonStyle(
-                                    fixedSize: MaterialStateProperty.all(const Size(150, 50)),
-                                    elevation: MaterialStateProperty.all(0)),
-                              );
-                            },
-                          ),
-                        )
-                      ],
+                              },
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+                cancelled
+                    ? Positioned.fill(
+                        child: Container(
+                        color: Colors.white.withOpacity(0.9),
+                        alignment: Alignment.center,
+                        child: Image.asset("assets/images/cancelled.png"),
+                      ))
+                    : Container()
+              ]),
             ),
     );
   }
