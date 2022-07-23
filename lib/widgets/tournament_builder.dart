@@ -121,13 +121,13 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.only(right: 8.0),
-                                          child: widget.team
+                                          child: !widget.team
                                               ? const Icon(Icons.people_alt, size: 20, color: Colors.purple)
                                               : const Icon(Icons.person, size: 20, color: Colors.purple),
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.only(right: 8.0),
-                                          child: widget.tournament
+                                          child: !widget.tournament
                                               ? Icon(Icons.account_tree_sharp, size: 20, color: Colors.blue[800])
                                               : Icon(Icons.play_arrow, size: 20, color: Colors.blue[800]),
                                         ),
@@ -284,7 +284,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                       Padding(
                                         padding: const EdgeInsets.only(bottom: 5, top: 5),
                                         child: Row(
-                                          children: widget.team
+                                          children: !widget.team
                                               ? [
                                                   const Icon(Icons.people_alt, size: 20, color: Colors.purple),
                                                   const SizedBox(width: 5),
@@ -308,7 +308,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                       Padding(
                                           padding: const EdgeInsets.only(bottom: 5),
                                           child: Row(
-                                            children: widget.tournament
+                                            children: !widget.tournament
                                                 ? [
                                                     Icon(Icons.account_tree_sharp, size: 20, color: Colors.blue[800]),
                                                     const SizedBox(width: 5),

@@ -44,9 +44,10 @@ class _ContestDetailsState extends State<ContestDetails> {
   Blob? winnerhash;
   String? winnerName;
 
-  void fetchMatchData() {
+  void fetchMatchData() async {
     isLoading = true;
     setState(() {});
+
     FirebaseFirestore.instance.collection(widget.matchType).doc(widget.uid).snapshots().listen((value) async {
       try {
         special = value["special"];
@@ -290,7 +291,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                               width: 100,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
-                                children: team!
+                                children: !team!
                                     ? [
                                         const Icon(Icons.people_alt, size: 25, color: Colors.purple),
                                         const SizedBox(width: 5),
@@ -312,7 +313,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                             SizedBox(
                               width: 100,
                               child: Column(
-                                children: tournament!
+                                children: !tournament!
                                     ? [
                                         Icon(Icons.account_tree_sharp, size: 25, color: Colors.blue[800]),
                                         const SizedBox(width: 5),
@@ -489,6 +490,56 @@ class _ContestDetailsState extends State<ContestDetails> {
 
       // if signed in,
       else {
+        // calculate user level
+        Response value = await get(Uri.parse(
+            ApiEndpoints.baseUrl + ApiEndpoints.userLevelCalculate + "?uid=${FirebaseAuth.instance.currentUser?.uid}"));
+        if (value.statusCode != 200) {
+          Fluttertoast.showToast(msg: "Something went wrong");
+          isButtonLoading = false;
+          setState(() {});
+          return;
+        }
+        if (value.body != "Success") {
+          Fluttertoast.showToast(msg: "Something went wrong");
+          isButtonLoading = false;
+          setState(() {});
+          return;
+        }
+
+        // fetch user level
+        DocumentSnapshot<Map<String, dynamic>> data =
+            await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser?.uid).get();
+        if (skill == null) {
+          isButtonLoading = false;
+          setState(() {});
+          return;
+        } else {
+          int currentLevel = data["level"];
+          if (skill == 0) {
+            if (currentLevel < 0) {
+              Fluttertoast.showToast(msg: "Must be ROOKIE or greater to participate");
+              isButtonLoading = false;
+              setState(() {});
+              return;
+            }
+          }
+          if (skill == 1) {
+            if (currentLevel < 5001) {
+              Fluttertoast.showToast(msg: "Must be VETERAN or greater to participate");
+              isButtonLoading = false;
+              setState(() {});
+              return;
+            }
+          }
+          if (skill == 2) {
+            if (currentLevel < 20001) {
+              Fluttertoast.showToast(msg: "Must be VETERAN or greater to participate");
+              isButtonLoading = false;
+              setState(() {});
+              return;
+            }
+          }
+        }
         // if free register then and there
         if (rewards == 0) {
           if (regTeams! < totalTeams! && token != null) {
