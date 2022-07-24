@@ -125,6 +125,7 @@ class _UserAccountState extends State<UserAccount> {
         email = value["email"];
         try {
           level = value["level"];
+          isEmailVerified = _auth.currentUser!.emailVerified;
           if (level! <= 5000) {
             levelAttrib = "Rookie";
           } else if (level! <= 20000) {
@@ -514,6 +515,8 @@ class _UserAccountState extends State<UserAccount> {
                                     onTap: () async {
                                       await Navigator.push(context,
                                           MaterialPageRoute(builder: (context) => LinkGame(matchType: element)));
+                                      await Navigator.pushReplacement(
+                                          context, MaterialPageRoute(builder: (context) => const UserAccount()));
                                     },
                                     child: Text(
                                       "Link Now",
