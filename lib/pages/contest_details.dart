@@ -748,11 +748,15 @@ class _BannerImageState extends State<BannerImage> {
 
   // download and use banner
   void downloadBanner() async {
-    Reference storage = FirebaseStorage.instance.ref("zbgaming/organizers/images/$ouid/banner.jpg");
-    await storage.getDownloadURL().then((value) {
-      imageurl = value;
-      setState(() {});
-    }).catchError((e) {});
+    try {
+      Reference storage = FirebaseStorage.instance.ref("zbgaming/organizers/images/$ouid/banner.jpg");
+      await storage.getDownloadURL().then((value) {
+        imageurl = value;
+        setState(() {});
+      }).catchError((e) {});
+    } catch (e) {
+      imageurl = null;
+    }
   }
 
   @override

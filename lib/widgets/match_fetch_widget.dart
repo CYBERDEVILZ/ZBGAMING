@@ -66,7 +66,7 @@ class _MatchFetchWidgetState extends State<MatchFetchWidget> {
                                     MaterialPageRoute(
                                         builder: ((context) => ContestDetails(
                                               uid: e.id,
-                                              matchType: "csgo",
+                                              matchType: widget.matchName,
                                             ))));
                               },
                               child: const Icon(Icons.open_in_new))),
