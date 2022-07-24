@@ -64,6 +64,11 @@ class _CreateMatchState extends State<CreateMatch> {
               "?date=$datepicked&uid=${FirebaseAuth.instance.currentUser!.uid}&fee=$fee&match=$match&name=$organizerName&skill=$skill&solo=$solo&matchType=$matchType"))
           .then((value) {
         if (value.statusCode == 200) {
+          if (value.body == "Success") {
+            Fluttertoast.showToast(msg: "Success");
+            Navigator.pop(context);
+            Navigator.pop(context);
+          }
           Fluttertoast.showToast(msg: value.body);
         } else {
           Fluttertoast.showToast(msg: "Something went wrong");

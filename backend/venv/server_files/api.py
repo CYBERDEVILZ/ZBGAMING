@@ -631,6 +631,8 @@ def create():
         hashedValue = hashlib.sha256(toHash.encode()).digest()
         if fee != 0:
             paid = True
+        else:
+            paid = False
 
         db.collection(matchType.lower()).document().set(
             {

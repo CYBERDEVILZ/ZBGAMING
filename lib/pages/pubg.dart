@@ -88,13 +88,25 @@ class _PubgTournamentsState extends State<PubgTournaments> {
           const SliverToBoxAdapter(child: CustomDivider(indent: 0, height: 5, radius: false)),
           SliverToBoxAdapter(
             child: Container(
+                padding: const EdgeInsets.only(left: 16, top: 3),
+                child: const Text(
+                  "Filters:",
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                )),
+          ),
+          SliverToBoxAdapter(
+            child: Container(
                 padding: const EdgeInsets.all(8),
                 child: Wrap(
                   children: [
                     Row(
                       children: [
                         GestureDetector(
-                            child: SearchTags(toggle: freeTag, name: "Free"),
+                            child: SearchTags(
+                              toggle: freeTag,
+                              name: "Free",
+                              color: Colors.blue[300]!,
+                            ),
                             onTap: () {
                               if (freeTag == false) {
                                 paidTag = false;
@@ -103,7 +115,11 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                               setState(() {});
                             }),
                         GestureDetector(
-                            child: SearchTags(toggle: paidTag, name: "Paid"),
+                            child: SearchTags(
+                              toggle: paidTag,
+                              name: "Paid",
+                              color: Colors.blue[300]!,
+                            ),
                             onTap: () {
                               if (paidTag == false) {
                                 freeTag = false;
@@ -116,7 +132,11 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                     Row(
                       children: [
                         GestureDetector(
-                            child: SearchTags(toggle: rookieTag, name: "Rookie"),
+                            child: SearchTags(
+                              toggle: rookieTag,
+                              name: "Rookie",
+                              color: Colors.blue,
+                            ),
                             onTap: () {
                               if (rookieTag == false) {
                                 veteranTag = false;
@@ -126,7 +146,11 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                               setState(() {});
                             }),
                         GestureDetector(
-                            child: SearchTags(toggle: veteranTag, name: "Veteran"),
+                            child: SearchTags(
+                              toggle: veteranTag,
+                              name: "Veteran",
+                              color: Colors.blue,
+                            ),
                             onTap: () {
                               if (veteranTag == false) {
                                 rookieTag = false;
@@ -136,7 +160,11 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                               setState(() {});
                             }),
                         GestureDetector(
-                            child: SearchTags(toggle: eliteTag, name: "Elite"),
+                            child: SearchTags(
+                              toggle: eliteTag,
+                              name: "Elite",
+                              color: Colors.blue,
+                            ),
                             onTap: () {
                               if (eliteTag == false) {
                                 rookieTag = false;
@@ -150,7 +178,11 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                     Row(
                       children: [
                         GestureDetector(
-                            child: SearchTags(toggle: registrationsOpenTag, name: "Registrations Open"),
+                            child: SearchTags(
+                              toggle: registrationsOpenTag,
+                              name: "Registrations Open",
+                              color: Colors.blue[700]!,
+                            ),
                             onTap: () {
                               if (registrationsOpenTag == false) {
                                 ongoingTag = false;
@@ -160,7 +192,11 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                               setState(() {});
                             }),
                         GestureDetector(
-                            child: SearchTags(toggle: ongoingTag, name: "Ongoing"),
+                            child: SearchTags(
+                              toggle: ongoingTag,
+                              name: "Ongoing",
+                              color: Colors.blue[700]!,
+                            ),
                             onTap: () {
                               if (ongoingTag == false) {
                                 registrationsOpenTag = false;
@@ -170,7 +206,11 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                               setState(() {});
                             }),
                         GestureDetector(
-                            child: SearchTags(toggle: finishedTag, name: "Finished"),
+                            child: SearchTags(
+                              toggle: finishedTag,
+                              name: "Finished",
+                              color: Colors.blue[700]!,
+                            ),
                             onTap: () {
                               if (finishedTag == false) {
                                 registrationsOpenTag = false;
@@ -182,7 +222,11 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                       ],
                     ),
                     GestureDetector(
-                        child: SearchTags(toggle: specialTag, name: "Special"),
+                        child: SearchTags(
+                          toggle: specialTag,
+                          name: "Special",
+                          color: Colors.blue[900]!,
+                        ),
                         onTap: () {
                           specialTag = !specialTag;
                           setState(() {});
@@ -252,9 +296,10 @@ class SlivAppBar extends StatelessWidget {
 }
 
 class SearchTags extends StatefulWidget {
-  const SearchTags({Key? key, required this.toggle, required this.name}) : super(key: key);
+  const SearchTags({Key? key, required this.toggle, required this.name, required this.color}) : super(key: key);
   final bool toggle;
   final String name;
+  final Color color;
 
   @override
   State<SearchTags> createState() => _SearchTagsState();
@@ -268,7 +313,7 @@ class _SearchTagsState extends State<SearchTags> {
       child: Container(
         height: 30,
         decoration: BoxDecoration(
-            color: widget.toggle ? Colors.blue : Colors.white,
+            color: widget.toggle ? widget.color : Colors.white,
             borderRadius: const BorderRadius.all(Radius.circular(100))),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
         child: Row(
@@ -276,7 +321,7 @@ class _SearchTagsState extends State<SearchTags> {
           children: [
             Text(
               widget.name,
-              style: TextStyle(color: widget.toggle ? Colors.white : Colors.blue),
+              style: TextStyle(color: widget.toggle ? Colors.white : widget.color),
             ),
             widget.toggle ? const SizedBox(width: 3) : Container(),
             widget.toggle ? const Icon(Icons.cancel, color: Colors.white) : Container()
