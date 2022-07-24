@@ -2,90 +2,105 @@
 OPTIMIZATIONS / IDEAS
 ---------------------
 
-IMPORTANT!!! 
-ASK THE ORGANIZER TO ENTER YOUTUBE STREAM LINK. A PUSH NOTIFICATION WILL BE SENT TO PLAYERS TELLING THEM THAT
-THE MATCH WILL START SOON, SO BE READY AND PREPARE YOURSELF
+########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
-USER GETS MATCH ROOM INFO (ROOM ID AND PASS) ON NOTIFICATIONS. ALSO GETS ADDED TO A CHAT ROOM WHERE ONLY THE ORGANIZER CAN CHAT
+USER KYC VERIFICATION PAGE LEFT
+
+SERIOUS ISSUE!!!
+IF SOMEONE FINDS THIS, WE ARE DEAD
+USER CAN EASILY REGISTER ANOTHER USER MULTIPLE TIMES BY JUST SENDING OTHER'S UUID INSTEAD OF HIS. THIS OCCURS
+BECAUSE WE ARE CHECKING ONLY USER DATABASE WHETHER HE IS REGISTERED OR NOT. CHECK REGISTERED USERS OF ORGANIZERS AS WELL
 
 IMPORTANT!!!
-FRONTEND FOR LINKED ACCOUNTS NOT COMPLETED.
+ADD SEARCH USER FEATURE TO LOOK FOR PLAYERS BY OTHER USERS
 
 IMPORTANT!!!
-VERIFIED USER NOT CHECKING VALUE FROM DATABASE
+UNIQUE ID FOR PLAYERS --  FIREBASE UID (SECRET) => SHA256 HASH => BLOB (BYTE STRING) [0XFD0XFA0XAE -- fdfaae]
 
 IMPORTANT!!!
-DESIGN SPECIFIC: I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN SHORT. MAKE SURE TO REPLACE THE ORIGINAL WITH SHORT AND 
-CHECK THE RESULT. REALLY IMPORTANT TO REDUCE SIZE!
+STOP MATCH LOGIC
+ORGANIZER STOPS THE MATCH. HE IS FORCED TO SELECT A WINNER FROM THE REGISTERED USERS. AFTER SELECTING THE WINNER,
+A PUSH NOTIFICATION IS SENT WHICH REDIRECTS THE USER TO THE CONTEST DETAILS PAGE WHERE HE HAS AN OPTION TO REPORT AND ALSO SEE THE WINNER OF THE MATCH.
+VALIDATORS VALIDATE WHETHER THE WINNER IS LEGIT IFF REPORTS POUR IN.
+THE USER GETS REMOVED FROM THE CHAT GROUP AS WELL AND 'LOST' STATUS IS UPDATED ON ALL THE WINNERS.
 
 IMPORTANT!!!
-ADD VALIDATION TO GAME ACCOUNT LINKING!
+IF MATCH IS NOT 'ONGOING' EVEN AFTER THE DATE HAS PASSED OR MATCH FOUND INVALID, AUTOMATICALLY THE MATCH STATUS WILL BE SET TO FINISHED, 
+MONEY WILL BE REFUNDED TO ALL AND WON VARIABLE SET TO 2. IF ALL IS LEGIT THEN MONEY FUNDED TO THE WINNER THE NEXT DAY AND ORGANIZER AND
+AMOUNTGIVEN VARIABLE OF ORGANIZER IS UPDATED
 
 IMPORTANT!!!
-THE ORGANIZER CAN THEN SEND A MASS NOTIFICATION TO ALL THE USER REGISTERED ABOUT THE DATE AND TIME AND DISCORD CHANNEL LINK TO THE REGISTERED USERS.
+POLICY NOT ADDED FOR ORGANIZER SIGNUP
 
 IMPORTANT!!!
-VALIDATE ORGANIZER SIGNIN AS WELL
+BACKEND TO CALCULATE ORGANIZER RATINGS: BASED ON RATINGS PURELY FROM PLAYERS.
 
 IMPORTANT!!!
-ORGANIZER CAN POST SCOREBOARD ON HIS PAGE
+CREATE BACKEND TO CALCULATE ORGANIZER LEVEL BASED ON AMOUNTGIVEN PARAMETER.
+
+IMPORTANT!!!
+I HAVE USED TOKENS FOR PUSH NOTIFICATION. CONVERT THEM INTO TOPICS FOR FASTER SENDING. OR USE BACKGROUND WORKER (LEAST PREFERRED)
+
+IMPORTANT!!!
+VALIDATE ORGANIZER SIGNIN AS WELL. NORMAL PLAYERS CAN ALSO SIGN IN AS ORGANIZERS AND THERE IS A BUG!
 
 IMPORTANT!!!
 ORGANIZER VERIFICATION
 IN ORDER TO CREATE MATCHES, THE ORGANIZER SHOULD BE VERIFIED (KYC).
-IN ORDER TO START MATCH, THE ORGANIZER SHOULD PROVIDE THE YOUTUBE STREAM LINK FOR PAID MATCHES
 AFTER THE MATCH ENDS, A 24 HOUR WINDOW IS GIVEN FOR ANY REPORTS. IF REPORTS ARE RECEIVED THEN THE STREAM IS WATCHED BY VERIFIERS.
 IF SOMETHING IS OFF, LIKE WRONG LINK, CHEATING, MATCH STARTED EARLY, ETC, THE MATCH IS FORFEITED AND MONEY IS REFUNDED.
-
-IMPORTANT!!!
-CREATE FRONTEND FOR ORGANIZER VERIFIED. JUST ADD VERIFY ME TAGS LIKE THAT OF USER VERIFICATION
-
-IMPORTANT!!!
-AFTER THE MATCH ENDS FOR USER, GIVE HIM AN OPTION TO REPORT FOR THE NEXT 24 HOURS. MAKE SURE TO MENTION, IF THE REPORT TURNS FALSE, YOU WILL BE BANNED
 
 IMPORTANT!!!
 CREATE LOGIC FOR PAYOUTS
 
 IMPORTANT!!!
-ORGANIZER UPDATED FINISHED STATUS AND WHO WON THE MATCH. VALIDATORS VALIDATE WHETHER THE WINNER IS LEGIT.
-IF MATCH IS NOT 'ONGOING' EVEN AFTER THE DATE HAS PASSED OR MATCH FOUND INVALID, AUTOMATICALLY THE MATCH STATUS WILL BE SET TO FINISHED, 
-MONEY WILL BE REFUNDED TO ALL AND WON VARIABLE SET TO 2. IF ALL IS LEGIT THEN MONEY FUNDED TO THE WINNER AND ORGANIZER AND
-AMOUNTGIVEN VARIABLE OF ORGANIZER IS UPDATED
-
-IMPORTANT!!!
 MAKE A CLOUD FUNCTION THAT CLEANS DATABASE.
 
-<DO IT LATER>
-CALL CLEAN API EVERYTIME THE USER VISITS ANY MATCH SECTION OR REGISTERED SECTION
-</DO IT LATER>
-
-Organizer starts the match if the required minimum number of people have joined (80%), further registration stops, ongoing message shown, 
-joining details sent as push notification to each people who have registered.
 Validator should be able to validate a match
-Validate organizers (KYC, BANK ACCOUNT, isverified tag add if they are verified)
-Database Cleanup (After every call to view matches, registered matches, always clean the database)
-Backend to calculate organizer ratings based on [number of matches he conducted successfully / (total matches)] * 5
 Backend to calculate organizer levels based on prizes given
-Backend to collect and distribute money
 Organizer account delete
 Customer Care chat feature, account related assistance, monetary related assistance
-Add report functionality
 
-AFTER MATCH GETS OVER, ORGANIZER UPDATES WHO WON AND VALIDATOR CHECKS THE UPDATION
-OPTIMIZE LEVEL CALCULATION (RIGHT NOW IT IS LINEAR :/ )
 
+########################## DESIGN SECTION ###############################
+
+IMPORTANT!!!
+GAME IMAGE NOT LOADING AT SHOW USER ACCOUNT SECTION
+
+IMPORTANT!!!
+FIX EMAIL VERIFIED AUTOMATIC UPDATE STATE MANAGEMENT
+
+IMPORTANT!!!
+DISABLE REGISTER BUTTON FOR INELIGIBLE USERS BASED ON SKILL
+
+IMPORTANT!!!
+DESIGN A GOOD UI TO ADD IGID. MAKE SURE THE PREVIOUS IGID IS VISIBLE TO THE USER
+
+IMPORTANT!!!
+I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN SHORT. MAKE SURE TO REPLACE THE ORIGINAL WITH SHORT AND 
+CHECK THE RESULT. REALLY IMPORTANT TO REDUCE SIZE!
+
+IMPORTANT!!!
+FRONTEND FOR LINKED ACCOUNTS NOT COMPLETED.
+
+IMPORTANT!!!
+CREATE FRONTEND FOR ORGANIZER VERIFIED. JUST ADD VERIFY ME TAGS LIKE THAT OF USER VERIFICATION
+
+IMPORTANT!!!
+ORGANIZER CAN POST SCOREBOARD ON HIS PAGE
+
+IMPORTANT!!!
+ADD CIRCULAR PROGRESS INDICATOR WHEN ORGANIZER CONFIRMS THE USER WON
 
 
 ###################### FEATURES FOR FUTURE DEVS ##############################
 
 TIME OF MATCH START SHOULD BE SHOWN TO THE USER WHILE REGISTERING FOR THE MATCH
 
-NOTIFICATION SECTION WHERE HE RECEIVES INFO ABOUT MATCH DETAILS FOR WHICH HE REGISTERED
-
 ONE WAY TEMPORARY CHAT SECTION FOR USERS REGISTERED FOR A MATCH. ALL ONE WAY DISCUSSION WILL BE TAKEN PLACE THERE
 
-
+OPTIMIZE USER LEVEL CALCULATION AS WELL AS ORGANIZER LEVEL CALCULATION (IF EXISTS)
 
 
 """
@@ -93,11 +108,14 @@ ONE WAY TEMPORARY CHAT SECTION FOR USERS REGISTERED FOR A MATCH. ALL ONE WAY DIS
 
 from datetime import datetime, timedelta
 import json
+from lib2to3.pytree import Base
 from flask import Flask
 from flask import request
 import firebase_admin
 from firebase_admin import credentials, messaging
 from firebase_admin import firestore
+from pytz import timezone
+import pytz
 import razorpay
 import re
 import hashlib
@@ -240,40 +258,38 @@ def register():
                 return "Failed: Account not linked"
             
 
-            # checking if matchuid exists
-            matchData = db.collection(matchType.lower()).document(matchuid).get()
-            matchData = matchData.to_dict()
-            if matchData == None:
-                return "Failed: Match Doesn't Exist"
-
-            # checking for already registered..
-            user = (
+            # checking for already registered on user side..
+            registeredMatches = (
                 db.collection("userinfo").document(useruid).collection("registered").get()
             )
-            user = [user.id for user in user]
-            if matchuid in user:
+
+            matchId = [match.id for match in registeredMatches]
+            if matchuid in matchId:
                 return "Failed: Already registered"
 
-            # if all conditions passed, then check for valid matchuid
+            # checking if matchuid exists
             ref = db.collection("pubg").document(matchuid)
             ref_obj = ref.get().to_dict()
+            if ref_obj == None:
+                return "Failed: Match Doesn't Exist"
 
-            try:
-                date = ref_obj["date"]
-                matchType = "pubg"
-                uid = matchuid
-                name = ref_obj["name"]
-                paid = ref_obj["fee"]
-                skill = ref_obj["skill"]
-                started = ref_obj["started"]
-            except:
-                return "Failed: No such match"
+            date = ref_obj["date"]
+            matchType = "pubg"
+            uid = matchuid
+            name = ref_obj["name"]
+            paid = ref_obj["fee"]
+            skill = ref_obj["skill"]
+            started = ref_obj["started"]
+            notifId = ref_obj["notificationId"]
             
             if paid != 0:
                 return "Failed: Can't register for free"
 
             if started != 0:
                 return "Failed: This match is no longer accepting registration"
+            
+            if userdata["level"] < skill:
+                return "Failed: Don't have enough skill"
             
 
             # retrieve the total registered and increase it by one [USE TRANSACTION!]
@@ -309,13 +325,14 @@ def register():
                 db.collection("userinfo").document(useruid).collection(
                     "registered"
                 ).document(matchuid).set(
-                    {"date": date, "matchType": matchType, "name": name, "uid": uid}
+                    {"date": date, "matchType": matchType, "name": name, "uid": uid, "notificationId": notifId}
                 )
 
                 # add to history
                 db.collection("userinfo").document(useruid).collection("history").document(
                     matchuid
-                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": 0, "skill": skill})
+                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill})
+
                 return "Success"
             else:
                 return "Failed"
@@ -359,6 +376,14 @@ def paidRegister():
             if matchuid in user:
                 return "Failed: Already registered"
 
+             # checking whether the user has linked his game account
+            ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
+            ids_dict = ids.to_dict()
+            if ids_dict == None:
+                return "Failed: Account not linked"
+            if ids_dict["id"] == None or ids_dict["id"] == "":
+                return "Failed: Account not linked"
+
             # if all conditions passed, then check for valid matchuid
             ref = db.collection("pubg").document(matchuid)
             ref_obj = ref.get().to_dict()
@@ -371,12 +396,13 @@ def paidRegister():
             if paid == 1:
                 amount = 100 * 100
             elif paid == 2:
-                amount == 500 * 100
+                amount = 500 * 100
             elif paid == 3:
                 amount = 1000 * 100
             elif paid == 4:
                 amount = 2000 * 100
             else:
+                
                 return "Failed: Price mismatch"
 
             DATA = {
@@ -388,13 +414,24 @@ def paidRegister():
             response = client.order.create(data=DATA)
             order_id = response["id"]
 
+            # for notification room
+            secret_key = "shinra_tensei"
+            datething = str(datetime.now())
+            toHash = matchuid+secret_key+datething
+            hashedValue = hashlib.sha256(toHash.encode()).digest()
+
+            db.collection("chats").document().set({
+                "notificationId": hashedValue,
+                "chats": [{"message": "Thank You all for joining this match!", "time": datetime.now(timezone(zone="Asia/Kolkata"))}]
+            })
+
             # RETURNING ORDER FOR CHECKOUT
             return order_id
             
         else: 
-            return "Failed"
+            return "Failed: matchType doesn't exist"
 
-    return "Failed" 
+    return "Failed: Request parameters missing" 
 
 
 # ORDER VALIDATION AND PAID REGISTRATION
@@ -406,6 +443,7 @@ def validate():
     matchType = request.args.get("matchType")
     matchuid = request.args.get("matchuid")
     useruid = request.args.get("useruid")
+    token = request.args.get("token")
 
     verifyStatus = client.utility.verify_payment_signature({
    'razorpay_order_id': order_id,
@@ -414,7 +452,7 @@ def validate():
    })
 
     if verifyStatus:
-        if matchuid != None and useruid != None and matchType != None:
+        if matchuid != None and useruid != None and matchType != None and token!=None:
             if matchType.lower() == "pubg":
 
                 # checking whether user is verified (KYC)
@@ -439,6 +477,14 @@ def validate():
                 if matchuid in user:
                     return "Failed: Already registered"
 
+                # checking whether the user has linked his game account
+                ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
+                ids_dict = ids.to_dict()
+                if ids_dict == None:
+                    return "Failed: Account not linked"
+                if ids_dict["id"] == None or ids_dict["id"] == "":
+                    return "Failed: Account not linked"
+
                 # if all conditions passed, then check for valid matchuid
                 ref = db.collection("pubg").document(matchuid)
                 ref_obj = ref.get().to_dict()
@@ -449,6 +495,7 @@ def validate():
                     name = ref_obj["name"]
                     paid = ref_obj["fee"]
                     skill = ref_obj["skill"]
+                    notifId = ref_obj["notificationId"]
                 except:
                     return "Failed: No such match"
                 
@@ -462,7 +509,7 @@ def validate():
                     total = snapshot.get("total")
                     try:
                         if reg < total:
-                            transaction.update(ref, {"reg": reg + 1})
+                            transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
                             return True
                         else:
                             return False
@@ -477,14 +524,24 @@ def validate():
                     db.collection("userinfo").document(useruid).collection(
                         "registered"
                     ).document(matchuid).set(
-                        {"date": date, "matchType": matchType, "name": name, "uid": uid}
+                        {"date": date, "matchType": matchType, "name": name, "uid": uid, "notificationId": notifId}
                     )
+
+                    # add to match's registration list
+                    ref.collection("registeredUsers").document().set({
+                        "email": userdata["email"],
+                        "username": userdata["username"],
+                        "IGID": ids_dict["id"],
+                        "hashedID": hashlib.sha256(useruid.encode()).digest()
+                    })
 
                     # add to history
                     db.collection("userinfo").document(useruid).collection("history").document(
                         matchuid
-                    ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": 0, "skill": skill})
-                    return "Registration Successful!"
+                    ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill})
+
+
+                    return "Success"
                 else:
                     return "Failed"
             else: 
@@ -567,12 +624,23 @@ def create():
             if fee == 3 or fee == 4:
                 return "Failed"
 
+        # for notification room
+        secret_key = "shinra_tensei"
+        datething = str(datetime.now())
+        toHash = uid+secret_key+datething
+        hashedValue = hashlib.sha256(toHash.encode()).digest()
+        if fee != 0:
+            paid = True
+        else:
+            paid = False
+
         db.collection(matchType.lower()).document().set(
             {
                 "date": date,
                 "fee": fee,
                 "match": match,
                 "name": name,
+                "paid": paid,
                 "skill": skill,
                 "solo": solo,
                 "uid": uid,
@@ -580,8 +648,14 @@ def create():
                 "reg": 0,
                 "total": total,
                 "started": started,
+                "notificationId": hashedValue
             }
         )
+
+        db.collection("chats").document().set({
+            "notificationId": hashedValue,
+            "chats": [{"message": "Thank You all for joining this match!", "time": datetime.now(timezone(zone="Asia/Kolkata"))}]
+        })
 
         return "Success"
     else:
@@ -716,6 +790,7 @@ def startMatch():
     streamLink = request.args.get('streamLink')
     matchType = matchType.lower()
 
+
     if streamLink == None:
         return "Failed: Invalid URL"
 
@@ -727,7 +802,7 @@ def startMatch():
     try:
         data = db.collection(matchType).document(matchUid).get().to_dict()
         if data == None:
-            return "Failed"
+            return "Failed: No such match"
         
         if data["started"] != 0:
             return "Failed: Match cannot be started"
@@ -737,10 +812,12 @@ def startMatch():
         userMessageTokens = data["userMessageTokens"]
         name = data["name"]
         for token in userMessageTokens:
+            print(token)
             try:
-                message = messaging.Message(notification=messaging.Notification(title="Are You Ready for the Battle?", body=f"Your registered match '{name}' will begin in a few minutes! Visit the chat room to know more!"), token=token)
+                message = messaging.Message(notification=messaging.Notification(title="Are You Ready for the Battle?", body=f"Your registered match '{name}' will begin in a few minutes! Visit the chat room to know more!"), token=token, data={"route": "/registeredMatches"})
                 messaging.send(message)
-            except:
+            except BaseException as err:
+                print(f"an error occurred: {err}")
                 pass
         db.collection(matchType).document(matchUid).update({
             "started": 1,
@@ -748,7 +825,7 @@ def startMatch():
         })
         return "Success"
     except:
-        return "Failed"
+        return "Failed: Something went wrong"
 
 # STOP MATCH LOGIC
 @app.route("/api/stopMatch")
@@ -770,12 +847,39 @@ def stopMatch():
         name = data["name"]
         for token in userMessageTokens:
             try:
-                message = messaging.Message(notification=messaging.Notification(title="Match ended", body=f"Your registered match '{name}' has ended. Congratulations to the winner!"), token=token)
+                message = messaging.Message(notification=messaging.Notification(title="Match ended", body=f"Your registered match '{name}' has ended. Congratulations to the winner!"), token=token, data={"routename": "contest-details", "matchuid": matchUid, "matchtype": matchType.lower()})
                 messaging.send(message)
             except:
                 pass
         return "Success"
     except:
         return "Failed"
+
+# NOTIFICATION WHEN ORGANIZER SENDS MESSAGE
+@app.route("/api/receivedNotification")
+def receivedNotification():
+    muid = request.args.get("muid")
+    mtype = request.args.get("mtype")
+    
+    if muid != None and mtype != None:
+        mtype = mtype.lower()
+        data = db.collection(mtype).document(muid).get().to_dict()
+        if data == None:
+            return "Failed"
+        userMessageTokens = data["userMessageTokens"]
+        name = data["name"]
+        for token in userMessageTokens:
+            try:
+                message = messaging.Message(notification=messaging.Notification(title="You received a new message!", body=f"Organizers of '{name}' has sent you a message. Quickly check it out!"), token=token,data={"route": "/registeredMatches"})
+                messaging.send(message)
+            except:
+                pass
+        return "Success"
+    
+    return "success"
+        
+
+
+
 
 app.run(debug=True)

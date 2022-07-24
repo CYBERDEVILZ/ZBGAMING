@@ -98,6 +98,7 @@ class _UserAccountState extends State<UserAccount> {
   Map<String, String?> linkedAccounts = {};
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> accountData;
 
   void fetchData() async {
     isLoading = true;
@@ -117,32 +118,35 @@ class _UserAccountState extends State<UserAccount> {
 
     await _auth.currentUser!.reload();
 
-    await FirebaseFirestore.instance.collection("userinfo").doc(_auth.currentUser!.uid).get().then((value) {
-      name = value["username"];
-      imageurl = value["imageurl"];
-      email = value["email"];
-      try {
-        level = value["level"];
-        if (level! <= 5000) {
-          levelAttrib = "Rookie";
-        } else if (level! <= 20000) {
-          levelAttrib = "Veteran";
-        } else {
-          levelAttrib = "Master Elite";
+    try {
+      FirebaseFirestore.instance.collection("userinfo").doc(_auth.currentUser!.uid).snapshots().listen((value) {
+        name = value["username"];
+        imageurl = value["imageurl"];
+        email = value["email"];
+        try {
+          level = value["level"];
+          isEmailVerified = _auth.currentUser!.emailVerified;
+          if (level! <= 5000) {
+            levelAttrib = "Rookie";
+          } else if (level! <= 20000) {
+            levelAttrib = "Veteran";
+          } else {
+            levelAttrib = "Master Elite";
+          }
+        } catch (e) {
+          level = null;
+          levelAttrib = "Unidentified";
         }
-      } catch (e) {
-        level = null;
-        levelAttrib = "Unidentified";
-      }
-      try {
-        isKYCVerified = value["verified"];
-      } catch (e) {
-        isKYCVerified = false;
-      }
-      isEmailVerified = _auth.currentUser!.emailVerified;
-    }).catchError((onError) {
-      Fluttertoast.showToast(msg: "Error getting data");
-    });
+        try {
+          isKYCVerified = value["isVerified"];
+        } catch (e) {
+          isKYCVerified = false;
+        }
+        setState(() {});
+      });
+    } catch (e) {
+      Fluttertoast.showToast(msg: "An error occurred");
+    }
 
     // fetching linked accounts data
     await FirebaseFirestore.instance
@@ -511,6 +515,8 @@ class _UserAccountState extends State<UserAccount> {
                                     onTap: () async {
                                       await Navigator.push(context,
                                           MaterialPageRoute(builder: (context) => LinkGame(matchType: element)));
+                                      await Navigator.pushReplacement(
+                                          context, MaterialPageRoute(builder: (context) => const UserAccount()));
                                     },
                                     child: Text(
                                       "Link Now",

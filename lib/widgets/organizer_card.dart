@@ -114,7 +114,7 @@ class _OrganizerCardState extends State<OrganizerCard> {
             const Positioned(bottom: -2, right: -2, child: CircleAvatar(radius: 42, backgroundColor: Colors.white)),
             imageurl == null
                 ? const CircleAvatar(radius: 40, child: CircularProgressIndicator())
-                : CircleAvatar(radius: 40, foregroundImage: NetworkImage(imageurl!))
+                : CircleAvatar(radius: 40, foregroundImage: imageurl == null ? null : NetworkImage(imageurl!))
           ]),
 
           // tournament name and rating

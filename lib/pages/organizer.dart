@@ -53,25 +53,19 @@ class _OrganizerState extends State<Organizer> {
         if (event?.uid == null) {
           if (mounted) {
             Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const OrganizerLogin()),
-                (route) => false);
+                context, MaterialPageRoute(builder: (context) => const OrganizerLogin()), (route) => false);
           }
         } else if (mounted && event?.uid != null) {
           if (Provider.of<OrganizerModel>(context, listen: false).uid == null) {
             await Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const OrganizerLogin()),
-                (route) => false);
+                context, MaterialPageRoute(builder: (context) => const OrganizerLogin()), (route) => false);
           }
           if (Provider.of<OrganizerModel>(context, listen: false).uid != null) {
             var data = await FirebaseFirestore.instance
                 .collection("organizer")
                 .doc(FirebaseAuth.instance.currentUser!.uid)
                 .get();
-            context
-                .read<OrganizerModel>()
-                .setuid(FirebaseAuth.instance.currentUser!.uid);
+            context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
             context.read<OrganizerModel>().setusername(data["username"]);
             context.read<OrganizerModel>().setemail(data["email"]);
             context.read<OrganizerModel>().setimageurl(data["imageurl"]);
@@ -102,14 +96,12 @@ class _OrganizerState extends State<Organizer> {
                     color: Colors.white,
                     height: 400,
                     width: MediaQuery.of(context).size.width,
-                    child: Image.asset("assets/images/zbunker-app-banner.png",
-                        fit: BoxFit.fitWidth)),
+                    child: Image.asset("assets/images/zbunker-app-banner.png", fit: BoxFit.fitWidth)),
                 SizedBox(
                   height: 400,
                   width: double.infinity,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -117,9 +109,7 @@ class _OrganizerState extends State<Organizer> {
                           !(context.watch<OrganizerModel>().imageurl == null)
                               ? Stack(
                                   children: [
-                                    CircleAvatar(
-                                        backgroundColor: Colors.cyan[700],
-                                        radius: 45),
+                                    CircleAvatar(backgroundColor: Colors.cyan[700], radius: 45),
                                     Positioned(
                                       top: 5,
                                       left: 5,
@@ -128,9 +118,7 @@ class _OrganizerState extends State<Organizer> {
                                         child: const CircularProgressIndicator(
                                           color: Colors.white,
                                         ),
-                                        foregroundImage: NetworkImage(context
-                                            .watch<OrganizerModel>()
-                                            .imageurl!),
+                                        foregroundImage: NetworkImage(context.watch<OrganizerModel>().imageurl!),
                                         radius: 40,
                                       ),
                                     )
@@ -174,10 +162,7 @@ class _OrganizerState extends State<Organizer> {
         ),
         ListTile(
           onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const OrganizerAccount()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const OrganizerAccount()));
           }, // leads to my account
           leading: const Icon(Icons.account_circle, color: Colors.black),
           trailing: const Icon(Icons.arrow_right, color: Colors.black),
@@ -214,8 +199,7 @@ class _OrganizerState extends State<Organizer> {
               style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.all(Colors.red),
                   overlayColor: MaterialStateProperty.all(Colors.red[100]),
-                  side: MaterialStateProperty.all(
-                      const BorderSide(color: Colors.red, width: 2))),
+                  side: MaterialStateProperty.all(const BorderSide(color: Colors.red, width: 2))),
             )),
         Container(
           margin: const EdgeInsets.only(top: 50),
@@ -261,9 +245,7 @@ class _OrganizerState extends State<Organizer> {
                 return const Text("An error occurred");
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                    height: 30,
-                    child: FittedBox(child: CircularProgressIndicator()));
+                return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
               }
               return UpcomingMatch(matchType: "csgo", snapshot: snapshot);
             },
@@ -285,9 +267,7 @@ class _OrganizerState extends State<Organizer> {
                 return const Text("An error occurred");
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                    height: 30,
-                    child: FittedBox(child: CircularProgressIndicator()));
+                return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
               }
               return UpcomingMatch(matchType: "freefire", snapshot: snapshot);
             },
@@ -309,9 +289,7 @@ class _OrganizerState extends State<Organizer> {
                 return const Text("An error occurred");
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                    height: 30,
-                    child: FittedBox(child: CircularProgressIndicator()));
+                return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
               }
               return UpcomingMatch(matchType: "pubg", snapshot: snapshot);
             },
@@ -335,20 +313,12 @@ class _OrganizerState extends State<Organizer> {
                 return const Text("An error occurred");
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                    height: 30,
-                    child: FittedBox(child: CircularProgressIndicator()));
+                return const SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator()));
               }
               return UpcomingMatch(matchType: "valo", snapshot: snapshot);
             },
           ),
         ]),
-
-        // bottomNavigationBar:
-        //     BottomNavigationBar(items: const <BottomNavigationBarItem>[
-        //   BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: "haha"),
-        //   BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: "hoh")
-        // ]),
 
         // floating action button
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,

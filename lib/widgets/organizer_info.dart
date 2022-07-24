@@ -26,8 +26,16 @@ class _OrganizerState extends State<OrganizerInfo> {
     setState(() {});
     final FirebaseFirestore _storeInstance = FirebaseFirestore.instance;
     await _storeInstance.collection("organizer").doc(widget.organizerId).get().then((value) {
-      bannerurl = value["bannerurl"];
-      imageurl = value["imageurl"];
+      try {
+        bannerurl = value["bannerurl"];
+      } catch (e) {
+        bannerurl = null;
+      }
+      try {
+        imageurl = value["imageurl"];
+      } catch (e) {
+        imageurl = null;
+      }
       name = value["username"];
       email = value["email"];
       special = value["special"];

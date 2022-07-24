@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
+import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
+import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/widgets/drawer.dart';
 import 'package:zbgaming/widgets/exit_pop_up.dart';
 import 'package:zbgaming/widgets/favorite_organizer.dart';
@@ -24,9 +28,43 @@ class _HomePageState extends State<HomePage> {
 
   bool isLogged = false;
 
+  void registerNotification() async {
+    // initialize firebase app
+    Firebase.initializeApp();
+
+    // initialize firebase messaging
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) {
+        if (message.data["route"] != null) {
+          Navigator.of(context).pushNamed(message.data["route"]);
+        }
+      }
+    });
+
+    // foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {}
+      NotificationService.display(message);
+    });
+
+    // When the app is in the background and message is opened
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      if (message.data["route"] != null) {
+        Navigator.of(context).pushNamed(message.data["route"]);
+      } else if (message.data["routename"] == "contest-details" &&
+          message.data["matchuid"] != null &&
+          message.data["matchtype"] != null) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ContestDetails(uid: message.data["matchuid"], matchType: message.data["matchtype"])));
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+
+    registerNotification();
 
     // subscribe to userchanges
     FirebaseAuth.instance.authStateChanges().listen((User? event) async {
