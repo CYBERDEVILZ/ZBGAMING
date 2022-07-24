@@ -5,9 +5,6 @@ OPTIMIZATIONS / IDEAS
 ########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
-OBJECT NOT FOUND ERROR OF FIRESTORE IMAGE FOR ORGANIZER IMAGE WITH NULL VALUE
-
-IMPORTANT!!!
 ADD FILTERS TO FILTER GAMES
 
 SERIOUS ISSUE!!!
@@ -632,6 +629,8 @@ def create():
         datething = str(datetime.now())
         toHash = uid+secret_key+datething
         hashedValue = hashlib.sha256(toHash.encode()).digest()
+        if fee != 0:
+            paid = True
 
         db.collection(matchType.lower()).document().set(
             {
@@ -639,6 +638,7 @@ def create():
                 "fee": fee,
                 "match": match,
                 "name": name,
+                "paid": paid,
                 "skill": skill,
                 "solo": solo,
                 "uid": uid,
