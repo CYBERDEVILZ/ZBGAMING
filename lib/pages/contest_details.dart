@@ -242,40 +242,52 @@ class _ContestDetailsState extends State<ContestDetails> {
 
                 winnerhash == null
                     ? Container()
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 32),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          color: Colors.blueGrey[900],
-                          child: Column(
-                            children: [
-                              const Text(
-                                "🔥Match Winner🔥",
-                                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-                              ),
-                              const SizedBox(height: 10),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => ShowUserAccount(hashedId: winnerhash!)));
-                                  },
-                                  child: Text(
-                                    "$winnerName",
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(fontSize: 22, color: Color.fromARGB(255, 33, 212, 243)),
-                                  )),
-                              const SizedBox(height: 10),
-                              Text(
-                                "Click on the username to open profile page",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.blueGrey[700]),
-                              )
-                            ],
+                    : Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            color: Colors.blueGrey[900],
+                            child: Column(
+                              children: [
+                                const Text(
+                                  "🔥Match Winner🔥",
+                                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                                ),
+                                const SizedBox(height: 10),
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ShowUserAccount(hashedId: winnerhash!)));
+                                    },
+                                    child: Text(
+                                      "$winnerName",
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(fontSize: 22, color: Color.fromARGB(255, 33, 212, 243)),
+                                    )),
+                                const SizedBox(height: 10),
+                                Text(
+                                  "Click on the username to open profile page",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.blueGrey[700]),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                          Container(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                child: const Text(
+                                  "Report This Match",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                style:
+                                    ButtonStyle(overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0.1))),
+                                onPressed: () {},
+                              )),
+                        ],
                       ),
 
                 const Divider(height: 20),
@@ -719,7 +731,14 @@ class _ContestDetailsState extends State<ContestDetails> {
                         child: Container(
                         color: Colors.white.withOpacity(0.9),
                         alignment: Alignment.center,
-                        child: Image.asset("assets/images/cancelled.png"),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Image.asset("assets/images/cancelled.png"),
+                            Image.asset("assets/images/cancelled.png"),
+                            Image.asset("assets/images/cancelled.png"),
+                          ],
+                        ),
                       ))
                     : Container()
               ]),
