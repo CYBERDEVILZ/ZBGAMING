@@ -4,9 +4,6 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
-IMPORTANT!!!
-USER KYC VERIFICATION PAGE LEFT
-
 SERIOUS ISSUE!!!
 IF SOMEONE FINDS THIS, WE ARE DEAD
 USER CAN EASILY REGISTER ANOTHER USER MULTIPLE TIMES BY JUST SENDING OTHER'S UUID INSTEAD OF HIS. THIS OCCURS
@@ -56,6 +53,9 @@ CREATE LOGIC FOR PAYOUTS
 
 IMPORTANT!!!
 MAKE A CLOUD FUNCTION THAT CLEANS DATABASE.
+
+IMPORTANT!!!
+USER KYC VERIFICATION PAGE LEFT
 
 Validator should be able to validate a match
 Backend to calculate organizer levels based on prizes given
@@ -840,9 +840,22 @@ def stopMatch():
             return "Failed"
         if data["started"] != 1:
             return "Failed: Something went wrong"
+        if data["notificationId"] == None:
+            return "Failed: Something went wrong"
+        notifId = data["notificationId"]
+
+        # delete chat section logic
+        chat = db.collection("chats").where("notificationId", "==", notifId).get()
+        try:
+            chat_id = chat[0].id
+            db.collection("chats").document(chat_id).delete()
+        except:
+            pass
+
         db.collection(matchType).document(matchUid).update({
             "started": 2
         })
+
         userMessageTokens = data["userMessageTokens"]
         name = data["name"]
         for token in userMessageTokens:
@@ -879,7 +892,34 @@ def receivedNotification():
     return "success"
         
 
+@app.get("/api/reportMatch")
+def reportMatch():
+    muid = request.args.get("muid")
+    mtype = request.args.get("mtype")
+    uuid = request.args.get("uuid")
 
+    if muid == None and uuid == None and mtype == None:
+        return "Failed"
+    
+    if muid == "" and uuid == "" and mtype == "":
+        return "Failed"
+    
+    uuid = hashlib.sha256(uuid.encode()).digest()
+    
+    matchData = db.collection(mtype.lower()).document(muid).get().to_dict()
+    if matchData == None:
+        return "Failed: No such match exists"
+    
+    userData = db.collection(mtype.lower()).document(muid).collection("registeredUsers").where("hashedID", "==", uuid).get()
+    if len(userData) != 1:
+        return "Failed: You have not registered for this match"
+    
+    db.collection(mtype.lower()).document(muid).update({"reports": "reported haha"})
+    return "Success"
+    
+
+
+        
 
 
 app.run(debug=True)

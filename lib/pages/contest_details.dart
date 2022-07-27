@@ -26,6 +26,7 @@ class ContestDetails extends StatefulWidget {
 
 class _ContestDetailsState extends State<ContestDetails> {
   bool isLoading = false;
+  bool isReportLoading = false;
   bool isButtonLoading = false;
   bool isRegistered = false;
   String? token;
@@ -279,13 +280,36 @@ class _ContestDetailsState extends State<ContestDetails> {
                           Container(
                               alignment: Alignment.centerRight,
                               child: TextButton(
-                                child: const Text(
-                                  "Report This Match",
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                                style:
-                                    ButtonStyle(overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0.1))),
-                                onPressed: () {},
+                                child: isReportLoading
+                                    ? const LinearProgressIndicator(
+                                        color: Colors.red,
+                                        backgroundColor: Colors.white,
+                                      )
+                                    : const Text(
+                                        "Report This Match",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                style: ButtonStyle(overlayColor: MaterialStateProperty.all(Colors.white)),
+                                onPressed: () async {
+                                  if (FirebaseAuth.instance.currentUser != null) {
+                                    isReportLoading = true;
+                                    setState(() {});
+                                    await get(Uri.parse(ApiEndpoints.baseUrl +
+                                            ApiEndpoints.reportMatch +
+                                            "?uuid=${FirebaseAuth.instance.currentUser!.uid}&mtype=${widget.matchType}&muid=${widget.uid}"))
+                                        .then((value) {
+                                      if (value.statusCode != 200) {
+                                        Fluttertoast.showToast(msg: "Something went wrong (Server Side)");
+                                      } else {
+                                        Fluttertoast.showToast(msg: value.body);
+                                      }
+                                    });
+                                  } else {
+                                    Fluttertoast.showToast(msg: "Must be logged in to access this feature");
+                                  }
+                                  isReportLoading = false;
+                                  setState(() {});
+                                },
                               )),
                         ],
                       ),
@@ -551,7 +575,7 @@ class _ContestDetailsState extends State<ContestDetails> {
           }
           if (skill == 2) {
             if (currentLevel < 20001) {
-              Fluttertoast.showToast(msg: "Must be VETERAN or greater to participate");
+              Fluttertoast.showToast(msg: "Must be ELITE to participate");
               isButtonLoading = false;
               setState(() {});
               return;
