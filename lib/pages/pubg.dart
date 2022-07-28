@@ -246,6 +246,13 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                   return const SliverToBoxAdapter(
                       child: SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator())));
                 }
+                if (snapshot.data!.docs.isEmpty) {
+                  return SliverToBoxAdapter(
+                      child: Image.asset(
+                    "assets/images/no_data.png",
+                    fit: BoxFit.fitHeight,
+                  ));
+                }
                 return SliverList(
                     delegate: SliverChildListDelegate(snapshot.data!.docs
                         .map((DocumentSnapshot e) => TournamentBuilder(

@@ -400,6 +400,10 @@ class _UserAccountState extends State<UserAccount> {
                 await _auth.currentUser?.sendEmailVerification().then((value) async {
                   await Fluttertoast.showToast(
                       msg: "Verify mail and login again", textColor: Colors.white, backgroundColor: Colors.blue);
+                  await Fluttertoast.showToast(
+                      msg: "Don't forget to check your spam folder!",
+                      textColor: Colors.white,
+                      backgroundColor: Colors.blue);
                   await _auth.signOut();
                 }).catchError((onError) {
                   Fluttertoast.showToast(
