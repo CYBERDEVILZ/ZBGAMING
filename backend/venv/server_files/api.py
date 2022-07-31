@@ -4,16 +4,8 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
-SERIOUS ISSUE!!!
-IF SOMEONE FINDS THIS, WE ARE DEAD
-USER CAN EASILY REGISTER ANOTHER USER MULTIPLE TIMES BY JUST SENDING OTHER'S UUID INSTEAD OF HIS. THIS OCCURS
-BECAUSE WE ARE CHECKING ONLY USER DATABASE WHETHER HE IS REGISTERED OR NOT. CHECK REGISTERED USERS OF ORGANIZERS AS WELL
-
 IMPORTANT!!!
-ADD SEARCH FIELD FOR ORGANIZERS TO SEARCH FOR PLAYERS
-
-IMPORTANT!!!
-RATING WIDGET NOT ADDED IN CONTEST DETAILS PAGE
+RTYPE! RTYPE! RTYPE!!
 
 IMPORTANT!!!
 ADD SEARCH USER FEATURE TO LOOK FOR PLAYERS BY OTHER USERS
@@ -22,11 +14,11 @@ IMPORTANT!!!
 UNIQUE ID FOR PLAYERS --  FIREBASE UID (SECRET) => SHA256 HASH => BLOB (BYTE STRING) [0XFD0XFA0XAE -- fdfaae]
 
 IMPORTANT!!!
-STOP MATCH LOGIC
-ORGANIZER STOPS THE MATCH. HE IS FORCED TO SELECT A WINNER FROM THE REGISTERED USERS. AFTER SELECTING THE WINNER,
-A PUSH NOTIFICATION IS SENT WHICH REDIRECTS THE USER TO THE CONTEST DETAILS PAGE WHERE HE HAS AN OPTION TO REPORT AND ALSO SEE THE WINNER OF THE MATCH.
-VALIDATORS VALIDATE WHETHER THE WINNER IS LEGIT IFF REPORTS POUR IN.
-THE USER GETS REMOVED FROM THE CHAT GROUP AS WELL AND 'LOST' STATUS IS UPDATED ON ALL THE WINNERS.
+REPORT LOGIC
+WHEN A USER REPORTS A MATCH, MAKE SURE TO MAKE NOTE OF HIS UUID. WHEN HE REPORTS AGAIN ON THE SAME MATCH, WE CAN WARN HIM
+THAT WE ALREADY RECIEVED YOUR REPORT. IF A MATCH RECEIVES MORE THAN 10 REPORTS, MAKE SURE TO ASSIGN THE REPORT TO A VALIDATOR 
+WHO GOES AND CHECKS THE MATCH HIMSELF. HE READS THE REPORT, UNDERSTANDS COMMON ISSUE AND CHECKS IT OUT ON THE STREAM URL.
+IF STREAM URL IS NOT VALID, THE MATCH WILL BE CANCELLED AND ALL THE USERS WILL BE REFUNDED.
 
 IMPORTANT!!!
 IF MATCH IS NOT 'ONGOING' EVEN AFTER THE DATE HAS PASSED OR MATCH FOUND INVALID, AUTOMATICALLY THE MATCH STATUS WILL BE SET TO FINISHED, 
@@ -35,9 +27,6 @@ AMOUNTGIVEN VARIABLE OF ORGANIZER IS UPDATED
 
 IMPORTANT!!!
 POLICY NOT ADDED FOR ORGANIZER SIGNUP
-
-IMPORTANT!!!
-BACKEND TO CALCULATE ORGANIZER RATINGS: BASED ON RATINGS PURELY FROM PLAYERS.
 
 IMPORTANT!!!
 CREATE BACKEND TO CALCULATE ORGANIZER LEVEL BASED ON AMOUNTGIVEN PARAMETER.
@@ -75,12 +64,6 @@ IMPORTANT!!!
 GAME IMAGE NOT LOADING AT SHOW USER ACCOUNT SECTION
 
 IMPORTANT!!!
-FIX EMAIL VERIFIED AUTOMATIC UPDATE STATE MANAGEMENT
-
-IMPORTANT!!!
-DISABLE REGISTER BUTTON FOR INELIGIBLE USERS BASED ON SKILL
-
-IMPORTANT!!!
 DESIGN A GOOD UI TO ADD IGID. MAKE SURE THE PREVIOUS IGID IS VISIBLE TO THE USER
 
 IMPORTANT!!!
@@ -88,23 +71,16 @@ I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN
 CHECK THE RESULT. REALLY IMPORTANT TO REDUCE SIZE!
 
 IMPORTANT!!!
-FRONTEND FOR LINKED ACCOUNTS NOT COMPLETED.
-
-IMPORTANT!!!
 CREATE FRONTEND FOR ORGANIZER VERIFIED. JUST ADD VERIFY ME TAGS LIKE THAT OF USER VERIFICATION
 
 IMPORTANT!!!
 ORGANIZER CAN POST SCOREBOARD ON HIS PAGE
 
-IMPORTANT!!!
-ADD CIRCULAR PROGRESS INDICATOR WHEN ORGANIZER CONFIRMS THE USER WON
 
 
 ###################### FEATURES FOR FUTURE DEVS ##############################
 
 TIME OF MATCH START SHOULD BE SHOWN TO THE USER WHILE REGISTERING FOR THE MATCH
-
-ONE WAY TEMPORARY CHAT SECTION FOR USERS REGISTERED FOR A MATCH. ALL ONE WAY DISCUSSION WILL BE TAKEN PLACE THERE
 
 OPTIMIZE USER LEVEL CALCULATION AS WELL AS ORGANIZER LEVEL CALCULATION (IF EXISTS)
 
@@ -126,6 +102,8 @@ import razorpay
 import re
 import hashlib
 import requests
+
+games = ["pubg"]
 
 # FIREBASE INIT
 cred = credentials.Certificate("zbgaming-v1-firebase-adminsdk-2ozhj-4f38e5fc3e.json")
@@ -268,9 +246,11 @@ def register():
             registeredMatches = (
                 db.collection("userinfo").document(useruid).collection("registered").get()
             )
-
             matchId = [match.id for match in registeredMatches]
             if matchuid in matchId:
+                return "Failed: Already registered"
+            isHeRegistered = db.collection(matchType.lower()).document(matchuid).collection("registeredUsers").where("hashedID", "==", hashlib.sha256(useruid.encode()).digest()).get()
+            if len(isHeRegistered) != 0:
                 return "Failed: Already registered"
 
             # checking if matchuid exists
@@ -330,9 +310,14 @@ def register():
                 # add to registered
                 db.collection("userinfo").document(useruid).collection(
                     "registered"
-                ).document(matchuid).set(
-                    {"date": date, "matchType": matchType, "name": name, "uid": uid, "notificationId": notifId}
-                )
+                ).document(matchuid).set({
+                    "date": date, 
+                    "matchType": matchType,
+                    "name": name,
+                    "uid": uid,
+                    "notificationId": notifId,
+                    "hasRated": False
+                    })
 
                 # add to history
                 db.collection("userinfo").document(useruid).collection("history").document(
@@ -529,9 +514,14 @@ def validate():
                     # add to registered
                     db.collection("userinfo").document(useruid).collection(
                         "registered"
-                    ).document(matchuid).set(
-                        {"date": date, "matchType": matchType, "name": name, "uid": uid, "notificationId": notifId}
-                    )
+                    ).document(matchuid).set({
+                        "date": date,
+                        "matchType": matchType, 
+                        "name": name, 
+                        "uid": uid, 
+                        "notificationId": notifId, 
+                        "hasRated": False
+                    })
 
                     # add to match's registration list
                     ref.collection("registeredUsers").document().set({
@@ -903,14 +893,36 @@ def reportMatch():
     muid = request.args.get("muid")
     mtype = request.args.get("mtype")
     uuid = request.args.get("uuid")
+    rtype = request.args.get("rtype")
+    reportData = request.args.get("otherReport")
 
-    if muid == None and uuid == None and mtype == None:
+    reportArray = [
+        "Match was started early without prior notice",
+        "Player(s) was/were found cheating", 
+        "Organizer selected the wrong winner", 
+        "No information regarding the match was shared by the organizer in the Chat Section"
+        ]
+    
+    try:
+        rtype = int(rtype)
+        if rtype < 0 or rtype > 4:
+            return "Failed"
+        if rtype < 4:
+            reportData = reportArray[rtype]
+
+    except:
+        return "Failed"
+
+    if muid == None and uuid == None and mtype == None and rtype == None:
         return "Failed"
     
-    if muid == "" and uuid == "" and mtype == "":
+    if muid == "" and uuid == "" and mtype == "" and rtype == "":
         return "Failed"
     
     uuid = hashlib.sha256(uuid.encode()).digest()
+
+    if mtype.lower() not in games:
+        return "Failed: Invalid Game"
     
     matchData = db.collection(mtype.lower()).document(muid).get().to_dict()
     if matchData == None:
@@ -919,13 +931,69 @@ def reportMatch():
     userData = db.collection(mtype.lower()).document(muid).collection("registeredUsers").where("hashedID", "==", uuid).get()
     if len(userData) != 1:
         return "Failed: You have not registered for this match"
+
+    try:
+        reportedUsers = matchData["reportedUsers"]
+        for reportDict in reportedUsers:
+            if uuid in reportDict["uuid"]:
+                return "Failed: Cannot report more than once"
+
+    except:
+        reportedUsers = []
     
-    db.collection(mtype.lower()).document(muid).update({"reports": "reported haha"})
+    reports = len(reportedUsers) + 1
+    
+    db.collection(mtype.lower()).document(muid).update({"reportedUsers": firestore.ArrayUnion([{"uuid": uuid, "report": reportData}])})
+    
+    try:
+        hasSubmittedForReview = matchData["hasSubmittedForReview"]
+    except:
+        hasSubmittedForReview = False
+
+    if reports > 20 and hasSubmittedForReview == False:
+        db.collection(mtype.lower()).document(muid).update({"hasSubmittedForReview": True})
+        db.collection("reports").document().set({"matchType": mtype.lower(), "muid": muid})
+        
     return "Success"
     
 
 
-        
+@app.get("/api/rate")
+def rate():
+    ouid = request.args.get("ouid")
+    rating = request.args.get("rating")
+
+    if ouid == None and rating == None:
+        return "Failed"
+    
+    if ouid == "" and rating == "":
+        return "Failed"
+    
+    # checking valid ouid
+    data = db.collection("organizer").document(ouid).get().to_dict()
+    if data == None:
+        return "Failed"
+
+    # rating logic
+    try:
+        rating = int(rating)
+        if rating <= 0  or rating > 5:
+            return "Failed"
+        try:
+            total_rating = data["total_rating"]
+        except KeyError:
+            total_rating = 0
+        try:
+            total_reviews = data["total_reviews"]
+        except KeyError:
+            total_reviews = 0
+        db.collection("organizer").document(ouid).update({"total_rating": total_rating + rating})
+        db.collection("organizer").document(ouid).update({"total_reviews": total_reviews + 1})
+    except:
+        return "Failed"
+    
+    
+    return "Success"
 
 
 app.run(debug=True)

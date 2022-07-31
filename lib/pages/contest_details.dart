@@ -12,6 +12,7 @@ import 'package:zbgaming/widgets/Date_to_string.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
 import 'package:zbgaming/widgets/organizer_info.dart';
+import 'package:zbgaming/widgets/rate_builder.dart';
 import 'package:zbgaming/widgets/rules_and_requirements.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
@@ -46,6 +47,7 @@ class _ContestDetailsState extends State<ContestDetails> {
   String? winnerName;
   int? matchStarted;
   bool cancelled = false;
+  bool? hasRated;
 
   void fetchMatchData() async {
     isLoading = true;
@@ -125,12 +127,17 @@ class _ContestDetailsState extends State<ContestDetails> {
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .collection("registered")
         .get()
-        .then((snapshots) {
+        .then((snapshots) async {
       try {
         List<QueryDocumentSnapshot<Map<String, dynamic>>> data = snapshots.docs;
         for (int i = 0; i < data.length; i++) {
           if (data[i].id == widget.uid) {
             isRegistered = true;
+            try {
+              hasRated = data[i]["hasRated"];
+            } catch (e) {
+              hasRated = null;
+            }
           }
         }
       } catch (e) {
@@ -296,7 +303,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                     setState(() {});
                                     await get(Uri.parse(ApiEndpoints.baseUrl +
                                             ApiEndpoints.reportMatch +
-                                            "?uuid=${FirebaseAuth.instance.currentUser!.uid}&mtype=${widget.matchType}&muid=${widget.uid}"))
+                                            "?uuid=${FirebaseAuth.instance.currentUser!.uid}&mtype=${widget.matchType}&muid=${widget.uid}&rtype=4"))
                                         .then((value) {
                                       if (value.statusCode != 200) {
                                         Fluttertoast.showToast(msg: "Something went wrong (Server Side)");
@@ -314,6 +321,14 @@ class _ContestDetailsState extends State<ContestDetails> {
                         ],
                       ),
 
+                const Divider(height: 20),
+                winnerhash != null && hasRated == false && FirebaseAuth.instance.currentUser != null && ouid != null
+                    ? Column(
+                        children: [
+                          RateBuilder(uuid: FirebaseAuth.instance.currentUser!.uid, muid: widget.uid, ouid: ouid!),
+                        ],
+                      )
+                    : Container(),
                 const Divider(height: 20),
 
                 // match format

@@ -277,7 +277,7 @@ class _OrganizerState extends State<Organizer> {
           Align(
               child: Container(
             child: const Text(
-              "Player Unknown Battlegrounds",
+              "Battlegrounds Mobile India",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             margin: const EdgeInsets.only(top: 5),

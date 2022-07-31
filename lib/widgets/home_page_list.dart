@@ -24,7 +24,7 @@ class HomePageList extends StatelessWidget {
           }),
       Tile(
           img: "assets/images/pubg.jpg",
-          title: "PUBG New State",
+          title: "Battlegrounds Mobile India",
           ontap: () {
             Navigator.pushNamed(context, AppRoutes.pubg);
           }),

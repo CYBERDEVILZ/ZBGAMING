@@ -288,7 +288,7 @@ class SlivAppBar extends StatelessWidget {
       elevation: 0,
       expandedHeight: 200, // height of expanded app bar
       title: const Text(
-        "PUBG: New State",
+        "Battlegrounds Mobile India",
       ),
       centerTitle: true,
       // space for image in appbar
