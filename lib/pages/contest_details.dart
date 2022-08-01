@@ -174,6 +174,8 @@ class _ContestDetailsState extends State<ContestDetails> {
 
   @override
   Widget build(BuildContext context) {
+    int selectedOption = 0;
+    TextEditingController fieldvalue = TextEditingController();
     final fee = (rewards == 1)
         ? 100
         : (rewards == 2)
@@ -298,21 +300,122 @@ class _ContestDetailsState extends State<ContestDetails> {
                                       ),
                                 style: ButtonStyle(overlayColor: MaterialStateProperty.all(Colors.white)),
                                 onPressed: () async {
-                                  if (FirebaseAuth.instance.currentUser != null) {
-                                    isReportLoading = true;
-                                    setState(() {});
-                                    await get(Uri.parse(ApiEndpoints.baseUrl +
-                                            ApiEndpoints.reportMatch +
-                                            "?uuid=${FirebaseAuth.instance.currentUser!.uid}&mtype=${widget.matchType}&muid=${widget.uid}&rtype=4"))
-                                        .then((value) {
-                                      if (value.statusCode != 200) {
-                                        Fluttertoast.showToast(msg: "Something went wrong (Server Side)");
-                                      } else {
-                                        Fluttertoast.showToast(msg: value.body);
-                                      }
-                                    });
-                                  } else {
-                                    Fluttertoast.showToast(msg: "Must be logged in to access this feature");
+                                  String result = "no";
+                                  result = await showDialog(
+                                      context: context,
+                                      builder: ((context) => StatefulBuilder(builder: (context, setState) {
+                                            return SingleChildScrollView(
+                                              child: AlertDialog(
+                                                insetPadding: const EdgeInsets.all(8),
+                                                title: const Text(
+                                                  "Report the match",
+                                                  style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                                                ),
+                                                content: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Text(
+                                                      "Choose one of the following: ",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 0,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text("Match was started early without prior notice"),
+                                                    ),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 1,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text("Player(s) was/were found cheating"),
+                                                    ),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 2,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text("Organizer selected the wrong winner"),
+                                                    ),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 3,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text(
+                                                          "No information regarding the match was shared by the organizer in the Chat Section"),
+                                                    ),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 4,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text("Other: "),
+                                                    ),
+                                                    selectedOption == 4
+                                                        ? TextFormField(
+                                                            controller: fieldvalue,
+                                                            decoration: const InputDecoration(
+                                                              border: OutlineInputBorder(),
+                                                              hintText: "Explain in short and concise manner",
+                                                            ),
+                                                            maxLength: 100,
+                                                          )
+                                                        : Container()
+                                                  ],
+                                                ),
+                                                actions: [
+                                                  OutlinedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop("no");
+                                                      },
+                                                      child: const Text("Cancel")),
+                                                  ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop("yes");
+                                                      },
+                                                      child: const Text("Report"))
+                                                ],
+                                              ),
+                                            );
+                                          })));
+
+                                  if (result == "yes") {
+                                    if (FirebaseAuth.instance.currentUser != null) {
+                                      isReportLoading = true;
+                                      setState(() {});
+                                      await get(Uri.parse(ApiEndpoints.baseUrl +
+                                              ApiEndpoints.reportMatch +
+                                              "?uuid=${FirebaseAuth.instance.currentUser!.uid}&mtype=${widget.matchType}&muid=${widget.uid}&rtype=$selectedOption&otherReport=${fieldvalue.text}"))
+                                          .then((value) {
+                                        if (value.statusCode != 200) {
+                                          Fluttertoast.showToast(msg: "Something went wrong (Server Side)");
+                                        } else {
+                                          Fluttertoast.showToast(msg: value.body);
+                                        }
+                                      });
+                                    } else {
+                                      Fluttertoast.showToast(msg: "Must be logged in to access this feature");
+                                    }
                                   }
                                   isReportLoading = false;
                                   setState(() {});
