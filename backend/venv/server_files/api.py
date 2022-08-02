@@ -3,6 +3,11 @@ OPTIMIZATIONS / IDEAS
 ---------------------
 
 ########################## LOGIC SECTION ###############################
+IDEA! IDEA! IDEA!
+When the organizer stops the match, give a 24 hour window before deleting the data from the current database. In the meantime, if we
+receive any reports then validators can spring into action and change the needed things from the database. AFTER 24 HOURS ONLY SHOULD
+FUNDS BE DISTRIBUTED TO WINNERS. FAILURE IS NOT TOLERATED! REPORTS WILL NOT BE ACCEPTED AFTER WINNER HAS BEEN AWARDED.
+When you pay the winner, make sure to update the amountGiven parameter of organizer. This helps in calculating organizer level.
 
 IMPORTANT!!!
 ADD SEARCH USER FEATURE TO LOOK FOR PLAYERS BY OTHER USERS

@@ -160,10 +160,8 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                           left: -5,
                           child: CircleAvatar(
                             maxRadius: 70,
-                            backgroundColor:
-                                const Color.fromARGB(255, 7, 133, 155),
-                            foregroundImage:
-                                imgurl == null ? null : NetworkImage(imgurl!),
+                            backgroundColor: const Color.fromARGB(255, 7, 133, 155),
+                            foregroundImage: imgurl == null ? null : NetworkImage(imgurl!),
                           ),
                         ),
                       ]),
@@ -171,10 +169,7 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                       ShadowedContainer(
                         anyWidget: Text(
                           name!,
-                          style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w300,
-                              color: Colors.white),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: Colors.white),
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -187,28 +182,18 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                                   text: TextSpan(
                                       text: "Level: ",
                                       style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
+                                          color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                                       children: [
-                                    TextSpan(
-                                        text: userLevel,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w300))
+                                    TextSpan(text: userLevel, style: const TextStyle(fontWeight: FontWeight.w300))
                                   ])),
                               const SizedBox(height: 20),
                               RichText(
                                   text: TextSpan(
                                       text: "Total Matches Won: ",
                                       style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
+                                          color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                                       children: [
-                                    TextSpan(
-                                        text: "$matchesWon",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w300))
+                                    TextSpan(text: "$matchesWon", style: const TextStyle(fontWeight: FontWeight.w300))
                                   ])),
                               const SizedBox(height: 20),
                               RichText(
@@ -216,14 +201,10 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                                   text: TextSpan(
                                       text: "Amounts Won: ",
                                       style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
+                                          color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                                       children: [
                                         TextSpan(
-                                            text: "$amountWon",
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w300))
+                                            text: "$amountWon", style: const TextStyle(fontWeight: FontWeight.w300))
                                       ])),
                             ],
                           ),
@@ -240,10 +221,7 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                                 children: [
                                   const Text(
                                     "Matches Won",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
+                                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 20),
                                   ...totalMatchesWon.map((element) {
@@ -254,53 +232,41 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                                           color: Colors.white,
                                           padding: const EdgeInsets.all(8),
                                           child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              const CircleAvatar(),
+                                              CircleAvatar(
+                                                backgroundImage:
+                                                    AssetImage("assets/images/${element['matchType']}.jpg"),
+                                                radius: 30,
+                                              ),
                                               Expanded(
                                                   child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
+                                                padding: const EdgeInsets.all(8.0),
                                                 child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       element["name"],
-                                                      style: const TextStyle(
-                                                          fontSize: 17,
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                                                     ),
                                                     const SizedBox(height: 5),
                                                     Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: [
-                                                        Text(DateToString()
-                                                            .dateToString(
-                                                                element['date']
-                                                                    .toDate())),
-                                                        const SizedBox(
-                                                            width: 10),
+                                                        Text(DateToString().dateToString(element['date'].toDate())),
+                                                        const SizedBox(width: 10),
                                                         Expanded(
                                                           child: Text(
                                                             element["paid"] == 1
                                                                 ? "Rs 2400"
-                                                                : element["paid"] ==
-                                                                        2
+                                                                : element["paid"] == 2
                                                                     ? "Rs 12000"
-                                                                    : element["paid"] ==
-                                                                            3
+                                                                    : element["paid"] == 3
                                                                         ? "Rs 24000"
-                                                                        : element["paid"] ==
-                                                                                4
+                                                                        : element["paid"] == 4
                                                                             ? "Rs 120000"
                                                                             : "Rs Null",
-                                                            textAlign:
-                                                                TextAlign.right,
+                                                            textAlign: TextAlign.right,
                                                           ),
                                                         )
                                                       ],
