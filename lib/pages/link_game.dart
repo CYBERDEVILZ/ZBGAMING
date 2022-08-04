@@ -17,6 +17,26 @@ class _LinkGameState extends State<LinkGame> {
 
   bool isLoading = false;
 
+  void fetchData() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("userinfo")
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection("linkedAccounts")
+          .doc(widget.matchType)
+          .get()
+          .then((value) => idController.text = value["id"]);
+    } catch (e) {
+      idController.text = "";
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -36,8 +56,9 @@ class _LinkGameState extends State<LinkGame> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    decoration: const InputDecoration(
-                        labelText: "In-Game UID", border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        hintText: idController.text == "" ? "Enter Game ID Here" : idController.text),
                     controller: idController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -60,6 +81,7 @@ class _LinkGameState extends State<LinkGame> {
                               .collection("linkedAccounts")
                               .doc(widget.matchType)
                               .set({"id": idController.text});
+                          Navigator.pop(context);
                         }
                         isLoading = false;
                         setState(() {});

@@ -503,7 +503,12 @@ class _UserAccountState extends State<UserAccount> {
                           linkedAccounts[element] != null
                               ? GestureDetector(
                                   // navigate to edit account page
-                                  onTap: () {},
+                                  onTap: () async {
+                                    await Navigator.push(
+                                        context, MaterialPageRoute(builder: (context) => LinkGame(matchType: element)));
+                                    await Navigator.pushReplacement(
+                                        context, MaterialPageRoute(builder: (context) => const UserAccount()));
+                                  },
                                   child: Icon(
                                     Icons.open_in_new,
                                     color: colorCodeForButtonTextCumCanvas[levelAttrib],
