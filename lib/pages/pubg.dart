@@ -77,6 +77,7 @@ class _PubgTournamentsState extends State<PubgTournaments> {
         .where("skill", isEqualTo: skillquery)
         .where("started", isEqualTo: startedquery)
         .where("special", isEqualTo: specialquery)
+        .where("date", isGreaterThanOrEqualTo: DateTime.now().toLocal())
         .orderBy("date")
         .snapshots();
 
@@ -287,9 +288,7 @@ class SlivAppBar extends StatelessWidget {
       pinned: true, // pins the appbar at start of scroll
       elevation: 0,
       expandedHeight: 200, // height of expanded app bar
-      title: const Text(
-        "Battlegrounds Mobile India",
-      ),
+
       centerTitle: true,
       // space for image in appbar
       flexibleSpace: FlexibleSpaceBar(
