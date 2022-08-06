@@ -4,9 +4,8 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
-MAKE SURE TO ADD A FUNCTION THAT UPDATES WON VARIABLE TO 2 FOR CANCELLATION IN REGISTERED USERS
-DELETE CHAT SECTION FOR DELETED MATCHES
 PROVIDE CANCEL MATCH OPTION TO ORGANIZERS.
+DELETE CHAT GROUPS FOR MATCHES THAT ARE OVER.
 
 ----->>>> IDEA! IDEA! IDEA!
 When the organizer stops the match, give a 24 hour window before deleting the data from the current database. In the meantime, if we
