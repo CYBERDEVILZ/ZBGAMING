@@ -3,7 +3,11 @@ OPTIMIZATIONS / IDEAS
 ---------------------
 
 ########################## LOGIC SECTION ###############################
-IDEA! IDEA! IDEA!
+
+MAKE SURE TO ADD A FUNCTION THAT UPDATES WON VARIABLE TO -1 FOR CANCELLATION IN REGISTERED USERS
+DELETE CHAT SECTION FOR DELETED MATCHES
+
+----->>>> IDEA! IDEA! IDEA!
 When the organizer stops the match, give a 24 hour window before deleting the data from the current database. In the meantime, if we
 receive any reports then validators can spring into action and change the needed things from the database. AFTER 24 HOURS ONLY SHOULD
 FUNDS BE DISTRIBUTED TO WINNERS. FAILURE IS NOT TOLERATED! REPORTS WILL NOT BE ACCEPTED AFTER WINNER HAS BEEN AWARDED.
@@ -20,7 +24,7 @@ IF A MATCH RECEIVES MORE THAN 10 REPORTS, MAKE SURE TO ASSIGN THE REPORT TO A VA
 WHO GOES AND CHECKS THE MATCH HIMSELF. HE READS THE REPORT, UNDERSTANDS COMMON ISSUE AND CHECKS IT OUT ON THE STREAM URL.
 IF STREAM URL IS NOT VALID, THE MATCH WILL BE CANCELLED AND ALL THE USERS WILL BE REFUNDED.
 
-IMPORTANT!!!
+----->>>> IMPORTANT!!!
 IF MATCH IS NOT 'ONGOING' EVEN AFTER THE DATE HAS PASSED OR MATCH FOUND INVALID, AUTOMATICALLY THE MATCH STATUS WILL BE SET TO FINISHED, 
 MONEY WILL BE REFUNDED TO ALL AND WON VARIABLE SET TO 2. IF ALL IS LEGIT THEN MONEY FUNDED TO THE WINNER THE NEXT DAY AND ORGANIZER AND
 AMOUNTGIVEN VARIABLE OF ORGANIZER IS UPDATED
@@ -50,7 +54,6 @@ MAKE A CLOUD FUNCTION THAT CLEANS DATABASE.
 IMPORTANT!!!
 USER KYC VERIFICATION PAGE LEFT
 
-Backend to calculate organizer levels based on prizes given
 Organizer account delete
 
 
@@ -79,6 +82,8 @@ ORGANIZER PAGE WHERE HE CAN UPLOAD POSTS AND SCORECARDS
 from datetime import datetime, timedelta
 import json
 from lib2to3.pytree import Base
+from xmlrpc.client import DateTime
+from colorama import Back
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -90,6 +95,8 @@ import razorpay
 import re
 import hashlib
 import requests
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 games = ["pubg"]
 
@@ -106,12 +113,62 @@ secret_key = "C7IHXyYq0nsDlWQYUcRKGzaH"
 client = razorpay.Client(auth=("rzp_test_rKi9TFV4sMHvz2", secret_key))
 
 # FUNCTIONS
+# email validation
 def validateEmail(email):
     result = re.match("[^@]+@[^@]+\.[A-Za-z0-9]+$", email)
     if result:
         return True
     else:
         return False
+
+# refund money logic
+def refund():
+    print("refund all the money BLYAT! and Give organizer bad rating!")
+
+# delete game from database
+def deleteGame(game, gameID):
+    docs1 = db.collection(game).document(gameID).collection("registeredUsers").get()
+    for doc in docs1:
+        doc.reference.delete()
+    db.collection(game).document(gameID).delete()
+
+# delete chats
+def deleteChat(chatID):
+    db.collection("chats").where("notificationId", "==", chatID).get()[0].reference.delete()
+
+
+# BACKGROUND SCHEDULERS
+scheduler = BackgroundScheduler()
+# SCHEDULE 1: look for matches that are over. Perform necessary actions
+def schedule_1_are_matches_over():
+    for game in games:
+        date_over_matches = db.collection(game).where("date", "<", datetime.now()).get()
+        print(datetime.utcnow())
+        for matches in date_over_matches:
+            match_data = matches.to_dict()
+            print(match_data["date"])
+            if (match_data["started"] == 0):
+                print("match was never started! lets refund all the money and show it cancelled")
+                refund()
+                deleteGame(game, matches.id)
+                deleteChat(match_data["notificationId"])
+            if (match_data["started"] == 1):
+                db.collection()
+                print("match started but not stopped. lets stop it now and refund all the money")
+                refund()
+                deleteChat(match_data["notificationId"])
+                deleteGame(game, matches.id)
+            if (match_data["started"] == 2):
+                print("match was stopped. Nice organizer. Give him a hug")
+                deleteGame(game, matches.id)
+                deleteChat(match_data["notificationId"])
+        print("scheduler running -------------------")
+                
+# run every 24 hours
+job = scheduler.add_job(schedule_1_are_matches_over, "interval", seconds=10)
+scheduler.start()
+
+            
 
 
 # HOME
@@ -582,17 +639,23 @@ def create():
         # converting date from string to datetime object
         try:
             date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S.%f")
-            date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+            date = date.replace(hour=23, minute=59, second=59, microsecond=0)
+            local = pytz.timezone("Asia/Kolkata")
+            current_date_in_utc = local.localize(datetime.now(), is_dst=None).astimezone(pytz.utc)
+            print(current_date_in_utc)
+            local_dt = local.localize(date, is_dst=None)
+            date = local_dt.astimezone(pytz.utc)
+            print(date)
 
             # checking if date is valid
-            if date < datetime.now():
-                return "Failed"
+            if date < current_date_in_utc:
+                return "Failed: Invalid Date"
 
             # checking if date is atleast two days from now
-            if date.day < (datetime.now().day + 2):
-                return "Failed"
+            if date.day < (current_date_in_utc.day + 1):
+                return "Failed: Cannot choose this date"
         except:
-            return "Failed"
+            return "Failed: Server Error"
 
         # checking if organizer uid is valid
         organizerData = db.collection("organizer").document(uid).get()
@@ -984,4 +1047,4 @@ def rate():
     return "Success"
 
 
-app.run(debug=True)
+app.run(debug=False)
