@@ -4,8 +4,9 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
-MAKE SURE TO ADD A FUNCTION THAT UPDATES WON VARIABLE TO -1 FOR CANCELLATION IN REGISTERED USERS
+MAKE SURE TO ADD A FUNCTION THAT UPDATES WON VARIABLE TO 2 FOR CANCELLATION IN REGISTERED USERS
 DELETE CHAT SECTION FOR DELETED MATCHES
+PROVIDE CANCEL MATCH OPTION TO ORGANIZERS.
 
 ----->>>> IDEA! IDEA! IDEA!
 When the organizer stops the match, give a 24 hour window before deleting the data from the current database. In the meantime, if we
@@ -60,6 +61,9 @@ Organizer account delete
 ########################## DESIGN SECTION ###############################
 
 IMPORTANT!!!
+UPDATE RULES IN CONTEST DETAILS PAGE. THEY ARE OUTDATED
+
+IMPORTANT!!!
 I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN SHORT. MAKE SURE TO REPLACE THE ORIGINAL WITH SHORT AND 
 CHECK THE RESULT. REALLY IMPORTANT TO REDUCE SIZE!
 
@@ -81,9 +85,6 @@ ORGANIZER PAGE WHERE HE CAN UPLOAD POSTS AND SCORECARDS
 
 from datetime import datetime, timedelta
 import json
-from lib2to3.pytree import Base
-from xmlrpc.client import DateTime
-from colorama import Back
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -136,6 +137,17 @@ def deleteGame(game, gameID):
 def deleteChat(chatID):
     db.collection("chats").where("notificationId", "==", chatID).get()[0].reference.delete()
 
+# update history of users to cancelled
+def updateHistoryToCancelled(game, gameID):
+    docs1 = db.collection(game).document(gameID).collection("registeredUsers").get()
+    for doc in docs1:
+        doc_data = doc.to_dict()
+        hashedID = doc_data["hashedID"]
+        users = db.collection("userinfo").where("hashedID", "==", hashedID).get()
+        for user in users:
+            print(user.id)
+            user.reference.collection("history").document(gameID).update({"won": 2})
+
 
 # BACKGROUND SCHEDULERS
 scheduler = BackgroundScheduler()
@@ -143,20 +155,20 @@ scheduler = BackgroundScheduler()
 def schedule_1_are_matches_over():
     for game in games:
         date_over_matches = db.collection(game).where("date", "<", datetime.now()).get()
-        print(datetime.utcnow())
         for matches in date_over_matches:
             match_data = matches.to_dict()
-            print(match_data["date"])
             if (match_data["started"] == 0):
                 print("match was never started! lets refund all the money and show it cancelled")
                 refund()
-                deleteGame(game, matches.id)
                 deleteChat(match_data["notificationId"])
+                updateHistoryToCancelled(game, matches.id)
+                deleteGame(game, matches.id)
             if (match_data["started"] == 1):
                 db.collection()
-                print("match started but not stopped. lets stop it now and refund all the money")
+                print("match started but not stopped. lets refund all the money and show it cancelled")
                 refund()
                 deleteChat(match_data["notificationId"])
+                updateHistoryToCancelled(game, matches.id)
                 deleteGame(game, matches.id)
             if (match_data["started"] == 2):
                 print("match was stopped. Nice organizer. Give him a hug")
@@ -201,7 +213,6 @@ def userSignup():
                             "idToken": idToken
                         })
                         r = requests.post(url=REST_API_VERIFY_EMAIL, data=data)
-                        print(r.text)
                         if r.status_code != 200:
                             return "Failed"
 
@@ -229,7 +240,6 @@ def organizerSignup():
     username = request.args.get("username")
     email = request.args.get("email")
     docId = request.args.get("docId")
-    print(email)
     imageurl = None
     special = False
     amountGiven = 0
@@ -642,10 +652,8 @@ def create():
             date = date.replace(hour=23, minute=59, second=59, microsecond=0)
             local = pytz.timezone("Asia/Kolkata")
             current_date_in_utc = local.localize(datetime.now(), is_dst=None).astimezone(pytz.utc)
-            print(current_date_in_utc)
             local_dt = local.localize(date, is_dst=None)
             date = local_dt.astimezone(pytz.utc)
-            print(date)
 
             # checking if date is valid
             if date < current_date_in_utc:
@@ -707,32 +715,6 @@ def create():
         return "Success"
     else:
         return "Failed"
-
-
-# API TO CLEAN DATABASE
-@app.route("/api/clean")
-def clean():
-    matchType = request.args.get("matchType")
-    uid = request.args.get("uid")  # uid of user (to delete registered game)
-
-    if matchType != None and uid != None:
-        if matchType != "" and uid != "":
-            date = datetime.now() - timedelta(days=1)
-            print(date)
-
-            # get all the outdated matches
-            docs = db.collection(matchType).where("date", "<", date).get()
-
-            # delete all the outdated matches
-            for doc in docs:
-                db.collection(matchType).document(doc.id).delete()
-                db.collection("userinfo").document(uid).collection(
-                    "registered"
-                ).document(doc.id).delete()
-
-            return "Success"
-
-    return "Failed"
 
 # VERIFY USER
 @app.route("/api/verify/user")
@@ -859,7 +841,6 @@ def startMatch():
         userMessageTokens = data["userMessageTokens"]
         name = data["name"]
         for token in userMessageTokens:
-            print(token)
             try:
                 message = messaging.Message(notification=messaging.Notification(title="Are You Ready for the Battle?", body=f"Your registered match '{name}' will begin in a few minutes! Visit the chat room to know more!"), token=token, data={"route": "/registeredMatches"})
                 messaging.send(message)
