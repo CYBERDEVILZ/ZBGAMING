@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
+import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/pages/registered_users.dart';
 import 'package:zbgaming/pages/select_winner.dart';
 import 'package:zbgaming/pages/send_messages.dart';
@@ -172,6 +173,7 @@ class _MatchStartState extends State<MatchStart> {
           Column(
             children: [
               ElevatedButton(
+                  style: ButtonStyle(elevation: MaterialStateProperty.all(0)),
                   onPressed: context.watch<StartMatchIndicatorNotifier>().startMatchIndicatorValue == 2
                       ? null
                       : () async {
@@ -207,6 +209,71 @@ class _MatchStartState extends State<MatchStart> {
                               : context.watch<StartMatchIndicatorNotifier>().startMatchIndicatorValue == 2
                                   ? "FINISHED"
                                   : "ERROR")),
+              OutlinedButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: ((context) {
+                        bool isLoading = false;
+                        return StatefulBuilder(builder: ((context, setState) {
+                          return AlertDialog(
+                            title: const Text("Warning"),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                    "Cancelling a match can adversely affect your rating and the ability to organize matches in the future. Do you wish to proceed?"),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    OutlinedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        style: ButtonStyle(
+                                            overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0.1)),
+                                            foregroundColor: MaterialStateProperty.all(Colors.red),
+                                            side: MaterialStateProperty.all(const BorderSide(color: Colors.red))),
+                                        child: const Text("No")),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        isLoading = true;
+                                        setState(() {});
+                                        await get(Uri.parse(ApiEndpoints.baseUrl +
+                                            ApiEndpoints.cancel +
+                                            "?matchType=${widget.matchType}&muid=${widget.matchuid}"));
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: ((context) => const Organizer())));
+                                      },
+                                      child: isLoading
+                                          ? const CircularProgressIndicator(
+                                              color: Colors.white,
+                                            )
+                                          : const Text("I wish to proceed"),
+                                      style: ButtonStyle(
+                                          overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0.1)),
+                                          backgroundColor: MaterialStateProperty.all(Colors.red),
+                                          elevation: MaterialStateProperty.all(0),
+                                          side: MaterialStateProperty.all(const BorderSide(color: Colors.red))),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          );
+                        }));
+                      }));
+                },
+                child: const Text("CANCEL MATCH"),
+                style: ButtonStyle(
+                    overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0.1)),
+                    foregroundColor: MaterialStateProperty.all(Colors.red),
+                    side: MaterialStateProperty.all(const BorderSide(color: Colors.red))),
+              )
             ],
           )
         ]),

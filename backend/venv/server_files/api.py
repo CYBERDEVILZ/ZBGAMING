@@ -4,8 +4,11 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
+INSANE SECURITY ISSUE!!!
+------------------------
+START MATCH, STOP MATCH, CANCEL MATCH, ETC ARE NOT PROTECTED FROM CSRF! MAKE SURE TO AUTHENTICATE THE SOURCE OF REQUEST!
+
 PROVIDE CANCEL MATCH OPTION TO ORGANIZERS.
-DELETE CHAT GROUPS FOR MATCHES THAT ARE OVER.
 
 ----->>>> IDEA! IDEA! IDEA!
 When the organizer stops the match, give a 24 hour window before deleting the data from the current database. In the meantime, if we
@@ -82,6 +85,7 @@ ORGANIZER PAGE WHERE HE CAN UPLOAD POSTS AND SCORECARDS
 """
 
 
+from ast import Or
 from datetime import datetime, timedelta
 import json
 from flask import Flask
@@ -994,10 +998,10 @@ def rate():
     ouid = request.args.get("ouid")
     rating = request.args.get("rating")
 
-    if ouid == None and rating == None:
+    if ouid == None or rating == None:
         return "Failed"
     
-    if ouid == "" and rating == "":
+    if ouid == "" or rating == "":
         return "Failed"
     
     # checking valid ouid
@@ -1023,8 +1027,31 @@ def rate():
     except:
         return "Failed"
     
-    
     return "Success"
 
+
+@app.route("/api/cancelTheMatch")
+def cancelMatch():
+    matchType = request.args.get("matchType")
+    matchUid = request.args.get("muid")
+
+    if matchUid == None or matchType == None:
+        return "Failed"
+    
+    if matchUid == "" or matchType == "":
+        return 'Failed'
+    
+    if matchType.lower() not in games:
+        return "Failed"
+
+    try:
+        notifID = db.collection(matchType).document(matchUid).get().to_dict()["notificationId"]
+        refund()
+        deleteChat(chatID=notifID)
+        deleteGame(game=matchType.lower(), gameID=matchUid)
+    except:
+        return "Failed"
+
+    return "Success"
 
 app.run(debug=False)
