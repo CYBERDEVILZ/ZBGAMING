@@ -31,7 +31,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zbgaming/model/usermodel.dart';
-import 'package:zbgaming/pages/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:zbgaming/pages/link_game.dart';
 import 'package:zbgaming/utils/apistring.dart';
@@ -171,14 +170,6 @@ class _UserAccountState extends State<UserAccount> {
   @override
   void initState() {
     super.initState();
-
-    _auth.userChanges().listen((event) {
-      if (mounted && event?.uid == null) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
-      } else {
-        if (mounted) setState(() {});
-      }
-    });
 
     // initialize the linked accounts with null values
     array.map((e) => linkedAccounts.putIfAbsent(e, () => null));
@@ -506,8 +497,7 @@ class _UserAccountState extends State<UserAccount> {
                                   onTap: () async {
                                     await Navigator.push(
                                         context, MaterialPageRoute(builder: (context) => LinkGame(matchType: element)));
-                                    await Navigator.pushReplacement(
-                                        context, MaterialPageRoute(builder: (context) => const UserAccount()));
+                                    fetchData();
                                   },
                                   child: Icon(
                                     Icons.open_in_new,
@@ -524,8 +514,7 @@ class _UserAccountState extends State<UserAccount> {
                                     onTap: () async {
                                       await Navigator.push(context,
                                           MaterialPageRoute(builder: (context) => LinkGame(matchType: element)));
-                                      await Navigator.pushReplacement(
-                                          context, MaterialPageRoute(builder: (context) => const UserAccount()));
+                                      fetchData();
                                     },
                                     child: Text(
                                       "Link Now",
@@ -632,6 +621,7 @@ class _UserAccountState extends State<UserAccount> {
                                           .reauthenticateWithCredential(credential)
                                           .then((value) async {
                                         context.read<ButtonLoader>().setButtonLoading(false);
+                                        Navigator.pop(context);
                                         Navigator.pop(context);
 
                                         // delete data

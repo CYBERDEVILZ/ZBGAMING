@@ -40,9 +40,9 @@ class _OrganizerState extends State<OrganizerInfo> {
       email = value["email"];
       special = value["special"];
       try {
-        int? total_rating = value["total_rating"];
-        int? total_reviews = value["total_reviews"];
-        rating = total_rating! / total_reviews!;
+        int? totalRating = value["total_rating"];
+        int? totalReviews = value["total_reviews"];
+        rating = totalRating! / totalReviews!;
       } catch (e) {
         rating = 0;
       }
