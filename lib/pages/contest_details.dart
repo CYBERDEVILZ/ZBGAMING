@@ -82,7 +82,7 @@ class _ContestDetailsState extends State<ContestDetails> {
           }
         }
         isLoading = false;
-        setState(() {});
+        if (mounted) setState(() {});
       } catch (e) {
         Fluttertoast.showToast(msg: "something went wrong", backgroundColor: Colors.blue);
         Navigator.pop(context);
