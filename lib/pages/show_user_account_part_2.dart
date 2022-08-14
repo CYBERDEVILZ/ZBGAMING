@@ -9,6 +9,7 @@ import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:provider/provider.dart';
+import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/date_to_string.dart';
 
@@ -522,21 +523,36 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
               }
               return Column(
                 children: snapshot.data!.docs
-                    .map((e) => ListTile(
-                          tileColor: colorCodeForHeading[levelAttrib],
-                          contentPadding: EdgeInsets.all(0),
-                          leading: CircleAvatar(
-                              backgroundImage: AssetImage("assets/images/${e['matchType']}.jpg"), maxRadius: 40),
-                          title: Text(
-                            e["name"],
-                            style: TextStyle(
-                                color: colorCodeForButtonTextCumCanvas[levelAttrib],
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                          subtitle: Text(
-                            DateToString().dateToString(e["date"].toDate()),
-                            style: TextStyle(color: colorCodeForCanvas[levelAttrib]),
+                    .map((e) => GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: ((context) => ContestDetails(uid: e["uid"], matchType: e["matchType"]))));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              tileColor: colorCodeForHeading[levelAttrib],
+                              contentPadding: const EdgeInsets.only(right: 10, left: 10),
+                              leading: CircleAvatar(
+                                  backgroundImage: AssetImage("assets/images/${e['matchType']}.jpg"), maxRadius: 40),
+                              title: Text(
+                                e["name"],
+                                style: TextStyle(
+                                    color: colorCodeForButtonTextCumCanvas[levelAttrib],
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
+                              ),
+                              subtitle: Text(
+                                DateToString().dateToString(e["date"].toDate()),
+                                style: TextStyle(color: colorCodeForCanvas[levelAttrib]),
+                              ),
+                              trailing: Icon(
+                                Icons.open_in_new,
+                                color: colorCodeForCanvas[levelAttrib],
+                              ),
+                            ),
                           ),
                         ))
                     .toList(),
