@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:provider/provider.dart';
 import 'package:zbgaming/utils/apistring.dart';
+import 'package:zbgaming/widgets/date_to_string.dart';
 
 Map<String, Color> colorCodeForHeading = {
   "Unidentified": Colors.blue,
@@ -124,6 +125,21 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
           Fluttertoast.showToast(msg: "Error occurred");
         });
       }
+
+      // get matches won
+      matchesPlayed = doc == null
+          ? null
+          : FirebaseFirestore.instance
+              .collection("userinfo")
+              .doc(doc!.id)
+              .collection("history")
+              .where("won", isEqualTo: 1)
+              .snapshots();
+
+      // get matches registered
+      registeredMatches = doc == null
+          ? null
+          : FirebaseFirestore.instance.collection("userinfo").doc(doc!.id).collection("registered").snapshots();
     }).catchError((onError) {
       Fluttertoast.showToast(msg: "Something went wrong");
     });
@@ -131,6 +147,9 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
     isLoading = false;
     setState(() {});
   }
+
+  Stream<QuerySnapshot>? matchesPlayed;
+  Stream<QuerySnapshot>? registeredMatches;
 
   @override
   void initState() {
@@ -176,6 +195,12 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
     isImageLoad = false;
     if (mounted) setState(() {});
   }
+
+  int afree = 0;
+  int ahundred = 0;
+  int afivehundred = 0;
+  int athousand = 0;
+  int afivethousand = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -351,15 +376,6 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
           color: colorCodeForHeading[levelAttrib],
         ));
 
-    Stream<QuerySnapshot>? matchesPlayed = doc == null
-        ? null
-        : FirebaseFirestore.instance
-            .collection("userinfo")
-            .doc(doc!.id)
-            .collection("history")
-            .where("won", isEqualTo: 1)
-            .snapshots();
-
     // GRAPH WIDGET
     Widget graphBuilder = Column(
       children: [
@@ -367,26 +383,39 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
           padding: const EdgeInsets.all(20.0),
           child: Text(
             "Matches Won",
-            style: TextStyle(color: colorCodeForText[levelAttrib], fontSize: 25, fontWeight: FontWeight.w300),
+            style: TextStyle(color: colorCodeForText[levelAttrib], fontSize: 25, fontWeight: FontWeight.bold),
           ),
         ),
         StreamBuilder(
             stream: matchesPlayed,
             builder: ((context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Text("Loading...");
+                return Text(
+                  "Loading...",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                );
               }
               if (snapshot.hasError) {
-                return const Text("Error occurred");
+                return Text(
+                  "Error occurred",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                );
               }
               if (!snapshot.hasData) {
-                return const Text("No data");
+                return Text(
+                  "No data",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                );
               }
               int free = 0;
               int hundred = 0;
               int fivehundred = 0;
               int thousand = 0;
               int fivethousand = 0;
+
               List<QueryDocumentSnapshot<Object?>> data = snapshot.data!.docs;
               for (var e in data) {
                 if (e["paid"] == 0) {
@@ -461,6 +490,59 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                 ),
               );
             })),
+        const SizedBox(height: 20),
+        Text(
+          "Registered Matches",
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: colorCodeForText[levelAttrib]),
+        ),
+        const SizedBox(height: 10),
+        StreamBuilder(
+            stream: registeredMatches,
+            builder: ((context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Text(
+                  "Loading...",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                );
+              }
+              if (snapshot.hasError) {
+                return Text(
+                  "Error occurred",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                );
+              }
+              if (!snapshot.hasData) {
+                return Text(
+                  "No data",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                );
+              }
+              return Column(
+                children: snapshot.data!.docs
+                    .map((e) => ListTile(
+                          tileColor: colorCodeForHeading[levelAttrib],
+                          contentPadding: EdgeInsets.all(0),
+                          leading: CircleAvatar(
+                              backgroundImage: AssetImage("assets/images/${e['matchType']}.jpg"), maxRadius: 40),
+                          title: Text(
+                            e["name"],
+                            style: TextStyle(
+                                color: colorCodeForButtonTextCumCanvas[levelAttrib],
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ),
+                          subtitle: Text(
+                            DateToString().dateToString(e["date"].toDate()),
+                            style: TextStyle(color: colorCodeForCanvas[levelAttrib]),
+                          ),
+                        ))
+                    .toList(),
+              );
+            })),
+        const SizedBox(height: 30),
       ],
     );
 
