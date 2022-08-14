@@ -7,7 +7,7 @@ ZBgaming is an application to host matches and tournaments to find the right tal
 ## PRICE DISTRIBUTION
 
 P = Player, O = Organizer, U = Us
-P = 30%, U = 10%, O = 60%
+P = 60%, U = 10%, O = 30%
 
 ### Tier 4 = 100 (POOL: 8000)
 P = >=2400
@@ -47,3 +47,22 @@ Elite:  20,001 +
 ### VETERANS
 - ZBunker goodies within 1000 rs
 - Posters to veterans
+
+## SOME CONSTANTS
+### started
+- 0 = registrations open
+- 1 = ongoing
+- 2 = finished
+
+### fee
+- 0 = free
+- 1 = 100
+- 2 = 500
+- 3 = 1000
+- 4 = 5000
+
+### won
+- -1 = registered
+- 0 = lost
+- 1 = won
+- 2 = cancelled
