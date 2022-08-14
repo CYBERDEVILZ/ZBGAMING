@@ -190,9 +190,9 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("Amount Won",
+              Text("Total Amount Won",
                   style: TextStyle(fontWeight: FontWeight.w300, fontSize: 25, color: colorCodeForCanvas[levelAttrib])),
-              const SizedBox(height: 10),
+              const SizedBox(height: 3),
               SizedBox(
                 height: 80,
                 child: FittedBox(
@@ -353,19 +353,23 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
 
     Stream<QuerySnapshot>? matchesPlayed = doc == null
         ? null
-        : FirebaseFirestore.instance.collection("userinfo").doc(doc!.id).collection("history").snapshots();
+        : FirebaseFirestore.instance
+            .collection("userinfo")
+            .doc(doc!.id)
+            .collection("history")
+            .where("won", isEqualTo: 1)
+            .snapshots();
 
-    // history widget
-    Widget historyBuilder = Column(
+    // GRAPH WIDGET
+    Widget graphBuilder = Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(20.0),
           child: Text(
-            "Matches Played",
+            "Matches Won",
             style: TextStyle(color: colorCodeForText[levelAttrib], fontSize: 25, fontWeight: FontWeight.w300),
           ),
         ),
-        const SizedBox(height: 5),
         StreamBuilder(
             stream: matchesPlayed,
             builder: ((context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -378,7 +382,84 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
               if (!snapshot.hasData) {
                 return const Text("No data");
               }
-              return Column(children: snapshot.data!.docs.map((e) => Text(e.id)).toList());
+              int free = 0;
+              int hundred = 0;
+              int fivehundred = 0;
+              int thousand = 0;
+              int fivethousand = 0;
+              List<QueryDocumentSnapshot<Object?>> data = snapshot.data!.docs;
+              for (var e in data) {
+                if (e["paid"] == 0) {
+                  free += 1;
+                }
+                if (e["paid"] == 1) {
+                  hundred += 1;
+                }
+                if (e["paid"] == 2) {
+                  fivehundred += 1;
+                }
+                if (e["paid"] == 3) {
+                  thousand += 1;
+                }
+                if (e["paid"] == 4) {
+                  fivethousand += 1;
+                }
+              }
+              // graph
+              return Padding(
+                padding: const EdgeInsets.only(top: 30.0, bottom: 50),
+                child: AspectRatio(
+                  aspectRatio: 1.5,
+                  child: free == 0 && hundred == 0 && fivehundred == 0 && thousand == 0 && fivethousand == 0
+                      ? Text(
+                          "Nothing to show here",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                        )
+                      : RadarChart(
+                          RadarChartData(
+                              radarShape: RadarShape.polygon,
+                              radarBorderData:
+                                  BorderSide(color: colorCodeForText[levelAttrib]!.withOpacity(0.3), width: 2),
+                              gridBorderData:
+                                  BorderSide(color: colorCodeForText[levelAttrib]!.withOpacity(0.3), width: 2),
+                              radarBackgroundColor: Colors.transparent,
+                              tickBorderData: const BorderSide(color: Colors.transparent),
+                              tickCount: 1,
+                              titlePositionPercentageOffset: 0.2,
+                              ticksTextStyle: const TextStyle(color: Colors.transparent),
+                              titleTextStyle: TextStyle(
+                                  color: colorCodeForHeading[levelAttrib], fontWeight: FontWeight.bold, fontSize: 16),
+                              getTitle: (index, angle) {
+                                switch (index) {
+                                  case (0):
+                                    return RadarChartTitle(text: "FREE\n($free)");
+                                  case (1):
+                                    return RadarChartTitle(text: "\u20b9100\n($hundred)");
+                                  case (2):
+                                    return RadarChartTitle(text: "\u20b9500\n($fivehundred)");
+                                  case (3):
+                                    return RadarChartTitle(text: "\u20b91000\n($thousand)");
+                                  case (4):
+                                    return RadarChartTitle(text: "\u20b95000\n($fivethousand)");
+                                  default:
+                                    return const RadarChartTitle(text: "");
+                                }
+                              },
+                              dataSets: <RadarDataSet>[
+                                RadarDataSet(borderColor: colorCodeForHeading[levelAttrib], dataEntries: [
+                                  RadarEntry(value: free.toDouble()),
+                                  RadarEntry(value: hundred.toDouble()),
+                                  RadarEntry(value: fivehundred.toDouble()),
+                                  RadarEntry(value: thousand.toDouble()),
+                                  RadarEntry(value: fivethousand.toDouble())
+                                ]),
+                              ]),
+                          swapAnimationDuration: const Duration(milliseconds: 500), // Optional
+                          swapAnimationCurve: Curves.ease,
+                        ),
+                ),
+              );
             })),
       ],
     );
@@ -403,10 +484,10 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                       children: [
                         const SizedBox(height: 30),
                         nameWidget,
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 30),
                         amountCard,
-                        const SizedBox(height: 5),
-                        historyBuilder,
+                        const SizedBox(height: 30),
+                        graphBuilder,
                       ],
                     ),
                   ),

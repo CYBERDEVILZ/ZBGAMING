@@ -16,7 +16,6 @@ class HomePageList extends StatelessWidget {
             Navigator.pushNamed(context, AppRoutes.csgo);
           }),
       Tile(
-          disabled: true,
           img: "assets/images/freefire.jpg",
           title: "Garena Free Fire",
           ontap: () {
