@@ -10,6 +10,7 @@ import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/pages/organizer_signup.dart';
 import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
+import 'package:zbgaming/pages/show_user_account_part_2.dart';
 import 'package:zbgaming/pages/signup.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/pages/valorant.dart';

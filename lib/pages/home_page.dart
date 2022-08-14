@@ -7,6 +7,7 @@ import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/pages/history.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
+import 'package:zbgaming/pages/show_user_account_part_2.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/widgets/drawer.dart';
@@ -31,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     1: const FavoriteOrganizers(),
     2: RegisteredMatches(),
     3: const History(),
-    4: const UserAccount()
+    4: const ShowUserAccountAlternative(uuid: "a")
   }; // mapping for bottom nav bar
 
   bool isLogged = false;
@@ -115,21 +116,59 @@ class _HomePageState extends State<HomePage> {
                 ? null
                 : BottomNavigationBar(
                     type: BottomNavigationBarType.shifting,
+                    showSelectedLabels: false,
+                    showUnselectedLabels: false,
                     items: const [
                       // games
-                      BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Games", backgroundColor: Colors.black),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.gamepad),
+                          label: "Games",
+                          activeIcon: Icon(
+                            Icons.gamepad,
+                            size: 30,
+                            color: Colors.blue,
+                          ),
+                          backgroundColor: Colors.black),
 
                       // favorite organizations
-                      BottomNavigationBarItem(icon: Icon(Icons.star), label: "Favorites"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.star),
+                          label: "Favorites",
+                          activeIcon: Icon(
+                            Icons.star,
+                            size: 30,
+                            color: Colors.blue,
+                          )),
 
                       // registered matches
-                      BottomNavigationBarItem(icon: Icon(Icons.flag), label: "Registered"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.flag),
+                          label: "Registered",
+                          activeIcon: Icon(
+                            Icons.flag,
+                            size: 30,
+                            color: Colors.blue,
+                          )),
 
                       // hisotry
-                      BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.history),
+                          label: "History",
+                          activeIcon: Icon(
+                            Icons.history,
+                            size: 30,
+                            color: Colors.blue,
+                          )),
 
                       // account
-                      BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: "Account")
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.account_circle),
+                          label: "Account",
+                          activeIcon: Icon(
+                            Icons.account_circle,
+                            size: 30,
+                            color: Colors.blue,
+                          )),
                     ],
                     currentIndex: index,
                     onTap: (value) {

@@ -63,16 +63,22 @@ class BuildTiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return fav.isEmpty
-        ? const Center(child: Text("No favorite organizers found"))
-        : ListView.builder(
-            itemBuilder: (context, index) => Container(
-                decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.blue))),
-                margin: const EdgeInsets.only(top: 10, left: 8, right: 8),
-                padding: const EdgeInsets.only(bottom: 10),
-                child: OrganizerTiles(ouid: fav[index]["ouid"])),
-            itemCount: fav.length,
-          );
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Favorite Organizers"),
+        elevation: 0,
+      ),
+      body: fav.isEmpty
+          ? const Center(child: Text("No favorite organizers found"))
+          : ListView.builder(
+              itemBuilder: (context, index) => Container(
+                  decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.blue))),
+                  margin: const EdgeInsets.only(top: 10, left: 8, right: 8),
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: OrganizerTiles(ouid: fav[index]["ouid"])),
+              itemCount: fav.length,
+            ),
+    );
   }
 }
 

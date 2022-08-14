@@ -46,6 +46,7 @@ dependencies:
   firebase_messaging: ^11.4.2
   overlay_support: ^2.0.1
   flutter_local_notifications: ^9.5.3+1
+  fl_chart: ^0.55.1
 
 dev_dependencies:
   flutter_test:

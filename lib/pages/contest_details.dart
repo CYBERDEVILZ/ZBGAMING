@@ -185,15 +185,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                 : (rewards == 4)
                     ? 5000
                     : null;
-    final amount = (rewards == 1)
-        ? "2,400"
-        : (rewards == 2)
-            ? "12,000"
-            : (rewards == 3)
-                ? "24,000"
-                : (rewards == 4)
-                    ? "1.2 Lacs"
-                    : null;
+    final amount = fee == null ? null : regTeams! * fee * 60 ~/ 100;
 
     // contest details widget
     Widget contestDetails = isLoading
@@ -560,7 +552,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                           // prize
                           rewards != 0
                               ? Container(
-                                  height: 90,
+                                  height: 120,
                                   padding: const EdgeInsets.all(3),
                                   width: MediaQuery.of(context).size.width,
                                   decoration: const BoxDecoration(color: Colors.blue),
@@ -574,13 +566,21 @@ class _ContestDetailsState extends State<ContestDetails> {
                                       ),
                                       Expanded(
                                         child: FittedBox(
-                                          child: Text(
-                                            "\u20b9 $amount or more",
-                                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                            textScaleFactor: 4,
-                                          ),
+                                          child: regTeams! <= 1
+                                              ? const Text(
+                                                  "[Waiting for more players]",
+                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                )
+                                              : Text(
+                                                  "\u20b9 $amount",
+                                                  style:
+                                                      const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                  textScaleFactor: 4,
+                                                ),
                                         ),
-                                      )
+                                      ),
+                                      const Text("Bring more players to increase the PRIZE POOL!",
+                                          style: TextStyle(color: Colors.white))
                                     ],
                                   ),
                                 )

@@ -55,10 +55,10 @@ class _HistoryState extends State<History> {
                                     ? Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(10),
-                                          color: Colors.blue.withOpacity(0.3),
+                                          color: Colors.blue,
                                         ),
                                         padding: const EdgeInsets.all(8),
-                                        child: const Text("Registered"),
+                                        child: const Text("Registered", style: TextStyle(color: Colors.white)),
                                       )
                                     : e["won"] == 0
                                         ? Container(
@@ -73,19 +73,20 @@ class _HistoryState extends State<History> {
                                             ? Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.circular(10),
-                                                  color: Colors.green.withOpacity(0.3),
+                                                  color: Colors.green[700],
                                                 ),
                                                 padding: const EdgeInsets.all(8),
-                                                child: const Text("Won"),
+                                                child: const Text("Won", style: TextStyle(color: Colors.white)),
                                               )
                                             : e["won"] == 2
                                                 ? Container(
                                                     decoration: BoxDecoration(
                                                       borderRadius: BorderRadius.circular(10),
-                                                      color: Colors.yellow.withOpacity(0.3),
+                                                      color: Colors.red,
                                                     ),
                                                     padding: const EdgeInsets.all(8),
-                                                    child: const Text("Cancelled"),
+                                                    child:
+                                                        const Text("Cancelled", style: TextStyle(color: Colors.white)),
                                                   )
                                                 : Container(
                                                     decoration: BoxDecoration(

@@ -4,7 +4,16 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
+EVEN AFTER STOPPING A MATCH, THERE IS AN OPTION TO CANCEL MATCH. THIS SHOULD NOT BE MADE AVAILABLE
+
+DEPENDING ON THE NUMBER OF USERS AND THE TYPE OF MATCH,  THE TOTAL AMOUNT SHOULD BE CALCULATED AUTOMATICALLY AND 
+UPDATED IN THE MATCH DATABASE.
+
+WHEN THE MATCH IS STOPPED, GRAB THE TOTAL AMOUNT FROM GAME DATABASE, 60% OF IT AND ADD IT TO HISTORY OF WINNER.
+
 UPDATE AMOUNT GIVEN PARAMETER WHEN THE ORGANIZER SUCCESSFULLY ORGANIZE A MATCH THAT IS PAID.
+
+CREATE CLOUD FUNCTIONS THAT ACTS ON TRIGGER (WHEN ORGANIZER STOPS THE MATCH) TO UPDATE THE LEVEL OF EACH USER
 
 INSANE SECURITY ISSUE!!!
 ------------------------
@@ -64,8 +73,7 @@ ORGANIZER PAGE WHERE HE CAN UPLOAD POSTS AND SCORECARDS
 """
 
 
-from ast import Or
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 from flask import Flask
 from flask import request
@@ -359,7 +367,7 @@ def register():
                 # add to history
                 db.collection("userinfo").document(useruid).collection("history").document(
                     matchuid
-                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill})
+                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill, "amount": 0})
 
                 return "Success"
             else:
@@ -571,7 +579,7 @@ def validate():
                     # add to history
                     db.collection("userinfo").document(useruid).collection("history").document(
                         matchuid
-                    ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill})
+                    ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill, "amount": 0})
 
 
                     return "Success"
@@ -793,6 +801,63 @@ def userLevelCalculate():
     except:
         return "Failed"
 
+
+# USER LEVEL CALCULATION
+@app.route("/api/userlevelcalculatealternative")
+def userLevelCalculateAlternative():
+    participation = 0
+    won = 0
+    uid = request.args.get("uid")
+
+    # Checking if uid is valid
+    try:
+
+        docs = db.collection("userinfo").where("tempUid", "==", uid).get()
+        if len(docs) != 1:
+            return "Failed"
+            
+        docId = docs[0].id
+
+        # get all the paid matches
+        docs = db.collection("userinfo").document(docId).collection("history").where("paid", "!=", 0).get()
+
+        # no matches played yet, make level 0
+        if len(docs) == 0:
+            db.collection("userinfo").document(docId).update({"level": 0})
+            return "Success"
+        
+        participation = len(docs) * 20
+        amount = 0
+
+        # calculate the level of user
+        for doc in docs:
+            data = doc.to_dict()
+            wonMatches = data["won"]
+            
+            if wonMatches == 1:
+                paid = data["paid"]
+                # scores based on FEE STRUCTURE
+                if paid == 1:
+                    won += 300
+                if paid == 2:
+                    won += 500
+                if paid == 3:
+                    won += 1500
+                if paid == 4:
+                    won += 2000
+                else:
+                     won += 0
+        
+        totalScore = participation + won
+
+        # update score
+        db.collection("userinfo").document(docId).update({"level": totalScore})
+
+        return "Success"
+        
+    except:
+        return "Failed"
+
 # START MATCH LOGIC
 @app.route("/api/startMatch")
 def startMatch():
@@ -817,7 +882,7 @@ def startMatch():
         
         if data["started"] != 0:
             return "Failed: Match cannot be started"
-        if data["reg"] < 80:
+        if data["reg"] < 2:
             return "Failed: Not enough registrations"
             
         userMessageTokens = data["userMessageTokens"]
@@ -1024,7 +1089,11 @@ def cancelMatch():
         return "Failed"
 
     try:
-        notifID = db.collection(matchType).document(matchUid).get().to_dict()["notificationId"]
+        ref = db.collection(matchType).document(matchUid).get().to_dict()
+        notifID = ref["notificationId"]
+        started = ref["started"]
+        if started == 2 or started == 1:
+            return "Failed"
         refund()
         deleteChat(chatID=notifID)
         deleteGame(game=matchType.lower(), gameID=matchUid)

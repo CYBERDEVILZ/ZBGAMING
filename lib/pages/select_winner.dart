@@ -68,13 +68,32 @@ class _SelectWinnerState extends State<SelectWinner> {
                       }
                       String id = data.docs[0].id;
 
-                      // update status to "won"
+                      int amount = 0;
+                      await FirebaseFirestore.instance
+                          .collection(widget.matchType)
+                          .doc(widget.matchUid)
+                          .get()
+                          .then((value) {
+                        int registered = value["reg"];
+                        int fee = value["fee"];
+                        if (fee == 1) {
+                          amount = registered * 60;
+                        } else if (fee == 2) {
+                          amount = registered * 300;
+                        } else if (fee == 3) {
+                          amount = registered * 600;
+                        } else if (fee == 4) {
+                          amount = registered * 3000;
+                        }
+                      });
+
+                      // INFORMATION DISCLOSURE VULNERABILITY HERE!!! update status to "won"
                       await FirebaseFirestore.instance
                           .collection("userinfo")
                           .doc(id)
                           .collection("history")
                           .doc(widget.matchUid)
-                          .update({"won": 1});
+                          .update({"won": 1, "amount": amount});
 
                       // update the same at contest detail page
                       await FirebaseFirestore.instance

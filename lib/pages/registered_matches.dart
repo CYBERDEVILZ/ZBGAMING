@@ -20,7 +20,7 @@ class RegisteredMatches extends StatelessWidget {
     // --------------- Return is Here --------------- //
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: const Text("Your Registered Matches"), elevation: 0, centerTitle: true),
+        appBar: AppBar(title: const Text("Your Registered Matches"), elevation: 0),
         body: _auth.currentUser?.uid == null ? notSignedIn : const BuildTiles(),
       ),
     );
