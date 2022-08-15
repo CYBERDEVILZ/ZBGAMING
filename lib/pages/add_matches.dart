@@ -38,18 +38,18 @@ class TournamentList extends StatelessWidget {
       //                     eligible: false,
       //                   )));
       //     }),
-      // Tile(
-      //     img: "assets/images/freefire.jpg",
-      //     title: "Garena Free Fire",
-      //     ontap: () {
-      //       Navigator.push(
-      //           context,
-      //           MaterialPageRoute(
-      //               builder: (context) => const CreateMatch(
-      //                     matchType: "freefire",
-      //                     eligible: false,
-      //                   )));
-      //     }),
+      Tile(
+          img: "assets/images/freefire.jpg",
+          title: "Garena Free Fire",
+          ontap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CreateMatch(
+                          matchType: "freefire",
+                          eligible: false,
+                        )));
+          }),
       Tile(
           img: "assets/images/pubg.jpg",
           title: "Battlegrounds Mobile India",

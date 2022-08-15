@@ -191,6 +191,7 @@ def userSignup():
 
     if username != None and email != None and docId != None:
         if username != "" and email != "" and docId != "":
+            username = username.lower()
             if validateEmail(email):
                 docs = db.collection("userinfo").where("email", "==", email).get()
                 if len(docs) == 0:
@@ -205,6 +206,10 @@ def userSignup():
                         r = requests.post(url=REST_API_VERIFY_EMAIL, data=data)
                         if r.status_code != 200:
                             return "Failed"
+                        
+                        # username must be unique
+                        if(len(db.collection("userinfo").where("username", "==", username).get()) != 0):
+                            return "Failed: Username is already taken"
 
                         # sending data to cloud firestore
                         db.collection("userinfo").document(docId).set(

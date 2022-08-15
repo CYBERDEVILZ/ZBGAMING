@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -41,42 +42,56 @@ class _SignUpState extends State<SignUp> {
         Fluttertoast.showToast(msg: "Error occurred");
         await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
       }
-      await get(Uri.parse(ApiEndpoints.baseUrl +
-              ApiEndpoints.userSignup +
-              "?" +
-              "username=" +
-              usernameController.text +
-              "&email=" +
-              emailController.text +
-              "&docId=" +
-              FirebaseAuth.instance.currentUser!.uid +
-              "&idToken=" +
-              idToken))
-          .then((value) async {
-        if (value.statusCode == 200) {
-          if (value.body == "Success") {
-            Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue[700], textColor: Colors.white);
-            // add data to usermodel to reduce number of reads to firestore
-            context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-            context.read<UserModel>().setusername(usernameController.text);
-            context.read<UserModel>().setimageurl(null);
-            context.read<UserModel>().setemail(emailController.text);
-            Navigator.pushAndRemoveUntil(
-                context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+
+      // check whether the username is already taken
+      await FirebaseFirestore.instance
+          .collection("userinfo")
+          .where("username", isEqualTo: usernameController.text.toLowerCase())
+          .get()
+          .then(
+        (value) async {
+          if (value.docs.isNotEmpty) {
+            Fluttertoast.showToast(msg: "Username is already taken");
           } else {
-            Fluttertoast.showToast(
-                msg: "Something went wrong", backgroundColor: Colors.blue[700], textColor: Colors.white);
-            await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
+            await get(Uri.parse(ApiEndpoints.baseUrl +
+                    ApiEndpoints.userSignup +
+                    "?" +
+                    "username=" +
+                    usernameController.text +
+                    "&email=" +
+                    emailController.text +
+                    "&docId=" +
+                    FirebaseAuth.instance.currentUser!.uid +
+                    "&idToken=" +
+                    idToken))
+                .then((value) async {
+              if (value.statusCode == 200) {
+                if (value.body == "Success") {
+                  Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue[700], textColor: Colors.white);
+                  // add data to usermodel to reduce number of reads to firestore
+                  context.read<UserModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+                  context.read<UserModel>().setusername(usernameController.text);
+                  context.read<UserModel>().setimageurl(null);
+                  context.read<UserModel>().setemail(emailController.text);
+                  Navigator.pushAndRemoveUntil(
+                      context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+                } else {
+                  Fluttertoast.showToast(
+                      msg: "Something went wrong", backgroundColor: Colors.blue[700], textColor: Colors.white);
+                  await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
+                }
+              } else {
+                Fluttertoast.showToast(
+                    msg: "Something went wrong", backgroundColor: Colors.blue[700], textColor: Colors.white);
+                await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
+              }
+            }).catchError((e) async {
+              Fluttertoast.showToast(msg: "Error occurred");
+              await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
+            });
           }
-        } else {
-          Fluttertoast.showToast(
-              msg: "Something went wrong", backgroundColor: Colors.blue[700], textColor: Colors.white);
-          await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
-        }
-      }).catchError((e) async {
-        Fluttertoast.showToast(msg: "Error occurred");
-        await FirebaseAuth.instance.currentUser?.delete().then((value) => null).catchError((onError) {});
-      });
+        },
+      );
     }
 
     // validation
