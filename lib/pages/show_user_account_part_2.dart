@@ -1,14 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:zbgaming/model/usermodel.dart';
-import 'package:provider/provider.dart';
 import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/date_to_string.dart';
@@ -334,7 +328,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
           padding: const EdgeInsets.all(20.0),
           child: Text(
             "Matches Won",
-            style: TextStyle(color: colorCodeForText[levelAttrib], fontSize: 25, fontWeight: FontWeight.bold),
+            style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 25, fontWeight: FontWeight.bold),
           ),
         ),
         StreamBuilder(
@@ -441,10 +435,14 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                       ),
               );
             })),
-        const SizedBox(height: 20),
+      ],
+    );
+
+    Widget registeredMatchesWidget = Column(
+      children: [
         Text(
           "Registered Matches",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: colorCodeForText[levelAttrib]),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: colorCodeForHeading[levelAttrib]),
         ),
         const SizedBox(height: 10),
         StreamBuilder(
@@ -508,7 +506,6 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                     .toList(),
               );
             })),
-        const SizedBox(height: 30),
       ],
     );
 
@@ -536,6 +533,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                         amountCard,
                         const SizedBox(height: 30),
                         graphBuilder,
+                        registeredMatchesWidget
                       ],
                     ),
                   ),
