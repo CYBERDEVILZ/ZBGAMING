@@ -58,7 +58,6 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
   bool? isKYCVerified;
   bool isVerifying = false;
   bool isLoading = false;
-  bool isImageLoad = false;
   bool? bankStatus;
   int? amount;
   QueryDocumentSnapshot<Map<String, dynamic>>? doc;
@@ -98,6 +97,7 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
         doc = value.docs[0];
         name = doc!["username"];
         level = doc!["level"];
+        imageurl = doc!["imageurl"];
         if (level! <= 5000) {
           levelAttrib = "Rookie";
         } else if (level! <= 20000) {
@@ -126,6 +126,8 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
         }).catchError((onError) {
           Fluttertoast.showToast(msg: "Error occurred");
         });
+      } else {
+        Fluttertoast.showToast(msg: "Something went wrong :(");
       }
 
       // get matches won
@@ -160,49 +162,6 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
     // fetch data
     fetchData();
   }
-
-  void imageUpload() async {
-    XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 250, maxWidth: 250);
-    if (image != null) {
-      isImageLoad = true;
-      if (mounted) setState(() {});
-      await FirebaseStorage.instance
-          .ref("zbgaming/users/images/${doc!.id}/profile.jpg")
-          .putFile(File(image.path))
-          .then((p0) async {
-        if (p0.state == TaskState.success) {
-          String imageurl = await p0.ref.getDownloadURL();
-          context.read<UserModel>().setimageurl(imageurl);
-          await FirebaseFirestore.instance.collection("userinfo").doc(doc!.id).update({"imageurl": imageurl});
-          Fluttertoast.showToast(
-              msg: "Image Uploaded Successfully",
-              textColor: colorCodeForButtonTextCumCanvas[levelAttrib],
-              backgroundColor: colorCodeForHeading[levelAttrib]);
-        }
-        if (p0.state == TaskState.error) {
-          Fluttertoast.showToast(
-            msg: "Some error occurred",
-            backgroundColor: colorCodeForHeading[levelAttrib],
-            textColor: colorCodeForButtonTextCumCanvas[levelAttrib],
-          );
-        }
-      }).catchError((onError) {
-        Fluttertoast.showToast(
-          msg: "Some error occurred",
-          backgroundColor: colorCodeForHeading[levelAttrib],
-          textColor: colorCodeForButtonTextCumCanvas[levelAttrib],
-        );
-      });
-    }
-    isImageLoad = false;
-    if (mounted) setState(() {});
-  }
-
-  int afree = 0;
-  int ahundred = 0;
-  int afivehundred = 0;
-  int athousand = 0;
-  int afivethousand = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -254,30 +213,15 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
             ),
             // inside circle
             Positioned(
-                left: 5,
-                top: 5,
-                child: GestureDetector(
-                  // image select and upload code
-                  onTap: () {
-                    imageUpload();
-                  },
-                  child: CircleAvatar(
-                    backgroundColor: colorCodeForHeading[levelAttrib],
-                    radius: 50,
-                    child: isImageLoad
-                        ? CircularProgressIndicator(
-                            color: context.watch<UserModel>().imageurl == null
-                                ? colorCodeForButtonTextCumCanvas[levelAttrib]
-                                : colorCodeForHeading[levelAttrib])
-                        : Icon(Icons.add_a_photo_outlined,
-                            color: context.watch<UserModel>().imageurl == null
-                                ? colorCodeForButtonTextCumCanvas[levelAttrib]
-                                : colorCodeForHeading[levelAttrib]),
-                    backgroundImage: context.watch<UserModel>().imageurl == null
-                        ? null
-                        : NetworkImage(context.watch<UserModel>().imageurl!),
-                  ),
-                )),
+              left: 5,
+              top: 5,
+              child: CircleAvatar(
+                backgroundColor: colorCodeForHeading[levelAttrib],
+                radius: 50,
+                child: Container(),
+                backgroundImage: imageurl == null ? null : NetworkImage(imageurl!),
+              ),
+            ),
           ],
         ),
       ),
@@ -385,7 +329,7 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
           padding: const EdgeInsets.all(20.0),
           child: Text(
             "Matches Won",
-            style: TextStyle(color: colorCodeForText[levelAttrib], fontSize: 25, fontWeight: FontWeight.bold),
+            style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 25, fontWeight: FontWeight.bold),
           ),
         ),
         StreamBuilder(
@@ -439,15 +383,15 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
               // graph
               return Padding(
                 padding: const EdgeInsets.only(top: 30.0, bottom: 50),
-                child: AspectRatio(
-                  aspectRatio: 1.5,
-                  child: free == 0 && hundred == 0 && fivehundred == 0 && thousand == 0 && fivethousand == 0
-                      ? Text(
-                          "Nothing to show here",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: colorCodeForHeading[levelAttrib]),
-                        )
-                      : RadarChart(
+                child: free == 0 && hundred == 0 && fivehundred == 0 && thousand == 0 && fivethousand == 0
+                    ? Text(
+                        "Nothing to show here",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                      )
+                    : AspectRatio(
+                        aspectRatio: 1.5,
+                        child: RadarChart(
                           RadarChartData(
                               radarShape: RadarShape.polygon,
                               radarBorderData:
@@ -489,13 +433,18 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                           swapAnimationDuration: const Duration(milliseconds: 500), // Optional
                           swapAnimationCurve: Curves.ease,
                         ),
-                ),
+                      ),
               );
             })),
         const SizedBox(height: 20),
+      ],
+    );
+
+    Widget registeredMatchesWidget = Column(
+      children: [
         Text(
           "Registered Matches",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: colorCodeForText[levelAttrib]),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: colorCodeForHeading[levelAttrib]),
         ),
         const SizedBox(height: 10),
         StreamBuilder(
@@ -559,7 +508,6 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                     .toList(),
               );
             })),
-        const SizedBox(height: 30),
       ],
     );
 
@@ -587,6 +535,7 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                         amountCard,
                         const SizedBox(height: 30),
                         graphBuilder,
+                        registeredMatchesWidget
                       ],
                     ),
                   ),

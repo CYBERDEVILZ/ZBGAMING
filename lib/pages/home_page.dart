@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     1: const FavoriteOrganizers(),
     2: RegisteredMatches(),
     3: const History(),
-    4: const ShowUserAccountAlternative(uuid: "a")
+    4: const UserAccount()
   }; // mapping for bottom nav bar
 
   bool isLogged = false;
