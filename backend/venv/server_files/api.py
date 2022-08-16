@@ -1034,7 +1034,7 @@ def reportMatch():
     except:
         hasSubmittedForReview = False
 
-    if reports > 20 and hasSubmittedForReview == False:
+    if reports > 2 and hasSubmittedForReview == False:
         db.collection(mtype.lower()).document(muid).update({"hasSubmittedForReview": True})
         db.collection("reports").document().set({"matchType": mtype.lower(), "muid": muid})
         

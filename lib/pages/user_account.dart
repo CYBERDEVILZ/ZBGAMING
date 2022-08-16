@@ -34,6 +34,7 @@ import 'package:zbgaming/model/usermodel.dart';
 import 'package:provider/provider.dart';
 import 'package:zbgaming/pages/link_game.dart';
 import 'package:zbgaming/utils/apistring.dart';
+import 'package:zbgaming/widgets/search_user.dart';
 
 Map<String, Color> colorCodeForHeading = {
   "Unidentified": Colors.blue,
@@ -225,7 +226,7 @@ class _UserAccountState extends State<UserAccount> {
       // blue rectangle in the back
       Container(
         color: colorCodeForHeading[levelAttrib],
-        height: 125,
+        height: 200,
         width: MediaQuery.of(context).size.width,
       ),
 
@@ -268,6 +269,7 @@ class _UserAccountState extends State<UserAccount> {
           ],
         ),
       ),
+      Positioned(right: 0, child: SearchPlayer(levelAttrib: levelAttrib))
     ]);
 
     // Level Widget
