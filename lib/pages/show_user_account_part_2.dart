@@ -7,28 +7,28 @@ import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/date_to_string.dart';
 
-Map<String, Color> colorCodeForHeading = {
+Map<String, Color> colorcodeforHeading = {
   "Unidentified": Colors.blue,
   "Rookie": Colors.blue,
   "Veteran": const Color(0xffB3E3EE),
   "Master Elite": const Color(0xFFFFD700)
 };
 
-Map<String, Color> colorCodeForText = {
+Map<String, Color> colorcodeforText = {
   "Unidentified": Colors.black,
   "Rookie": Colors.black,
   "Veteran": Colors.white,
   "Master Elite": Colors.white
 };
 
-Map<String, Color> colorCodeForButtonTextCumCanvas = {
+Map<String, Color> colorcodeforButtonTextCumCanvas = {
   "Unidentified": Colors.white,
   "Rookie": Colors.white,
   "Veteran": const Color(0xff00334c),
   "Master Elite": Colors.black
 };
 
-Map<String, Color> colorCodeForCanvas = {
+Map<String, Color> colorcodeforCanvas = {
   "Unidentified": Colors.white,
   "Rookie": Colors.white,
   "Veteran": const Color(0xff00334c),
@@ -167,7 +167,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
     // Matches Won Stream Builder Widget
     Widget amountCard = Card(
       child: Container(
-        color: colorCodeForHeading[levelAttrib],
+        color: colorcodeforHeading[levelAttrib],
         width: MediaQuery.of(context).size.width,
         child: Padding(
           padding: const EdgeInsets.all(5),
@@ -176,13 +176,13 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text("Total Amount Won",
-                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 25, color: colorCodeForCanvas[levelAttrib])),
+                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 25, color: colorcodeforCanvas[levelAttrib])),
               const SizedBox(height: 3),
               SizedBox(
                 height: 80,
                 child: FittedBox(
                   child: Text("\u20B9$amount",
-                      style: TextStyle(color: colorCodeForCanvas[levelAttrib], fontWeight: FontWeight.bold)),
+                      style: TextStyle(color: colorcodeforCanvas[levelAttrib], fontWeight: FontWeight.bold)),
                 ),
               )
             ],
@@ -195,7 +195,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
     Widget imageWidget = Stack(clipBehavior: Clip.none, children: [
       // blue rectangle in the back
       Container(
-        color: colorCodeForHeading[levelAttrib],
+        color: colorcodeforHeading[levelAttrib],
         height: 125,
         width: MediaQuery.of(context).size.width,
       ),
@@ -207,7 +207,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
         child: Stack(
           children: [
             CircleAvatar(
-              backgroundColor: colorCodeForButtonTextCumCanvas[levelAttrib],
+              backgroundColor: colorcodeforButtonTextCumCanvas[levelAttrib],
               radius: 55,
             ),
             // inside circle
@@ -215,7 +215,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
               left: 5,
               top: 5,
               child: CircleAvatar(
-                backgroundColor: colorCodeForHeading[levelAttrib],
+                backgroundColor: colorcodeforHeading[levelAttrib],
                 radius: 50,
                 child: Container(),
                 backgroundImage: imageurl == null ? null : NetworkImage(imageurl!),
@@ -259,7 +259,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                             "Veteran",
                             style: TextStyle(
                                 fontSize: 15,
-                                color: colorCodeForHeading[levelAttrib],
+                                color: colorcodeforHeading[levelAttrib],
                                 fontWeight: FontWeight.bold,
                                 fontStyle: FontStyle.italic),
                           ))
@@ -299,14 +299,14 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                       fit: BoxFit.fitHeight,
                       child: Text(
                         "$level",
-                        style: TextStyle(fontWeight: FontWeight.w300, color: colorCodeForHeading[levelAttrib]),
+                        style: TextStyle(fontWeight: FontWeight.w300, color: colorcodeforHeading[levelAttrib]),
                       ),
                     ),
                   ),
                 ),
                 Text(
                   "pts",
-                  style: TextStyle(fontWeight: FontWeight.bold, color: colorCodeForHeading[levelAttrib]),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: colorcodeforHeading[levelAttrib]),
                 )
               ],
             ),
@@ -318,7 +318,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
         style: TextStyle(
           fontSize: 40,
           fontWeight: FontWeight.w500,
-          color: colorCodeForHeading[levelAttrib],
+          color: colorcodeforHeading[levelAttrib],
         ));
 
     // GRAPH WIDGET
@@ -328,7 +328,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
           padding: const EdgeInsets.all(20.0),
           child: Text(
             "Matches Won",
-            style: TextStyle(color: colorCodeForHeading[levelAttrib], fontSize: 25, fontWeight: FontWeight.bold),
+            style: TextStyle(color: colorcodeforHeading[levelAttrib], fontSize: 25, fontWeight: FontWeight.bold),
           ),
         ),
         StreamBuilder(
@@ -338,21 +338,21 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                 return Text(
                   "Loading...",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                  style: TextStyle(color: colorcodeforHeading[levelAttrib]),
                 );
               }
               if (snapshot.hasError) {
                 return Text(
                   "Error occurred",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                  style: TextStyle(color: colorcodeforHeading[levelAttrib]),
                 );
               }
               if (!snapshot.hasData) {
                 return Text(
                   "No data",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                  style: TextStyle(color: colorcodeforHeading[levelAttrib]),
                 );
               }
               int free = 0;
@@ -386,7 +386,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                     ? Text(
                         "Nothing to show here",
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                        style: TextStyle(color: colorcodeforHeading[levelAttrib]),
                       )
                     : AspectRatio(
                         aspectRatio: 1.5,
@@ -394,16 +394,16 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                           RadarChartData(
                               radarShape: RadarShape.polygon,
                               radarBorderData:
-                                  BorderSide(color: colorCodeForText[levelAttrib]!.withOpacity(0.3), width: 2),
+                                  BorderSide(color: colorcodeforText[levelAttrib]!.withOpacity(0.3), width: 2),
                               gridBorderData:
-                                  BorderSide(color: colorCodeForText[levelAttrib]!.withOpacity(0.3), width: 2),
+                                  BorderSide(color: colorcodeforText[levelAttrib]!.withOpacity(0.3), width: 2),
                               radarBackgroundColor: Colors.transparent,
                               tickBorderData: const BorderSide(color: Colors.transparent),
                               tickCount: 1,
                               titlePositionPercentageOffset: 0.2,
                               ticksTextStyle: const TextStyle(color: Colors.transparent),
                               titleTextStyle: TextStyle(
-                                  color: colorCodeForHeading[levelAttrib], fontWeight: FontWeight.bold, fontSize: 16),
+                                  color: colorcodeforHeading[levelAttrib], fontWeight: FontWeight.bold, fontSize: 16),
                               getTitle: (index, angle) {
                                 switch (index) {
                                   case (0):
@@ -421,7 +421,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                                 }
                               },
                               dataSets: <RadarDataSet>[
-                                RadarDataSet(borderColor: colorCodeForHeading[levelAttrib], dataEntries: [
+                                RadarDataSet(borderColor: colorcodeforHeading[levelAttrib], dataEntries: [
                                   RadarEntry(value: free.toDouble()),
                                   RadarEntry(value: hundred.toDouble()),
                                   RadarEntry(value: fivehundred.toDouble()),
@@ -442,7 +442,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
       children: [
         Text(
           "Registered Matches",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: colorCodeForHeading[levelAttrib]),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: colorcodeforHeading[levelAttrib]),
         ),
         const SizedBox(height: 10),
         StreamBuilder(
@@ -452,21 +452,21 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                 return Text(
                   "Loading...",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                  style: TextStyle(color: colorcodeforHeading[levelAttrib]),
                 );
               }
               if (snapshot.hasError) {
                 return Text(
                   "Error occurred",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                  style: TextStyle(color: colorcodeforHeading[levelAttrib]),
                 );
               }
               if (!snapshot.hasData) {
                 return Text(
                   "No data",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                  style: TextStyle(color: colorcodeforHeading[levelAttrib]),
                 );
               }
               return Column(
@@ -481,24 +481,24 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ListTile(
-                              tileColor: colorCodeForHeading[levelAttrib],
+                              tileColor: colorcodeforHeading[levelAttrib],
                               contentPadding: const EdgeInsets.only(right: 10, left: 10),
                               leading: CircleAvatar(
                                   backgroundImage: AssetImage("assets/images/${e['matchType']}.jpg"), maxRadius: 40),
                               title: Text(
                                 e["name"],
                                 style: TextStyle(
-                                    color: colorCodeForButtonTextCumCanvas[levelAttrib],
+                                    color: colorcodeforButtonTextCumCanvas[levelAttrib],
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20),
                               ),
                               subtitle: Text(
                                 DateToString().dateToString(e["date"].toDate()),
-                                style: TextStyle(color: colorCodeForCanvas[levelAttrib]),
+                                style: TextStyle(color: colorcodeforCanvas[levelAttrib]),
                               ),
                               trailing: Icon(
                                 Icons.open_in_new,
-                                color: colorCodeForCanvas[levelAttrib],
+                                color: colorcodeforCanvas[levelAttrib],
                               ),
                             ),
                           ),
@@ -511,7 +511,7 @@ class _ShowUserAccountAlternativeState extends State<ShowUserAccountAlternative>
 
     // --------------- Return is Here --------------- //
     return Scaffold(
-      backgroundColor: colorCodeForButtonTextCumCanvas[levelAttrib],
+      backgroundColor: colorcodeforButtonTextCumCanvas[levelAttrib],
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
