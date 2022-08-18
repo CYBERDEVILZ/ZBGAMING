@@ -7,7 +7,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:zbgaming/pages/registered_users.dart';
 import 'package:zbgaming/pages/show_user_account.dart';
-import 'package:zbgaming/pages/show_user_account_part_2.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/Date_to_string.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
@@ -263,7 +262,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => ShowUserAccountAlternative(uuid: "a")));
+                                              builder: (context) => ShowUserAccount(hashedId: winnerhash!)));
                                     },
                                     child: Text(
                                       "$winnerName",

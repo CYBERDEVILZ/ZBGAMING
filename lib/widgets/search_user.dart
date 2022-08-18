@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:zbgaming/pages/show_user_account_part_2.dart';
 import '../pages/show_user_account.dart';
 
 class SearchPlayer extends StatefulWidget {
@@ -79,9 +78,9 @@ class _SearchPlayerState extends State<SearchPlayer> {
                           isButtonLoading = false;
                           setState(() {});
                         } else {
-                          String tempUid = value.docs[0]["tempUid"];
-                          await Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => ShowUserAccountAlternative(uuid: tempUid)));
+                          Blob hashedId = value.docs[0]["hashedID"];
+                          await Navigator.push(
+                              context, MaterialPageRoute(builder: (context) => ShowUserAccount(hashedId: hashedId)));
                           isButtonLoading = false;
                           isClicked = !isClicked;
                           setState(() {});

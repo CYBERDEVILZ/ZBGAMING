@@ -7,7 +7,6 @@ import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/pages/history.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
-import 'package:zbgaming/pages/show_user_account_part_2.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/widgets/drawer.dart';
