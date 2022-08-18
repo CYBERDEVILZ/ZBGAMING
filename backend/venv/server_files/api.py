@@ -78,6 +78,7 @@ import razorpay
 import re
 import hashlib
 import requests
+import base64
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
@@ -203,6 +204,9 @@ def userSignup():
                         if(len(db.collection("userinfo").where("username", "==", username).get()) != 0):
                             return "Failed: Username is already taken"
 
+                        # creating tempUid
+                        tempUid = base64.b64encode(hashlib.sha256(docId.encode()).digest()).decode("ascii")
+
                         # sending data to cloud firestore
                         db.collection("userinfo").document(docId).set(
                             {
@@ -211,7 +215,8 @@ def userSignup():
                                 "imageurl": imageurl,
                                 "level": 0,
                                 "isVerified": isVerified,
-                                "hashedID": hashlib.sha256(docId.encode()).digest()
+                                "hashedID": hashlib.sha256(docId.encode()).digest(),
+                                "tempUid": tempUid
                             }
                         )
                         return "Success"
@@ -330,6 +335,7 @@ def register():
                 total = snapshot.get("total")
                 try:
                     if reg < total:
+
                         transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
                         return True
                     else:
