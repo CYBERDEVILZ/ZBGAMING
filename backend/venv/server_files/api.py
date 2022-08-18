@@ -813,53 +813,52 @@ def userLevelCalculateAlternative():
     uid = request.args.get("uid")
 
     # Checking if uid is valid
-    try:
+    uid = uid.strip().replace(" ", "+")
 
-        docs = db.collection("userinfo").where("tempUid", "==", uid).get()
-        if len(docs) != 1:
-            return "Failed"
-            
-        docId = docs[0].id
-
-        # get all the paid matches
-        docs = db.collection("userinfo").document(docId).collection("history").where("paid", "!=", 0).get()
-
-        # no matches played yet, make level 0
-        if len(docs) == 0:
-            db.collection("userinfo").document(docId).update({"level": 0})
-            return "Success"
-        
-        participation = len(docs) * 20
-        amount = 0
-
-        # calculate the level of user
-        for doc in docs:
-            data = doc.to_dict()
-            wonMatches = data["won"]
-            
-            if wonMatches == 1:
-                paid = data["paid"]
-                # scores based on FEE STRUCTURE
-                if paid == 1:
-                    won += 300
-                if paid == 2:
-                    won += 500
-                if paid == 3:
-                    won += 1500
-                if paid == 4:
-                    won += 2000
-                else:
-                     won += 0
-        
-        totalScore = participation + won
-
-        # update score
-        db.collection("userinfo").document(docId).update({"level": totalScore})
-
-        return "Success"
-        
-    except:
+    docs = db.collection("userinfo").where("tempUid", "==", uid).get()
+    if len(docs) != 1:
+        print("cannot find the user bruh")
         return "Failed"
+        
+    docId = docs[0].id
+
+    # get all the paid matches
+    docs = db.collection("userinfo").document(docId).collection("history").where("paid", "!=", 0).get()
+
+    # no matches played yet, make level 0
+    if len(docs) == 0:
+        db.collection("userinfo").document(docId).update({"level": 0})
+        return "Success"
+    
+    participation = len(docs) * 20
+
+    # calculate the level of user
+    for doc in docs:
+        data = doc.to_dict()
+        wonMatches = data["won"]
+        
+        if wonMatches == 1:
+            paid = data["paid"]
+            # scores based on FEE STRUCTURE
+            if paid == 1:
+                won += 300
+            if paid == 2:
+                won += 500
+            if paid == 3:
+                won += 1500
+            if paid == 4:
+                won += 2000
+            else:
+                    won += 0
+    
+    totalScore = participation + won
+
+    # update score
+    db.collection("userinfo").document(docId).update({"level": totalScore})
+
+    return "Success"
+    
+    return "Failed"
 
 # START MATCH LOGIC
 @app.route("/api/startMatch")

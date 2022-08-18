@@ -1,14 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:zbgaming/model/usermodel.dart';
-import 'package:provider/provider.dart';
 import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/date_to_string.dart';
@@ -86,10 +80,10 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                 ApiEndpoints.baseUrl + ApiEndpoints.userLevelCalculateAlternative + "?uid=${value.docs[0]['tempUid']}"))
             .then((responseValue) async {
           if (responseValue.statusCode != 200) {
-            Fluttertoast.showToast(msg: "Something went wrong :(");
+            Fluttertoast.showToast(msg: "Something went wrong :( coz nothing");
           } else {
             if (responseValue.body == "Failed") {
-              Fluttertoast.showToast(msg: "Something went wrong :(");
+              Fluttertoast.showToast(msg: "Something went wrong :( cossa");
             }
           }
         });
@@ -126,8 +120,6 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
         }).catchError((onError) {
           Fluttertoast.showToast(msg: "Error occurred");
         });
-      } else {
-        Fluttertoast.showToast(msg: "Something went wrong :(");
       }
 
       // get matches won
