@@ -4,14 +4,7 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
-EVEN AFTER STOPPING A MATCH, THERE IS AN OPTION TO CANCEL MATCH. THIS SHOULD NOT BE MADE AVAILABLE
-
-DEPENDING ON THE NUMBER OF USERS AND THE TYPE OF MATCH,  THE TOTAL AMOUNT SHOULD BE CALCULATED AUTOMATICALLY AND 
-UPDATED IN THE MATCH DATABASE.
-
-UPDATE AMOUNT GIVEN PARAMETER WHEN THE ORGANIZER SUCCESSFULLY ORGANIZE A MATCH THAT IS PAID.
-
-CREATE CLOUD FUNCTIONS THAT ACTS ON TRIGGER (WHEN ORGANIZER STOPS THE MATCH) TO UPDATE THE LEVEL OF EACH USER
+UPDATE AMOUNT GIVEN PARAMETER WHEN THE ORGANIZER SUCCESSFULLY ORGANIZE A MATCH THAT IS PAID. (only happens when the payout is successful)
 
 INSANE SECURITY ISSUE!!!
 ------------------------
@@ -19,6 +12,11 @@ START MATCH, STOP MATCH, CANCEL MATCH, ETC ARE NOT PROTECTED FROM CSRF! MAKE SUR
 
 IMPORTANT!!!
 POLICY NOT ADDED FOR ORGANIZER SIGNUP
+ORGANIZER SIGNUP POLICY
+Welcome Organizers!
+You have taken the right step by choosing us as the platform to host your tournaments. We hope you will co-operate with us and make this a wholesome experience for all.
+Since this app involves monetary transactions, we prefer you adhere to our policy in the strictest manner possible. Pivoting away from the rules, in whatever way possible, is not tolerated at all.
+
 
 IMPORTANT!!!
 CREATE BACKEND TO CALCULATE ORGANIZER LEVEL BASED ON AMOUNTGIVEN PARAMETER.

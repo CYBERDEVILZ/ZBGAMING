@@ -236,12 +236,45 @@ class _OrganizerSignUpState extends State<OrganizerSignUp> {
                       setState(() {});
                     }),
                 const Text("I have read and accepted the "),
-                GestureDetector(
-                    onTap: () {},
-                    child: const Text(
-                      "Policy",
-                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-                    ))
+                TextButton(
+                  child: const Text(
+                    "Policy",
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: ((context) {
+                          return AlertDialog(
+                            titlePadding: const EdgeInsets.only(),
+                            scrollable: true,
+                            title: Image.asset("assets/images/zbunker-app-banner-upsidedown-short.png"),
+                            content: Column(
+                              children: [
+                                const Text(
+                                  "Welcome Organizers!",
+                                  style: TextStyle(color: Colors.blue, fontSize: 25),
+                                ),
+                                Image.asset("assets/images/pubg.jpg"),
+                                Image.asset("assets/images/pubg.jpg"),
+                                Image.asset("assets/images/pubg.jpg"),
+                                Image.asset("assets/images/pubg.jpg"),
+                                Image.asset("assets/images/pubg.jpg"),
+                                Image.asset("assets/images/pubg.jpg"),
+                                Image.asset("assets/images/pubg.jpg"),
+                              ],
+                            ),
+                            actions: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("OK"))
+                            ],
+                          );
+                        }));
+                  },
+                )
               ]),
 
               const SizedBox(height: 20),
