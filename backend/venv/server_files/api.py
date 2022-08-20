@@ -4,37 +4,19 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
-IMPORTANT!!!
-USER KYC VERIFICATION PAGE LEFT
+UPDATE AMOUNT GIVEN PARAMETER WHEN THE ORGANIZER SUCCESSFULLY ORGANIZE A MATCH THAT IS PAID. (only happens when the payout is successful)
 
-SERIOUS ISSUE!!!
-IF SOMEONE FINDS THIS, WE ARE DEAD
-USER CAN EASILY REGISTER ANOTHER USER MULTIPLE TIMES BY JUST SENDING OTHER'S UUID INSTEAD OF HIS. THIS OCCURS
-BECAUSE WE ARE CHECKING ONLY USER DATABASE WHETHER HE IS REGISTERED OR NOT. CHECK REGISTERED USERS OF ORGANIZERS AS WELL
-
-IMPORTANT!!!
-ADD SEARCH USER FEATURE TO LOOK FOR PLAYERS BY OTHER USERS
-
-IMPORTANT!!!
-UNIQUE ID FOR PLAYERS --  FIREBASE UID (SECRET) => SHA256 HASH => BLOB (BYTE STRING) [0XFD0XFA0XAE -- fdfaae]
-
-IMPORTANT!!!
-STOP MATCH LOGIC
-ORGANIZER STOPS THE MATCH. HE IS FORCED TO SELECT A WINNER FROM THE REGISTERED USERS. AFTER SELECTING THE WINNER,
-A PUSH NOTIFICATION IS SENT WHICH REDIRECTS THE USER TO THE CONTEST DETAILS PAGE WHERE HE HAS AN OPTION TO REPORT AND ALSO SEE THE WINNER OF THE MATCH.
-VALIDATORS VALIDATE WHETHER THE WINNER IS LEGIT IFF REPORTS POUR IN.
-THE USER GETS REMOVED FROM THE CHAT GROUP AS WELL AND 'LOST' STATUS IS UPDATED ON ALL THE WINNERS.
-
-IMPORTANT!!!
-IF MATCH IS NOT 'ONGOING' EVEN AFTER THE DATE HAS PASSED OR MATCH FOUND INVALID, AUTOMATICALLY THE MATCH STATUS WILL BE SET TO FINISHED, 
-MONEY WILL BE REFUNDED TO ALL AND WON VARIABLE SET TO 2. IF ALL IS LEGIT THEN MONEY FUNDED TO THE WINNER THE NEXT DAY AND ORGANIZER AND
-AMOUNTGIVEN VARIABLE OF ORGANIZER IS UPDATED
+INSANE SECURITY ISSUE!!!
+------------------------
+START MATCH, STOP MATCH, CANCEL MATCH, ETC ARE NOT PROTECTED FROM CSRF! MAKE SURE TO AUTHENTICATE THE SOURCE OF REQUEST!
 
 IMPORTANT!!!
 POLICY NOT ADDED FOR ORGANIZER SIGNUP
+ORGANIZER SIGNUP POLICY
+Welcome Organizers!
+You have taken the right step by choosing us as the platform to host your tournaments. We hope you will co-operate with us and make this a wholesome experience for all.
+Since this app involves monetary transactions, we prefer you adhere to our policy in the strictest manner possible. Pivoting away from the rules, in whatever way possible, is not tolerated at all.
 
-IMPORTANT!!!
-BACKEND TO CALCULATE ORGANIZER RATINGS: BASED ON RATINGS PURELY FROM PLAYERS.
 
 IMPORTANT!!!
 CREATE BACKEND TO CALCULATE ORGANIZER LEVEL BASED ON AMOUNTGIVEN PARAMETER.
@@ -48,67 +30,41 @@ VALIDATE ORGANIZER SIGNIN AS WELL. NORMAL PLAYERS CAN ALSO SIGN IN AS ORGANIZERS
 IMPORTANT!!!
 ORGANIZER VERIFICATION
 IN ORDER TO CREATE MATCHES, THE ORGANIZER SHOULD BE VERIFIED (KYC).
-AFTER THE MATCH ENDS, A 24 HOUR WINDOW IS GIVEN FOR ANY REPORTS. IF REPORTS ARE RECEIVED THEN THE STREAM IS WATCHED BY VERIFIERS.
-IF SOMETHING IS OFF, LIKE WRONG LINK, CHEATING, MATCH STARTED EARLY, ETC, THE MATCH IS FORFEITED AND MONEY IS REFUNDED.
 
 IMPORTANT!!!
 CREATE LOGIC FOR PAYOUTS
 
 IMPORTANT!!!
-MAKE A CLOUD FUNCTION THAT CLEANS DATABASE.
+USER KYC VERIFICATION PAGE LEFT
 
-Validator should be able to validate a match
-Backend to calculate organizer levels based on prizes given
 Organizer account delete
-Customer Care chat feature, account related assistance, monetary related assistance
 
 
 ########################## DESIGN SECTION ###############################
 
 IMPORTANT!!!
-GAME IMAGE NOT LOADING AT SHOW USER ACCOUNT SECTION
-
-IMPORTANT!!!
-FIX EMAIL VERIFIED AUTOMATIC UPDATE STATE MANAGEMENT
-
-IMPORTANT!!!
-DISABLE REGISTER BUTTON FOR INELIGIBLE USERS BASED ON SKILL
-
-IMPORTANT!!!
-DESIGN A GOOD UI TO ADD IGID. MAKE SURE THE PREVIOUS IGID IS VISIBLE TO THE USER
+UPDATE RULES IN CONTEST DETAILS PAGE. THEY ARE OUTDATED
 
 IMPORTANT!!!
 I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN SHORT. MAKE SURE TO REPLACE THE ORIGINAL WITH SHORT AND 
 CHECK THE RESULT. REALLY IMPORTANT TO REDUCE SIZE!
 
 IMPORTANT!!!
-FRONTEND FOR LINKED ACCOUNTS NOT COMPLETED.
-
-IMPORTANT!!!
 CREATE FRONTEND FOR ORGANIZER VERIFIED. JUST ADD VERIFY ME TAGS LIKE THAT OF USER VERIFICATION
-
-IMPORTANT!!!
-ORGANIZER CAN POST SCOREBOARD ON HIS PAGE
-
-IMPORTANT!!!
-ADD CIRCULAR PROGRESS INDICATOR WHEN ORGANIZER CONFIRMS THE USER WON
 
 
 ###################### FEATURES FOR FUTURE DEVS ##############################
 
-TIME OF MATCH START SHOULD BE SHOWN TO THE USER WHILE REGISTERING FOR THE MATCH
-
-ONE WAY TEMPORARY CHAT SECTION FOR USERS REGISTERED FOR A MATCH. ALL ONE WAY DISCUSSION WILL BE TAKEN PLACE THERE
-
 OPTIMIZE USER LEVEL CALCULATION AS WELL AS ORGANIZER LEVEL CALCULATION (IF EXISTS)
+
+ORGANIZER PAGE WHERE HE CAN UPLOAD POSTS AND SCORECARDS
 
 
 """
 
 
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
-from lib2to3.pytree import Base
 from flask import Flask
 from flask import request
 import firebase_admin
@@ -120,6 +76,11 @@ import razorpay
 import re
 import hashlib
 import requests
+import base64
+from apscheduler.schedulers.background import BackgroundScheduler
+
+
+games = ["pubg"]
 
 # FIREBASE INIT
 cred = credentials.Certificate("zbgaming-v1-firebase-adminsdk-2ozhj-4f38e5fc3e.json")
@@ -134,12 +95,73 @@ secret_key = "C7IHXyYq0nsDlWQYUcRKGzaH"
 client = razorpay.Client(auth=("rzp_test_rKi9TFV4sMHvz2", secret_key))
 
 # FUNCTIONS
+# email validation
 def validateEmail(email):
     result = re.match("[^@]+@[^@]+\.[A-Za-z0-9]+$", email)
     if result:
         return True
     else:
         return False
+
+# refund money logic
+def refund():
+    print("refund all the money BLYAT! and Give organizer bad rating!")
+
+# delete game from database
+def deleteGame(game, gameID):
+    docs1 = db.collection(game).document(gameID).collection("registeredUsers").get()
+    for doc in docs1:
+        doc.reference.delete()
+    db.collection(game).document(gameID).delete()
+
+# delete chats
+def deleteChat(chatID):
+    db.collection("chats").where("notificationId", "==", chatID).get()[0].reference.delete()
+
+# update history of users to cancelled
+def updateHistoryToCancelled(game, gameID):
+    docs1 = db.collection(game).document(gameID).collection("registeredUsers").get()
+    for doc in docs1:
+        doc_data = doc.to_dict()
+        hashedID = doc_data["hashedID"]
+        users = db.collection("userinfo").where("hashedID", "==", hashedID).get()
+        for user in users:
+            print(user.id)
+            user.reference.collection("history").document(gameID).update({"won": 2})
+
+
+# BACKGROUND SCHEDULERS
+scheduler = BackgroundScheduler()
+# SCHEDULE 1: look for matches that are over. Perform necessary actions
+def schedule_1_are_matches_over():
+    for game in games:
+        date_over_matches = db.collection(game).where("date", "<", datetime.now()).get()
+        for matches in date_over_matches:
+            match_data = matches.to_dict()
+            if (match_data["started"] == 0):
+                print("match was never started! lets refund all the money and show it cancelled")
+                refund()
+                deleteChat(match_data["notificationId"])
+                updateHistoryToCancelled(game, matches.id)
+                deleteGame(game, matches.id)
+            if (match_data["started"] == 1):
+                db.collection()
+                print("match started but not stopped. lets refund all the money and show it cancelled")
+                refund()
+                deleteChat(match_data["notificationId"])
+                updateHistoryToCancelled(game, matches.id)
+                deleteGame(game, matches.id)
+            if (match_data["started"] == 2):
+                print("match was stopped. Nice organizer. Give him a hug")
+                deleteGame(game, matches.id)
+                deleteChat(match_data["notificationId"])
+        print("scheduler running -------------------")
+                
+# run every 24 hours
+job = scheduler.add_job(schedule_1_are_matches_over, "interval", seconds=10)
+scheduler.start()
+
+            
 
 
 # HOME
@@ -160,6 +182,7 @@ def userSignup():
 
     if username != None and email != None and docId != None:
         if username != "" and email != "" and docId != "":
+            username = username.lower()
             if validateEmail(email):
                 docs = db.collection("userinfo").where("email", "==", email).get()
                 if len(docs) == 0:
@@ -172,9 +195,15 @@ def userSignup():
                             "idToken": idToken
                         })
                         r = requests.post(url=REST_API_VERIFY_EMAIL, data=data)
-                        print(r.text)
                         if r.status_code != 200:
                             return "Failed"
+                        
+                        # username must be unique
+                        if(len(db.collection("userinfo").where("username", "==", username).get()) != 0):
+                            return "Failed: Username is already taken"
+
+                        # creating tempUid
+                        tempUid = base64.b64encode(hashlib.sha256(docId.encode()).digest()).decode("ascii")
 
                         # sending data to cloud firestore
                         db.collection("userinfo").document(docId).set(
@@ -184,7 +213,8 @@ def userSignup():
                                 "imageurl": imageurl,
                                 "level": 0,
                                 "isVerified": isVerified,
-                                "hashedID": hashlib.sha256(docId.encode()).digest()
+                                "hashedID": hashlib.sha256(docId.encode()).digest(),
+                                "tempUid": tempUid
                             }
                         )
                         return "Success"
@@ -200,7 +230,6 @@ def organizerSignup():
     username = request.args.get("username")
     email = request.args.get("email")
     docId = request.args.get("docId")
-    print(email)
     imageurl = None
     special = False
     amountGiven = 0
@@ -262,9 +291,11 @@ def register():
             registeredMatches = (
                 db.collection("userinfo").document(useruid).collection("registered").get()
             )
-
             matchId = [match.id for match in registeredMatches]
             if matchuid in matchId:
+                return "Failed: Already registered"
+            isHeRegistered = db.collection(matchType.lower()).document(matchuid).collection("registeredUsers").where("hashedID", "==", hashlib.sha256(useruid.encode()).digest()).get()
+            if len(isHeRegistered) != 0:
                 return "Failed: Already registered"
 
             # checking if matchuid exists
@@ -302,6 +333,7 @@ def register():
                 total = snapshot.get("total")
                 try:
                     if reg < total:
+
                         transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
                         return True
                     else:
@@ -324,14 +356,19 @@ def register():
                 # add to registered
                 db.collection("userinfo").document(useruid).collection(
                     "registered"
-                ).document(matchuid).set(
-                    {"date": date, "matchType": matchType, "name": name, "uid": uid, "notificationId": notifId}
-                )
+                ).document(matchuid).set({
+                    "date": date, 
+                    "matchType": matchType,
+                    "name": name,
+                    "uid": uid,
+                    "notificationId": notifId,
+                    "hasRated": False
+                    })
 
                 # add to history
                 db.collection("userinfo").document(useruid).collection("history").document(
                     matchuid
-                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill})
+                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill, "amount": 0})
 
                 return "Success"
             else:
@@ -413,17 +450,6 @@ def paidRegister():
             # CREATING ORDER
             response = client.order.create(data=DATA)
             order_id = response["id"]
-
-            # for notification room
-            secret_key = "shinra_tensei"
-            datething = str(datetime.now())
-            toHash = matchuid+secret_key+datething
-            hashedValue = hashlib.sha256(toHash.encode()).digest()
-
-            db.collection("chats").document().set({
-                "notificationId": hashedValue,
-                "chats": [{"message": "Thank You all for joining this match!", "time": datetime.now(timezone(zone="Asia/Kolkata"))}]
-            })
 
             # RETURNING ORDER FOR CHECKOUT
             return order_id
@@ -523,9 +549,14 @@ def validate():
                     # add to registered
                     db.collection("userinfo").document(useruid).collection(
                         "registered"
-                    ).document(matchuid).set(
-                        {"date": date, "matchType": matchType, "name": name, "uid": uid, "notificationId": notifId}
-                    )
+                    ).document(matchuid).set({
+                        "date": date,
+                        "matchType": matchType, 
+                        "name": name, 
+                        "uid": uid, 
+                        "notificationId": notifId, 
+                        "hasRated": False
+                    })
 
                     # add to match's registration list
                     ref.collection("registeredUsers").document().set({
@@ -538,7 +569,7 @@ def validate():
                     # add to history
                     db.collection("userinfo").document(useruid).collection("history").document(
                         matchuid
-                    ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill})
+                    ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill, "amount": 0})
 
 
                     return "Success"
@@ -598,17 +629,21 @@ def create():
         # converting date from string to datetime object
         try:
             date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S.%f")
-            date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+            date = date.replace(hour=23, minute=59, second=59, microsecond=0)
+            local = pytz.timezone("Asia/Kolkata")
+            current_date_in_utc = local.localize(datetime.now(), is_dst=None).astimezone(pytz.utc)
+            local_dt = local.localize(date, is_dst=None)
+            date = local_dt.astimezone(pytz.utc)
 
             # checking if date is valid
-            if date < datetime.now():
-                return "Failed"
+            if date < current_date_in_utc:
+                return "Failed: Invalid Date"
 
             # checking if date is atleast two days from now
-            if date.day < (datetime.now().day + 2):
-                return "Failed"
+            if date.day < (current_date_in_utc.day + 1):
+                return "Failed: Cannot choose this date"
         except:
-            return "Failed"
+            return "Failed: Server Error"
 
         # checking if organizer uid is valid
         organizerData = db.collection("organizer").document(uid).get()
@@ -660,32 +695,6 @@ def create():
         return "Success"
     else:
         return "Failed"
-
-
-# API TO CLEAN DATABASE
-@app.route("/api/clean")
-def clean():
-    matchType = request.args.get("matchType")
-    uid = request.args.get("uid")  # uid of user (to delete registered game)
-
-    if matchType != None and uid != None:
-        if matchType != "" and uid != "":
-            date = datetime.now() - timedelta(days=1)
-            print(date)
-
-            # get all the outdated matches
-            docs = db.collection(matchType).where("date", "<", date).get()
-
-            # delete all the outdated matches
-            for doc in docs:
-                db.collection(matchType).document(doc.id).delete()
-                db.collection("userinfo").document(uid).collection(
-                    "registered"
-                ).document(doc.id).delete()
-
-            return "Success"
-
-    return "Failed"
 
 # VERIFY USER
 @app.route("/api/verify/user")
@@ -782,6 +791,62 @@ def userLevelCalculate():
     except:
         return "Failed"
 
+
+# USER LEVEL CALCULATION
+@app.route("/api/userlevelcalculatealternative")
+def userLevelCalculateAlternative():
+    participation = 0
+    won = 0
+    uid = request.args.get("uid")
+
+    # Checking if uid is valid
+    uid = uid.strip().replace(" ", "+")
+
+    docs = db.collection("userinfo").where("tempUid", "==", uid).get()
+    if len(docs) != 1:
+        print("cannot find the user bruh")
+        return "Failed"
+        
+    docId = docs[0].id
+
+    # get all the paid matches
+    docs = db.collection("userinfo").document(docId).collection("history").where("paid", "!=", 0).get()
+
+    # no matches played yet, make level 0
+    if len(docs) == 0:
+        db.collection("userinfo").document(docId).update({"level": 0})
+        return "Success"
+    
+    participation = len(docs) * 20
+
+    # calculate the level of user
+    for doc in docs:
+        data = doc.to_dict()
+        wonMatches = data["won"]
+        
+        if wonMatches == 1:
+            paid = data["paid"]
+            # scores based on FEE STRUCTURE
+            if paid == 1:
+                won += 300
+            if paid == 2:
+                won += 500
+            if paid == 3:
+                won += 1500
+            if paid == 4:
+                won += 2000
+            else:
+                    won += 0
+    
+    totalScore = participation + won
+
+    # update score
+    db.collection("userinfo").document(docId).update({"level": totalScore})
+
+    return "Success"
+    
+    return "Failed"
+
 # START MATCH LOGIC
 @app.route("/api/startMatch")
 def startMatch():
@@ -806,13 +871,12 @@ def startMatch():
         
         if data["started"] != 0:
             return "Failed: Match cannot be started"
-        if data["reg"] < 80:
+        if data["reg"] < 2:
             return "Failed: Not enough registrations"
             
         userMessageTokens = data["userMessageTokens"]
         name = data["name"]
         for token in userMessageTokens:
-            print(token)
             try:
                 message = messaging.Message(notification=messaging.Notification(title="Are You Ready for the Battle?", body=f"Your registered match '{name}' will begin in a few minutes! Visit the chat room to know more!"), token=token, data={"route": "/registeredMatches"})
                 messaging.send(message)
@@ -840,9 +904,22 @@ def stopMatch():
             return "Failed"
         if data["started"] != 1:
             return "Failed: Something went wrong"
+        if data["notificationId"] == None:
+            return "Failed: Something went wrong"
+        notifId = data["notificationId"]
+
+        # delete chat section logic
+        chat = db.collection("chats").where("notificationId", "==", notifId).get()
+        try:
+            chat_id = chat[0].id
+            db.collection("chats").document(chat_id).delete()
+        except:
+            pass
+
         db.collection(matchType).document(matchUid).update({
             "started": 2
         })
+
         userMessageTokens = data["userMessageTokens"]
         name = data["name"]
         for token in userMessageTokens:
@@ -879,7 +956,139 @@ def receivedNotification():
     return "success"
         
 
+@app.get("/api/reportMatch")
+def reportMatch():
+    muid = request.args.get("muid")
+    mtype = request.args.get("mtype")
+    uuid = request.args.get("uuid")
+    rtype = request.args.get("rtype")
+    reportData = request.args.get("otherReport")
+
+    reportArray = [
+        "Match was started early without prior notice",
+        "Player(s) was/were found cheating", 
+        "Organizer selected the wrong winner", 
+        "No information regarding the match was shared by the organizer in the Chat Section"
+        ]
+    
+    try:
+        rtype = int(rtype)
+        if rtype < 0 or rtype > 4:
+            return "Failed"
+        if rtype < 4:
+            reportData = reportArray[rtype]
+
+    except:
+        return "Failed"
+
+    if muid == None and uuid == None and mtype == None and rtype == None:
+        return "Failed"
+    
+    if muid == "" and uuid == "" and mtype == "" and rtype == "":
+        return "Failed"
+    
+    uuid = hashlib.sha256(uuid.encode()).digest()
+
+    if mtype.lower() not in games:
+        return "Failed: Invalid Game"
+    
+    matchData = db.collection(mtype.lower()).document(muid).get().to_dict()
+    if matchData == None:
+        return "Failed: No such match exists"
+    
+    userData = db.collection(mtype.lower()).document(muid).collection("registeredUsers").where("hashedID", "==", uuid).get()
+    if len(userData) != 1:
+        return "Failed: You have not registered for this match"
+
+    try:
+        reportedUsers = matchData["reportedUsers"]
+        for reportDict in reportedUsers:
+            if uuid in reportDict["uuid"]:
+                return "Failed: Cannot report more than once"
+
+    except:
+        reportedUsers = []
+    
+    reports = len(reportedUsers) + 1
+    
+    db.collection(mtype.lower()).document(muid).update({"reportedUsers": firestore.ArrayUnion([{"uuid": uuid, "report": reportData}])})
+    
+    try:
+        hasSubmittedForReview = matchData["hasSubmittedForReview"]
+    except:
+        hasSubmittedForReview = False
+
+    if reports > 2 and hasSubmittedForReview == False:
+        db.collection(mtype.lower()).document(muid).update({"hasSubmittedForReview": True})
+        db.collection("reports").document().set({"matchType": mtype.lower(), "muid": muid})
+        
+    return "Success"
+    
 
 
+@app.get("/api/rate")
+def rate():
+    ouid = request.args.get("ouid")
+    rating = request.args.get("rating")
 
-app.run(debug=True)
+    if ouid == None or rating == None:
+        return "Failed"
+    
+    if ouid == "" or rating == "":
+        return "Failed"
+    
+    # checking valid ouid
+    data = db.collection("organizer").document(ouid).get().to_dict()
+    if data == None:
+        return "Failed"
+
+    # rating logic
+    try:
+        rating = int(rating)
+        if rating <= 0  or rating > 5:
+            return "Failed"
+        try:
+            total_rating = data["total_rating"]
+        except KeyError:
+            total_rating = 0
+        try:
+            total_reviews = data["total_reviews"]
+        except KeyError:
+            total_reviews = 0
+        db.collection("organizer").document(ouid).update({"total_rating": total_rating + rating})
+        db.collection("organizer").document(ouid).update({"total_reviews": total_reviews + 1})
+    except:
+        return "Failed"
+    
+    return "Success"
+
+
+@app.route("/api/cancelTheMatch")
+def cancelMatch():
+    matchType = request.args.get("matchType")
+    matchUid = request.args.get("muid")
+
+    if matchUid == None or matchType == None:
+        return "Failed"
+    
+    if matchUid == "" or matchType == "":
+        return 'Failed'
+    
+    if matchType.lower() not in games:
+        return "Failed"
+
+    try:
+        ref = db.collection(matchType).document(matchUid).get().to_dict()
+        notifID = ref["notificationId"]
+        started = ref["started"]
+        if started == 2 or started == 1:
+            return "Failed"
+        refund()
+        deleteChat(chatID=notifID)
+        deleteGame(game=matchType.lower(), gameID=matchUid)
+    except:
+        return "Failed"
+
+    return "Success"
+
+app.run(debug=False)

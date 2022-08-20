@@ -19,6 +19,8 @@ class _OrganizerCardState extends State<OrganizerCard> {
   num? rating;
   String ouid;
   bool isLoading = false;
+  int? totalRating;
+  int? totalReviews;
   bool isNotEligible = false;
   bool isFound = false;
 
@@ -31,7 +33,21 @@ class _OrganizerCardState extends State<OrganizerCard> {
     await FirebaseFirestore.instance.collection("organizer").doc(ouid).get().then((value) {
       imageurl = value["imageurl"];
       name = value["username"];
-      rating = value["rating"];
+      try {
+        totalRating = value["total_rating"];
+      } catch (e) {
+        totalRating = null;
+      }
+      try {
+        totalReviews = value["total_reviews"];
+      } catch (e) {
+        totalReviews = null;
+      }
+      if (totalRating != null && totalReviews != null) {
+        if (totalReviews! > 0) {
+          rating = totalRating! / totalReviews!;
+        }
+      }
     }).catchError((e) {});
     setState(() {});
   }

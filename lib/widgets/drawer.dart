@@ -27,15 +27,12 @@ class AfterLoginDrawer extends StatelessWidget {
                         color: Colors.white,
                         height: 400,
                         width: MediaQuery.of(context).size.width,
-                        child: Image.asset(
-                            "assets/images/zbunker-app-banner.png",
-                            fit: BoxFit.fitWidth)),
+                        child: Image.asset("assets/images/zbunker-app-banner.png", fit: BoxFit.fitWidth)),
                     SizedBox(
                       height: 400,
                       width: double.infinity,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -43,22 +40,16 @@ class AfterLoginDrawer extends StatelessWidget {
                               !(context.watch<UserModel>().imageurl == null)
                                   ? Stack(
                                       children: [
-                                        CircleAvatar(
-                                            backgroundColor: Colors.cyan[700],
-                                            radius: 45),
+                                        CircleAvatar(backgroundColor: Colors.cyan[700], radius: 45),
                                         Positioned(
                                           top: 5,
                                           left: 5,
                                           child: CircleAvatar(
                                             backgroundColor: Colors.cyan[700],
-                                            child:
-                                                const CircularProgressIndicator(
+                                            child: const CircularProgressIndicator(
                                               color: Colors.white,
                                             ),
-                                            foregroundImage: NetworkImage(
-                                                context
-                                                    .watch<UserModel>()
-                                                    .imageurl!),
+                                            foregroundImage: NetworkImage(context.watch<UserModel>().imageurl!),
                                             radius: 40,
                                           ),
                                         )
@@ -76,8 +67,7 @@ class AfterLoginDrawer extends StatelessWidget {
                                       backgroundColor: Colors.cyan[700],
                                       radius: 45),
                               Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 30),
+                                padding: const EdgeInsets.symmetric(horizontal: 30),
                                 child: Text(
                                   context.watch<UserModel>().username == null
                                       ? "null"
@@ -94,8 +84,7 @@ class AfterLoginDrawer extends StatelessWidget {
                 )),
             ListTile(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const History()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const History()));
               }, // leads to match history
               leading: const Icon(Icons.history, color: Colors.black),
               trailing: const Icon(Icons.arrow_right, color: Colors.black),
@@ -106,24 +95,12 @@ class AfterLoginDrawer extends StatelessWidget {
             ),
             ListTile(
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const UserAccount()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const UserAccount()));
               }, // leads to my account
               leading: const Icon(Icons.account_circle, color: Colors.black),
               trailing: const Icon(Icons.arrow_right, color: Colors.black),
               title: const Text(
                 "My Account",
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-            ListTile(
-              onTap: () {}, // leads to Settings
-              leading: const Icon(Icons.settings, color: Colors.black),
-              trailing: const Icon(Icons.arrow_right, color: Colors.black),
-              title: const Text(
-                "Settings",
                 style: TextStyle(color: Colors.black),
               ),
             ),
@@ -146,16 +123,13 @@ class AfterLoginDrawer extends StatelessWidget {
                   style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(Colors.red),
                       overlayColor: MaterialStateProperty.all(Colors.red[100]),
-                      side: MaterialStateProperty.all(
-                          const BorderSide(color: Colors.red, width: 2))),
+                      side: MaterialStateProperty.all(const BorderSide(color: Colors.red, width: 2))),
                 )),
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
                     color: Color(0xff111111),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(50),
-                        topRight: Radius.circular(50))),
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
                 width: MediaQuery.of(context).size.width,
                 margin: const EdgeInsets.only(top: 50),
                 child: Column(
@@ -206,9 +180,7 @@ class BeforeLoginDrawer extends StatelessWidget {
                     SizedBox(
                       height: 400,
                       width: MediaQuery.of(context).size.width,
-                      child: Image.asset(
-                          "assets/images/zbunker-app-banner-upsidedown.png",
-                          fit: BoxFit.cover),
+                      child: Image.asset("assets/images/zbunker-app-banner-upsidedown.png", fit: BoxFit.cover),
                     ),
 
                     Container(
@@ -228,8 +200,7 @@ class BeforeLoginDrawer extends StatelessWidget {
                                 },
                                 style: ButtonStyle(
                                     elevation: MaterialStateProperty.all(0),
-                                    fixedSize: MaterialStateProperty.all(
-                                        const Size(200, 30))),
+                                    fixedSize: MaterialStateProperty.all(const Size(200, 30))),
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -237,8 +208,7 @@ class BeforeLoginDrawer extends StatelessWidget {
                                   const Text("Don't have an account? "),
                                   GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(
-                                          context, AppRoutes.signup);
+                                      Navigator.pushNamed(context, AppRoutes.signup);
                                     }, // signup navigation
                                     child: const Text(
                                       "Create one",
@@ -257,20 +227,11 @@ class BeforeLoginDrawer extends StatelessWidget {
                     )
                   ],
                 )),
-            ListTile(
-              onTap: () {}, // leads to Settings
-              leading: const Icon(Icons.settings, color: Colors.black),
-              trailing: const Icon(Icons.arrow_right, color: Colors.black),
-              title:
-                  const Text("Settings", style: TextStyle(color: Colors.black)),
-            ),
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
                     color: Color(0xff111111),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(50),
-                        topRight: Radius.circular(50))),
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
                 width: MediaQuery.of(context).size.width,
                 margin: const EdgeInsets.only(top: 50),
                 child: Column(

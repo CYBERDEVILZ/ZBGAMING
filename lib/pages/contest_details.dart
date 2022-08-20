@@ -12,6 +12,7 @@ import 'package:zbgaming/widgets/Date_to_string.dart';
 import 'package:zbgaming/widgets/custom_divider.dart';
 import 'package:zbgaming/widgets/organizer_card.dart';
 import 'package:zbgaming/widgets/organizer_info.dart';
+import 'package:zbgaming/widgets/rate_builder.dart';
 import 'package:zbgaming/widgets/rules_and_requirements.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
@@ -26,6 +27,7 @@ class ContestDetails extends StatefulWidget {
 
 class _ContestDetailsState extends State<ContestDetails> {
   bool isLoading = false;
+  bool isReportLoading = false;
   bool isButtonLoading = false;
   bool isRegistered = false;
   String? token;
@@ -45,6 +47,7 @@ class _ContestDetailsState extends State<ContestDetails> {
   String? winnerName;
   int? matchStarted;
   bool cancelled = false;
+  bool? hasRated;
 
   void fetchMatchData() async {
     isLoading = true;
@@ -79,7 +82,7 @@ class _ContestDetailsState extends State<ContestDetails> {
           }
         }
         isLoading = false;
-        setState(() {});
+        if (mounted) setState(() {});
       } catch (e) {
         Fluttertoast.showToast(msg: "something went wrong", backgroundColor: Colors.blue);
         Navigator.pop(context);
@@ -124,12 +127,17 @@ class _ContestDetailsState extends State<ContestDetails> {
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .collection("registered")
         .get()
-        .then((snapshots) {
+        .then((snapshots) async {
       try {
         List<QueryDocumentSnapshot<Map<String, dynamic>>> data = snapshots.docs;
         for (int i = 0; i < data.length; i++) {
           if (data[i].id == widget.uid) {
             isRegistered = true;
+            try {
+              hasRated = data[i]["hasRated"];
+            } catch (e) {
+              hasRated = null;
+            }
           }
         }
       } catch (e) {
@@ -166,6 +174,8 @@ class _ContestDetailsState extends State<ContestDetails> {
 
   @override
   Widget build(BuildContext context) {
+    int selectedOption = 0;
+    TextEditingController fieldvalue = TextEditingController();
     final fee = (rewards == 1)
         ? 100
         : (rewards == 2)
@@ -175,15 +185,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                 : (rewards == 4)
                     ? 5000
                     : null;
-    final amount = (rewards == 1)
-        ? "2,400"
-        : (rewards == 2)
-            ? "12,000"
-            : (rewards == 3)
-                ? "24,000"
-                : (rewards == 4)
-                    ? "1.2 Lacs"
-                    : null;
+    final amount = fee == null ? null : regTeams! * fee * 60 ~/ 100;
 
     // contest details widget
     Widget contestDetails = isLoading
@@ -242,42 +244,186 @@ class _ContestDetailsState extends State<ContestDetails> {
 
                 winnerhash == null
                     ? Container()
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 32),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          color: Colors.blueGrey[900],
-                          child: Column(
-                            children: [
-                              const Text(
-                                "🔥Match Winner🔥",
-                                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-                              ),
-                              const SizedBox(height: 10),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => ShowUserAccount(hashedId: winnerhash!)));
-                                  },
-                                  child: Text(
-                                    "$winnerName",
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(fontSize: 22, color: Color.fromARGB(255, 33, 212, 243)),
-                                  )),
-                              const SizedBox(height: 10),
-                              Text(
-                                "Click on the username to open profile page",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.blueGrey[700]),
-                              )
-                            ],
+                    : Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            color: Colors.blueGrey[900],
+                            child: Column(
+                              children: [
+                                const Text(
+                                  "🔥Match Winner🔥",
+                                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                                ),
+                                const SizedBox(height: 10),
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ShowUserAccount(hashedId: winnerhash!)));
+                                    },
+                                    child: Text(
+                                      "$winnerName",
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(fontSize: 22, color: Color.fromARGB(255, 33, 212, 243)),
+                                    )),
+                                const SizedBox(height: 10),
+                                Text(
+                                  "Click on the username to open profile page",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.blueGrey[700]),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                          Container(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                child: isReportLoading
+                                    ? const LinearProgressIndicator(
+                                        color: Colors.red,
+                                        backgroundColor: Colors.white,
+                                      )
+                                    : const Text(
+                                        "Report This Match",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                style: ButtonStyle(overlayColor: MaterialStateProperty.all(Colors.white)),
+                                onPressed: () async {
+                                  String result = "no";
+                                  result = await showDialog(
+                                      context: context,
+                                      builder: ((context) => StatefulBuilder(builder: (context, setState) {
+                                            return SingleChildScrollView(
+                                              child: AlertDialog(
+                                                insetPadding: const EdgeInsets.all(8),
+                                                title: const Text(
+                                                  "Report the match",
+                                                  style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                                                ),
+                                                content: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Text(
+                                                      "Choose one of the following: ",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 0,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text("Match was started early without prior notice"),
+                                                    ),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 1,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text("Player(s) was/were found cheating"),
+                                                    ),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 2,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text("Organizer selected the wrong winner"),
+                                                    ),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 3,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text(
+                                                          "No information regarding the match was shared by the organizer in the Chat Section"),
+                                                    ),
+                                                    ListTile(
+                                                      leading: Radio(
+                                                          value: 4,
+                                                          groupValue: selectedOption,
+                                                          onChanged: (int? value) {
+                                                            selectedOption = value!;
+                                                            setState(() {});
+                                                          }),
+                                                      title: const Text("Other: "),
+                                                    ),
+                                                    selectedOption == 4
+                                                        ? TextFormField(
+                                                            controller: fieldvalue,
+                                                            decoration: const InputDecoration(
+                                                              border: OutlineInputBorder(),
+                                                              hintText: "Explain in short and concise manner",
+                                                            ),
+                                                            maxLength: 100,
+                                                          )
+                                                        : Container()
+                                                  ],
+                                                ),
+                                                actions: [
+                                                  OutlinedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop("no");
+                                                      },
+                                                      child: const Text("Cancel")),
+                                                  ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop("yes");
+                                                      },
+                                                      child: const Text("Report"))
+                                                ],
+                                              ),
+                                            );
+                                          })));
+
+                                  if (result == "yes") {
+                                    if (FirebaseAuth.instance.currentUser != null) {
+                                      isReportLoading = true;
+                                      setState(() {});
+                                      await get(Uri.parse(ApiEndpoints.baseUrl +
+                                              ApiEndpoints.reportMatch +
+                                              "?uuid=${FirebaseAuth.instance.currentUser!.uid}&mtype=${widget.matchType}&muid=${widget.uid}&rtype=$selectedOption&otherReport=${fieldvalue.text}"))
+                                          .then((value) {
+                                        if (value.statusCode != 200) {
+                                          Fluttertoast.showToast(msg: "Something went wrong (Server Side)");
+                                        } else {
+                                          Fluttertoast.showToast(msg: value.body);
+                                        }
+                                      });
+                                    } else {
+                                      Fluttertoast.showToast(msg: "Must be logged in to access this feature");
+                                    }
+                                  }
+                                  isReportLoading = false;
+                                  setState(() {});
+                                },
+                              )),
+                        ],
                       ),
 
+                const Divider(height: 20),
+                winnerhash != null && hasRated == false && FirebaseAuth.instance.currentUser != null && ouid != null
+                    ? Column(
+                        children: [
+                          RateBuilder(uuid: FirebaseAuth.instance.currentUser!.uid, muid: widget.uid, ouid: ouid!),
+                        ],
+                      )
+                    : Container(),
                 const Divider(height: 20),
 
                 // match format
@@ -406,7 +552,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                           // prize
                           rewards != 0
                               ? Container(
-                                  height: 90,
+                                  height: 120,
                                   padding: const EdgeInsets.all(3),
                                   width: MediaQuery.of(context).size.width,
                                   decoration: const BoxDecoration(color: Colors.blue),
@@ -420,13 +566,21 @@ class _ContestDetailsState extends State<ContestDetails> {
                                       ),
                                       Expanded(
                                         child: FittedBox(
-                                          child: Text(
-                                            "\u20b9 $amount or more",
-                                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                            textScaleFactor: 4,
-                                          ),
+                                          child: regTeams! <= 1
+                                              ? const Text(
+                                                  "[Waiting for more players]",
+                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                )
+                                              : Text(
+                                                  "\u20b9 $amount",
+                                                  style:
+                                                      const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                  textScaleFactor: 4,
+                                                ),
                                         ),
-                                      )
+                                      ),
+                                      const Text("Bring more players to increase the PRIZE POOL!",
+                                          style: TextStyle(color: Colors.white))
                                     ],
                                   ),
                                 )
@@ -539,7 +693,7 @@ class _ContestDetailsState extends State<ContestDetails> {
           }
           if (skill == 2) {
             if (currentLevel < 20001) {
-              Fluttertoast.showToast(msg: "Must be VETERAN or greater to participate");
+              Fluttertoast.showToast(msg: "Must be ELITE to participate");
               isButtonLoading = false;
               setState(() {});
               return;
@@ -719,7 +873,14 @@ class _ContestDetailsState extends State<ContestDetails> {
                         child: Container(
                         color: Colors.white.withOpacity(0.9),
                         alignment: Alignment.center,
-                        child: Image.asset("assets/images/cancelled.png"),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Image.asset("assets/images/cancelled.png"),
+                            Image.asset("assets/images/cancelled.png"),
+                            Image.asset("assets/images/cancelled.png"),
+                          ],
+                        ),
                       ))
                     : Container()
               ]),

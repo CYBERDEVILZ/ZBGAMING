@@ -16,7 +16,6 @@ class HomePageList extends StatelessWidget {
             Navigator.pushNamed(context, AppRoutes.csgo);
           }),
       Tile(
-          disabled: true,
           img: "assets/images/freefire.jpg",
           title: "Garena Free Fire",
           ontap: () {
@@ -24,7 +23,7 @@ class HomePageList extends StatelessWidget {
           }),
       Tile(
           img: "assets/images/pubg.jpg",
-          title: "PUBG New State",
+          title: "Battlegrounds Mobile India",
           ontap: () {
             Navigator.pushNamed(context, AppRoutes.pubg);
           }),

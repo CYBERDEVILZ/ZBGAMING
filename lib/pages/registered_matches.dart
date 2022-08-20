@@ -20,7 +20,7 @@ class RegisteredMatches extends StatelessWidget {
     // --------------- Return is Here --------------- //
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: const Text("Your Registered Matches"), elevation: 0, centerTitle: true),
+        appBar: AppBar(title: const Text("Your Registered Matches"), elevation: 0),
         body: _auth.currentUser?.uid == null ? notSignedIn : const BuildTiles(),
       ),
     );
@@ -52,7 +52,25 @@ class _BuildTilesState extends State<BuildTiles> {
         .collection("registered")
         .orderBy("date")
         .get()
-        .then((value) {
+        .then((value) async {
+      data = value.docs;
+      for (var datas in data) {
+        String matchType = datas["matchType"];
+        String uid = datas["uid"];
+        DocumentSnapshot<Map<String, dynamic>> match =
+            await FirebaseFirestore.instance.collection(matchType).doc(uid).get();
+        if (!match.exists) {
+          await datas.reference.delete();
+        }
+      }
+    });
+    await FirebaseFirestore.instance
+        .collection("userinfo")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("registered")
+        .orderBy("date")
+        .get()
+        .then((value) async {
       data = value.docs;
     });
 

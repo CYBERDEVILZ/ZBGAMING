@@ -5,7 +5,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/contest_details.dart';
+import 'package:zbgaming/pages/history.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
+import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/widgets/drawer.dart';
 import 'package:zbgaming/widgets/exit_pop_up.dart';
@@ -24,7 +26,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int index = 0; // index for bottom nav bar
-  Map<int, Widget> showBody = {0: const HomePageList(), 1: const FavoriteOrganizers()}; // mapping for bottom nav bar
+  Map<int, Widget> showBody = {
+    0: const HomePageList(),
+    1: const FavoriteOrganizers(),
+    2: RegisteredMatches(),
+    3: const History(),
+    4: const UserAccount()
+  }; // mapping for bottom nav bar
 
   bool isLogged = false;
 
@@ -70,6 +78,7 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.authStateChanges().listen((User? event) async {
       if (event?.uid == null) {
         isLogged = false;
+        index = 0;
         if (mounted) setState(() {});
         if (mounted) context.read<UserModel>().signout();
       } else if (event?.uid != null) {
@@ -99,30 +108,72 @@ class _HomePageState extends State<HomePage> {
         child: WillPopScope(
           onWillPop: () => showExitPopup(context),
           child: Scaffold(
-            appBar: AppBar(title: Text(index == 0 ? "Games" : "Favorite Organizers"), elevation: 0, centerTitle: true),
+            appBar: index == 0 ? AppBar(title: const Text("Games"), elevation: 0, centerTitle: true) : null,
             body: showBody[index], // contains list of games
             drawer: isLogged ? const AfterLoginDrawer() : const BeforeLoginDrawer(),
-            bottomNavigationBar: BottomNavigationBar(
-                items: const [
-                  // games
-                  BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Games"),
+            bottomNavigationBar: !isLogged
+                ? null
+                : BottomNavigationBar(
+                    type: BottomNavigationBarType.shifting,
+                    showSelectedLabels: false,
+                    showUnselectedLabels: false,
+                    items: const [
+                      // games
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.gamepad),
+                          label: "Games",
+                          activeIcon: Icon(
+                            Icons.gamepad,
+                            size: 30,
+                            color: Colors.blue,
+                          ),
+                          backgroundColor: Colors.black),
 
-                  // favorite organizations
-                  BottomNavigationBarItem(icon: Icon(Icons.star), label: "Favorites")
-                ],
-                currentIndex: index,
-                onTap: (value) {
-                  index = value;
-                  setState(() {});
-                }),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => RegisteredMatches()));
-              }, // shows registered matches
-              child: const Icon(Icons.flag),
-              elevation: 0,
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                      // favorite organizations
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.star),
+                          label: "Favorites",
+                          activeIcon: Icon(
+                            Icons.star,
+                            size: 30,
+                            color: Colors.blue,
+                          )),
+
+                      // registered matches
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.flag),
+                          label: "Registered",
+                          activeIcon: Icon(
+                            Icons.flag,
+                            size: 30,
+                            color: Colors.blue,
+                          )),
+
+                      // hisotry
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.history),
+                          label: "History",
+                          activeIcon: Icon(
+                            Icons.history,
+                            size: 30,
+                            color: Colors.blue,
+                          )),
+
+                      // account
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.account_circle),
+                          label: "Account",
+                          activeIcon: Icon(
+                            Icons.account_circle,
+                            size: 30,
+                            color: Colors.blue,
+                          )),
+                    ],
+                    currentIndex: index,
+                    onTap: (value) {
+                      index = value;
+                      setState(() {});
+                    }),
           ),
         ));
   }

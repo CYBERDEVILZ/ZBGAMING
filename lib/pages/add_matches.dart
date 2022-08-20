@@ -26,18 +26,18 @@ class TournamentList extends StatelessWidget {
   Widget build(BuildContext context) {
     // array containing multiple tiles
     final List<Widget> list = [
-      Tile(
-          img: "assets/images/csgo.jpg",
-          title: "Counter Strike: Global Offensive",
-          ontap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const CreateMatch(
-                          matchType: "csgo",
-                          eligible: false,
-                        )));
-          }),
+      // Tile(
+      //     img: "assets/images/csgo.jpg",
+      //     title: "Counter Strike: Global Offensive",
+      //     ontap: () {
+      //       Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //               builder: (context) => const CreateMatch(
+      //                     matchType: "csgo",
+      //                     eligible: false,
+      //                   )));
+      //     }),
       Tile(
           img: "assets/images/freefire.jpg",
           title: "Garena Free Fire",
@@ -52,7 +52,7 @@ class TournamentList extends StatelessWidget {
           }),
       Tile(
           img: "assets/images/pubg.jpg",
-          title: "PUBG New State",
+          title: "Battlegrounds Mobile India",
           ontap: () {
             Navigator.push(
                 context,
@@ -62,18 +62,18 @@ class TournamentList extends StatelessWidget {
                           eligible: false,
                         )));
           }),
-      Tile(
-          img: "assets/images/valo.jpg",
-          title: "Valorant",
-          ontap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const CreateMatch(
-                          matchType: "valo",
-                          eligible: false,
-                        )));
-          }),
+      // Tile(
+      //     img: "assets/images/valo.jpg",
+      //     title: "Valorant",
+      //     ontap: () {
+      //       Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //               builder: (context) => const CreateMatch(
+      //                     matchType: "valo",
+      //                     eligible: false,
+      //                   )));
+      //     }),
     ];
 
     return ListView.builder(

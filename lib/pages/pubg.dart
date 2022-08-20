@@ -77,6 +77,7 @@ class _PubgTournamentsState extends State<PubgTournaments> {
         .where("skill", isEqualTo: skillquery)
         .where("started", isEqualTo: startedquery)
         .where("special", isEqualTo: specialquery)
+        .where("date", isGreaterThanOrEqualTo: DateTime.now().toLocal())
         .orderBy("date")
         .snapshots();
 
@@ -246,6 +247,13 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                   return const SliverToBoxAdapter(
                       child: SizedBox(height: 30, child: FittedBox(child: CircularProgressIndicator())));
                 }
+                if (snapshot.data!.docs.isEmpty) {
+                  return SliverToBoxAdapter(
+                      child: Image.asset(
+                    "assets/images/no_data.png",
+                    fit: BoxFit.fitHeight,
+                  ));
+                }
                 return SliverList(
                     delegate: SliverChildListDelegate(snapshot.data!.docs
                         .map((DocumentSnapshot e) => TournamentBuilder(
@@ -280,9 +288,7 @@ class SlivAppBar extends StatelessWidget {
       pinned: true, // pins the appbar at start of scroll
       elevation: 0,
       expandedHeight: 200, // height of expanded app bar
-      title: const Text(
-        "PUBG: New State",
-      ),
+
       centerTitle: true,
       // space for image in appbar
       flexibleSpace: FlexibleSpaceBar(

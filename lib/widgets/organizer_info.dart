@@ -39,7 +39,13 @@ class _OrganizerState extends State<OrganizerInfo> {
       name = value["username"];
       email = value["email"];
       special = value["special"];
-      rating = value["rating"];
+      try {
+        int? totalRating = value["total_rating"];
+        int? totalReviews = value["total_reviews"];
+        rating = totalRating! / totalReviews!;
+      } catch (e) {
+        rating = 0;
+      }
       amountGiven = value["amountGiven"];
     });
     isLoading = false;
