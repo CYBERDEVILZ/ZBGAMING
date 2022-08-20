@@ -954,8 +954,9 @@ def receivedNotification():
         return "Success"
     
     return "success"
-        
 
+
+# REPORT MATCH
 @app.get("/api/reportMatch")
 def reportMatch():
     muid = request.args.get("muid")
@@ -1025,7 +1026,7 @@ def reportMatch():
     return "Success"
     
 
-
+# RATING FOR ORGANIZER
 @app.get("/api/rate")
 def rate():
     ouid = request.args.get("ouid")
@@ -1063,6 +1064,7 @@ def rate():
     return "Success"
 
 
+# CANCEL MATCH
 @app.route("/api/cancelTheMatch")
 def cancelMatch():
     matchType = request.args.get("matchType")
@@ -1090,5 +1092,24 @@ def cancelMatch():
         return "Failed"
 
     return "Success"
+
+
+# ORGANIZER LEVEL CALCULATE
+@app.route("/api/organizerLevelCalculate")
+def organizerLevelCalculate():
+    ouid = request.args.get("ouid")
+
+    # checking for valid ouid
+    if ouid == None:
+        return "Failed"
+    if ouid == "":
+        return "Failed"
+    organizerData = db.collection("organizer").document(ouid).get().to_dict()
+    if organizerData == None:
+        return "Failed"
+    
+    # calculating organizer level
+    amountGiven = organizerData["amountGiven"]
+    
 
 app.run(debug=False)
