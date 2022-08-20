@@ -48,6 +48,11 @@ Elite:  20,001 +
 - ZBunker goodies within 1000 rs
 - Posters to veterans
 
+## ORGANIZER LEVELS
+Organizer levels up solely based on the amount he gives to players
+AmountGiven: 0 <= 10,000 ===> not eligible for organizing high paid matches
+AmountGiven: < 10,001 ===> eligible for high paid matches
+
 ## SOME CONSTANTS
 ### started
 - 0 = registrations open
