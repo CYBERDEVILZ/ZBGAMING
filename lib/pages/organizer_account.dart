@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/src/provider.dart';
 import 'package:zbgaming/model/organizermodel.dart';
 import 'package:zbgaming/pages/organizer_preview_pane.dart';
+import 'package:zbgaming/widgets/favorite_organizer.dart';
 
 class OrganizerAccount extends StatefulWidget {
   const OrganizerAccount({Key? key}) : super(key: key);
@@ -21,6 +22,29 @@ class OrganizerAccount extends StatefulWidget {
 
 class _OrganizerAccountState extends State<OrganizerAccount> {
   bool isLoading = false;
+  String? level;
+
+  void fetchData() async {
+    isLoading = true;
+    setState(() {});
+    await FirebaseFirestore.instance
+        .collection("organizer")
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get()
+        .then((value) => level = value["amountGiven"] <= 10000 ? "Omega" : "Alpha")
+        .catchError((onError) {
+      Fluttertoast.showToast(msg: "Some error occurred");
+    });
+    isLoading = false;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     void updateImage() async {
@@ -113,12 +137,26 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                   textScaleFactor: 2,
                 ),
 
+                // Level
+                Text(
+                  "Level: $level",
+                  style: const TextStyle(color: Colors.blue),
+                ),
                 const SizedBox(height: 30),
 
                 // Upload banner
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("Upload Banner [width:height = 4:1]"),
+                  child: RichText(
+                    text: const TextSpan(
+                        text: "Upload Banner",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+                        children: [
+                          TextSpan(
+                              text: " [width:height = 4:1]",
+                              style: TextStyle(color: Colors.blue, fontSize: 15, fontWeight: FontWeight.normal))
+                        ]),
+                  ),
                 ),
                 const SizedBox(height: 5),
                 Container(
@@ -134,19 +172,13 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
 
                 // preview button
                 Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: // navigate to preview pane
-                        () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const PreviewPane()));
-                    },
-                    child: const Text(
-                      "Preview",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.w500, decoration: TextDecoration.underline),
-                    ),
-                  ),
-                ),
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      child: const Text("Preview"),
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const PreviewPane()));
+                      },
+                    )),
 
                 const SizedBox(height: 20),
 
