@@ -225,11 +225,19 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                       Fluttertoast.showToast(msg: "Logging out...");
                       await FirebaseAuth.instance.signOut();
                     },
-                    child: const Text("Sign Out", style: TextStyle(fontSize: 22, color: Colors.red)),
+                    child: const Text("Sign Out", style: TextStyle(fontSize: 20, color: Colors.red)),
                     style: ButtonStyle(
                         overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0.1)),
                         side: MaterialStateProperty.all(const BorderSide(color: Colors.red)),
-                        fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 50))))
+                        fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 40)))),
+
+                // Delete widget
+                ElevatedButton(
+                    onPressed: () {},
+                    child: const Text("Delete Account", style: TextStyle(fontSize: 20, color: Colors.white)),
+                    style: ButtonStyle(
+                        fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 40)),
+                        backgroundColor: MaterialStateProperty.all(Colors.red)))
               ],
             ),
           ),
