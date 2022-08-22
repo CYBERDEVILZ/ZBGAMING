@@ -11,7 +11,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/src/provider.dart';
 import 'package:zbgaming/model/organizermodel.dart';
 import 'package:zbgaming/pages/organizer_preview_pane.dart';
-import 'package:zbgaming/widgets/favorite_organizer.dart';
 
 class OrganizerAccount extends StatefulWidget {
   const OrganizerAccount({Key? key}) : super(key: key);
@@ -22,6 +21,7 @@ class OrganizerAccount extends StatefulWidget {
 
 class _OrganizerAccountState extends State<OrganizerAccount> {
   bool isLoading = false;
+  bool isKYCVerified = false;
   String? level;
 
   void fetchData() async {
@@ -31,8 +31,14 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
         .collection("organizer")
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
-        .then((value) => level = value["amountGiven"] <= 10000 ? "Omega" : "Alpha")
-        .catchError((onError) {
+        .then((value) {
+      level = value["amountGiven"] <= 10000 ? "Omega" : "Alpha";
+      try {
+        isKYCVerified = value["isKYCVerified"];
+      } catch (e) {
+        isKYCVerified = false;
+      }
+    }).catchError((onError) {
       Fluttertoast.showToast(msg: "Some error occurred");
     });
     isLoading = false;
@@ -138,10 +144,30 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                 ),
 
                 // Level
-                Text(
-                  "Level: $level",
-                  style: const TextStyle(color: Colors.blue),
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(5), border: Border.all(color: Colors.blue)),
+                  child: Text(
+                    "Level: $level",
+                    style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.w600),
+                  ),
                 ),
+
+                const SizedBox(height: 10),
+
+                // kycverified label
+                isKYCVerified
+                    ? ElevatedButton(
+                        onPressed: () {},
+                        child: const Text("KYC Verified"),
+                      )
+                    : ElevatedButton(
+                        onPressed: () async {
+                          Fluttertoast.showToast(msg: "KYC Verification will be added soon");
+                        },
+                        child: const Text("Verify your KYC")),
+
                 const SizedBox(height: 30),
 
                 // Upload banner

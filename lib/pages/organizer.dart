@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
@@ -22,6 +23,7 @@ class Organizer extends StatefulWidget {
 
 class _OrganizerState extends State<Organizer> {
   bool eligible = false;
+  bool isKYCVerified = false;
   // streams to subscribe
   Stream<QuerySnapshot> csgoStream = FirebaseFirestore.instance
       .collection("csgo")
@@ -71,6 +73,11 @@ class _OrganizerState extends State<Organizer> {
                 eligible = data["amountGiven"] <= 10000 ? true : false;
               } catch (e) {
                 eligible = false;
+              }
+              try {
+                isKYCVerified = data["isKYCVerifed"];
+              } catch (e) {
+                isKYCVerified = false;
               }
               context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
               context.read<OrganizerModel>().setusername(data["username"]);
@@ -211,13 +218,15 @@ class _OrganizerState extends State<Organizer> {
             elevation: 0,
             // add matches page
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddMatches(
-                      eligible: eligible,
-                    ),
-                  ));
+              isKYCVerified
+                  ? Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddMatches(
+                          eligible: eligible,
+                        ),
+                      ))
+                  : Fluttertoast.showToast(msg: "KYC Must be verified");
             },
             child: const Icon(Icons.add),
           )),
