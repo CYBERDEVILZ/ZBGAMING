@@ -62,23 +62,27 @@ class _OrganizerState extends State<Organizer> {
                 context, MaterialPageRoute(builder: (context) => const OrganizerLogin()), (route) => false);
           }
           if (Provider.of<OrganizerModel>(context, listen: false).uid != null) {
-            var data = await FirebaseFirestore.instance
-                .collection("organizer")
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .get();
             try {
-              eligible = data["amountGiven"] <= 10000 ? true : false;
+              var data = await FirebaseFirestore.instance
+                  .collection("organizer")
+                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                  .get();
+              try {
+                eligible = data["amountGiven"] <= 10000 ? true : false;
+              } catch (e) {
+                eligible = false;
+              }
+              context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
+              context.read<OrganizerModel>().setusername(data["username"]);
+              context.read<OrganizerModel>().setemail(data["email"]);
+              context.read<OrganizerModel>().setimageurl(data["imageurl"]);
+              try {
+                context.read<OrganizerModel>().setbannerurl(data["bannerurl"]);
+              } catch (e) {
+                context.read<OrganizerModel>().setbannerurl(null);
+              }
             } catch (e) {
-              eligible = false;
-            }
-            context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
-            context.read<OrganizerModel>().setusername(data["username"]);
-            context.read<OrganizerModel>().setemail(data["email"]);
-            context.read<OrganizerModel>().setimageurl(data["imageurl"]);
-            try {
-              context.read<OrganizerModel>().setbannerurl(data["bannerurl"]);
-            } catch (e) {
-              context.read<OrganizerModel>().setbannerurl(null);
+              await FirebaseAuth.instance.signOut();
             }
           }
         }

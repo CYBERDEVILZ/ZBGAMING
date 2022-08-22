@@ -17,10 +17,6 @@ Welcome Organizers!
 You have taken the right step by choosing us as the platform to host your tournaments. We hope you will co-operate with us and make this a wholesome experience for all.
 Since this app involves monetary transactions, we prefer you adhere to our policy in the strictest manner possible. Pivoting away from the rules, in whatever way possible, is not tolerated at all.
 
-
-IMPORTANT!!!
-CREATE BACKEND TO CALCULATE ORGANIZER LEVEL BASED ON AMOUNTGIVEN PARAMETER.
-
 IMPORTANT!!!
 I HAVE USED TOKENS FOR PUSH NOTIFICATION. CONVERT THEM INTO TOPICS FOR FASTER SENDING. OR USE BACKGROUND WORKER (LEAST PREFERRED)
 

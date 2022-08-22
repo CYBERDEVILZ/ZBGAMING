@@ -190,6 +190,20 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                     trailing: Icon(Icons.arrow_right),
                   ),
                 ),
+
+                const SizedBox(height: 20),
+
+                // Signout widget
+                OutlinedButton(
+                    onPressed: () async {
+                      Fluttertoast.showToast(msg: "Logging out...");
+                      await FirebaseAuth.instance.signOut();
+                    },
+                    child: const Text("Sign Out", style: TextStyle(fontSize: 22, color: Colors.red)),
+                    style: ButtonStyle(
+                        overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0.1)),
+                        side: MaterialStateProperty.all(const BorderSide(color: Colors.red)),
+                        fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 50))))
               ],
             ),
           ),
