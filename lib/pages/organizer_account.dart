@@ -233,7 +233,11 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
 
                 // Delete widget
                 ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // firstly delete the organizer's games
+                      // then delete the organizer's cloud storage data
+                      // thirdly delete the organizer's account from auth.instance
+                    },
                     child: const Text("Delete Account", style: TextStyle(fontSize: 20, color: Colors.white)),
                     style: ButtonStyle(
                         fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 40)),
