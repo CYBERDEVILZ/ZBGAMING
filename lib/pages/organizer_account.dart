@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/src/provider.dart';
 import 'package:zbgaming/model/organizermodel.dart';
 import 'package:zbgaming/pages/organizer_preview_pane.dart';
+import 'package:zbgaming/utils/games.dart';
 
 class OrganizerAccount extends StatefulWidget {
   const OrganizerAccount({Key? key}) : super(key: key);
@@ -22,6 +23,7 @@ class OrganizerAccount extends StatefulWidget {
 class _OrganizerAccountState extends State<OrganizerAccount> {
   bool isLoading = false;
   bool isKYCVerified = false;
+  bool isLoadingDialog = false;
   String? level;
 
   void fetchData() async {
@@ -234,9 +236,82 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                 // Delete widget
                 ElevatedButton(
                     onPressed: () {
-                      // firstly delete the organizer's games
-                      // then delete the organizer's cloud storage data
-                      // thirdly delete the organizer's account from auth.instance
+                      TextEditingController loginController = TextEditingController();
+                      showDialog(
+                          context: context,
+                          builder: ((context) {
+                            return StatefulBuilder(builder: ((context, setState) {
+                              return AlertDialog(
+                                title: const Text("Reauthentication Required!"),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text("Enter you password below"),
+                                    TextFormField(controller: loginController)
+                                  ],
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('CANCEL')),
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        isLoadingDialog = true;
+                                        setState(() {});
+                                        try {
+                                          // check for ongoing matches of organizer first
+                                          for (String i in Games.games) {
+                                            QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
+                                                .collection(i)
+                                                .where("uid", isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+                                                .get();
+                                            if (data.docs.isNotEmpty) {
+                                              Fluttertoast.showToast(msg: "Complete ongoing matches first!");
+                                              isLoadingDialog = false;
+                                              setState(() {});
+                                              return;
+                                            }
+                                          }
+
+                                          // reauthenticate the user
+                                          AuthCredential credential = EmailAuthProvider.credential(
+                                              email: FirebaseAuth.instance.currentUser!.email!,
+                                              password: loginController.text);
+                                          await FirebaseAuth.instance.currentUser
+                                              ?.reauthenticateWithCredential(credential)
+                                              .then((value) async {
+                                            User? user1 = value.user;
+                                            if (user1 != null) {
+                                              // delete the user
+                                              await value.user!.delete().then((value) async {
+                                                // if delete is successful then delete data from firestore
+                                                try {
+                                                  FirebaseStorage.instance
+                                                      .ref("zbgaming/organizers/images/${user1.uid}}")
+                                                      .delete();
+                                                } catch (e) {
+                                                  Fluttertoast.showToast(
+                                                      msg: "Error occurred while deleting from database.");
+                                                }
+                                              });
+                                            } else {
+                                              Fluttertoast.showToast(msg: "Failed authentication");
+                                            }
+                                          });
+                                        } catch (e) {
+                                          Fluttertoast.showToast(msg: "$e");
+                                        }
+                                        isLoadingDialog = false;
+                                        setState(() {});
+                                      },
+                                      child:
+                                          isLoadingDialog ? const CircularProgressIndicator() : const Text('CONFIRM'))
+                                ],
+                              );
+                            }));
+                          }));
                     },
                     child: const Text("Delete Account", style: TextStyle(fontSize: 20, color: Colors.white)),
                     style: ButtonStyle(

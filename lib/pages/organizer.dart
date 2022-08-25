@@ -75,7 +75,7 @@ class _OrganizerState extends State<Organizer> {
                 eligible = false;
               }
               try {
-                isKYCVerified = data["isKYCVerifed"];
+                isKYCVerified = data["isKYCVerified"];
               } catch (e) {
                 isKYCVerified = false;
               }
