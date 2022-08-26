@@ -16,8 +16,8 @@ class Rules extends StatelessWidget {
     ];
 
     List<String?> contestDetails = [
-      "Rewards (if any) will be dispatched to your Bank Accounts within 48 hours. If you failed to receive it, make sure to raise a query from the Customer Care section.",
-      "If the Organizer resorts to cheating, you can report the Organizer from History. Our team will begin the investigation. If it turns out to be a false report, then your account will be banned without warning. So report only and only if you think there is surely some foul play going on.",
+      "Rewards (if any) will be dispatched to your Bank Accounts within 48 hours.",
+      "If the Organizer resorts to cheating, you can report the Organizer. Our team will begin the investigation. If it turns out to be a false report, then your account will be banned without warning. So report only and only if you think there is surely some foul play going on.",
     ];
 
     return Column(
@@ -74,7 +74,8 @@ class Rules extends StatelessWidget {
 
 // Requirements
 class Requirements extends StatelessWidget {
-  const Requirements({Key? key}) : super(key: key);
+  const Requirements({Key? key, required this.paid}) : super(key: key);
+  final bool paid;
 
   @override
   Widget build(BuildContext context) {
@@ -111,11 +112,11 @@ class Requirements extends StatelessWidget {
                 child: Container(
               margin: const EdgeInsets.only(left: 5),
               alignment: Alignment.centerLeft,
-              child: const Padding(
-                padding: EdgeInsets.only(left: 5),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 5),
                 child: Text(
-                  "User Must Be Verified",
-                  style: TextStyle(color: Colors.white),
+                  paid ? "User's KYC Must Be Verified" : "User's Email Must Be Verified",
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
               height: 40,
@@ -136,7 +137,7 @@ class Requirements extends StatelessWidget {
               child: const Padding(
                 padding: EdgeInsets.only(left: 5),
                 child: Text(
-                  "Game Account Must Be Connected with ZBunker",
+                  "Game Account Must Be Linked",
                   style: TextStyle(color: Colors.white),
                 ),
               ),

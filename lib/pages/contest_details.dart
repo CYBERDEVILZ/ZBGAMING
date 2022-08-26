@@ -628,10 +628,10 @@ class _ContestDetailsState extends State<ContestDetails> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text("Requirements",
+                        children: [
+                          const Text("Requirements",
                               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white), textScaleFactor: 1.7),
-                          Requirements(),
+                          Requirements(paid: rewards == 0 ? false : true),
                         ])),
 
                 const CustomDivider(indent: 0, height: 10, radius: false)

@@ -6,6 +6,9 @@ OPTIMIZATIONS / IDEAS
 
 UPDATE AMOUNT GIVEN PARAMETER WHEN THE ORGANIZER SUCCESSFULLY ORGANIZE A MATCH THAT IS PAID. (only happens when the payout is successful)
 
+IMPORTANT!!!
+ONLY FOR PAID MATCHES DOES THE USER HAVE TO BE KYC VERIFIED. ELSE EMAIL VERIFICATION IS A MUST
+
 INSANE SECURITY ISSUE!!!
 ------------------------
 START MATCH, STOP MATCH, CANCEL MATCH, ETC ARE NOT PROTECTED FROM CSRF! MAKE SURE TO AUTHENTICATE THE SOURCE OF REQUEST!
@@ -25,8 +28,6 @@ CREATE LOGIC FOR PAYOUTS
 
 IMPORTANT!!!
 USER AND ORGANIZER KYC VERIFICATION PAGE LEFT (PART OF PAYOUT)
-
-ORGANIZER DELETE LOGIC NEEDS TO BE ADDED
 
 
 ########################## DESIGN SECTION ###############################
@@ -264,8 +265,6 @@ def register():
             userdata = user.to_dict()
             if userdata == None:
                 return "Failed: No such user"
-            if userdata["isVerified"] == False:
-                return "Failed: User not verified"
 
             # checking whether the user has linked his game account
             ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
