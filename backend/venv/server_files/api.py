@@ -240,6 +240,7 @@ def organizerSignup():
                                 "special": special,
                                 "amountGiven": amountGiven,
                                 "rating": rating,
+                                "isKYCVerified": False
                             }
                         )
                         return "Success"
