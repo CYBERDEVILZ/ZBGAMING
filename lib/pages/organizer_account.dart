@@ -176,7 +176,7 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                       Padding(
                           padding: const EdgeInsets.all(3),
                           child: Text(
-                            level!,
+                            "$level",
                             style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.w600),
                           ))
                     ],
