@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
+import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/utils/apistring.dart';
 
 class CreateMatch extends StatefulWidget {
@@ -66,8 +67,8 @@ class _CreateMatchState extends State<CreateMatch> {
         if (value.statusCode == 200) {
           if (value.body == "Success") {
             Fluttertoast.showToast(msg: "Success");
-            Navigator.pop(context);
-            Navigator.pop(context);
+            Navigator.pushAndRemoveUntil(
+                context, MaterialPageRoute(builder: (context) => const Organizer()), (route) => false);
           }
           Fluttertoast.showToast(msg: value.body);
         } else {

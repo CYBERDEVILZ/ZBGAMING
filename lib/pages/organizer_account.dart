@@ -145,14 +145,41 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                   textScaleFactor: 2,
                 ),
 
+                Text(
+                  context.watch<OrganizerModel>().email!,
+                  style: const TextStyle(color: Colors.blue),
+                  textScaleFactor: 1.2,
+                ),
+
+                const SizedBox(height: 10),
+
                 // Level
                 Container(
-                  padding: const EdgeInsets.all(3),
                   decoration:
                       BoxDecoration(borderRadius: BorderRadius.circular(5), border: Border.all(color: Colors.blue)),
-                  child: Text(
-                    "Level: $level",
-                    style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.w600),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius:
+                                const BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)),
+                            border: Border.all(color: Colors.blue)),
+                        child: const Text(
+                          "Level",
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      const SizedBox(width: 3),
+                      Padding(
+                          padding: const EdgeInsets.all(3),
+                          child: Text(
+                            level!,
+                            style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.w600),
+                          ))
+                    ],
                   ),
                 ),
 
