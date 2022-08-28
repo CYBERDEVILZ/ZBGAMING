@@ -277,7 +277,7 @@ class DropDownSolo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      items: <String>["Solo", "Team"]
+      items: <String>["Solo"] //, "Team"]
           .map<DropdownMenuItem<String>>((String e) => DropdownMenuItem<String>(
                 child: Text(e),
                 value: e,
@@ -300,7 +300,7 @@ class DropDownMatch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      items: <String>["Match", "Tournament"]
+      items: <String>["Match"] //, "Tournament"]
           .map<DropdownMenuItem<String>>((String e) => DropdownMenuItem<String>(
                 child: Text(e),
                 value: e,
