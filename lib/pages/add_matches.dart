@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:zbgaming/pages/create_match.dart';
 
 class AddMatches extends StatelessWidget {
-  const AddMatches({Key? key}) : super(key: key);
+  const AddMatches({Key? key, required this.eligible}) : super(key: key);
+  final bool eligible;
 
   @override
   Widget build(BuildContext context) {
@@ -13,14 +14,15 @@ class AddMatches extends StatelessWidget {
           title: const Text("Choose Game"),
           centerTitle: true,
         ),
-        body: const TournamentList(),
+        body: TournamentList(eligible: eligible),
       ),
     );
   }
 }
 
 class TournamentList extends StatelessWidget {
-  const TournamentList({Key? key}) : super(key: key);
+  const TournamentList({Key? key, required this.eligible}) : super(key: key);
+  final bool eligible;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +35,9 @@ class TournamentList extends StatelessWidget {
       //       Navigator.push(
       //           context,
       //           MaterialPageRoute(
-      //               builder: (context) => const CreateMatch(
+      //               builder: (context) =>  CreateMatch(
       //                     matchType: "csgo",
-      //                     eligible: false,
+      //                     eligible: eligible,
       //                   )));
       //     }),
       Tile(
@@ -45,9 +47,9 @@ class TournamentList extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const CreateMatch(
+                    builder: (context) => CreateMatch(
                           matchType: "freefire",
-                          eligible: false,
+                          eligible: eligible,
                         )));
           }),
       Tile(
@@ -57,9 +59,9 @@ class TournamentList extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const CreateMatch(
+                    builder: (context) => CreateMatch(
                           matchType: "pubg",
-                          eligible: false,
+                          eligible: eligible,
                         )));
           }),
       // Tile(
@@ -69,9 +71,9 @@ class TournamentList extends StatelessWidget {
       //       Navigator.push(
       //           context,
       //           MaterialPageRoute(
-      //               builder: (context) => const CreateMatch(
+      //               builder: (context) =>  CreateMatch(
       //                     matchType: "valo",
-      //                     eligible: false,
+      //                     eligible: eligible,
       //                   )));
       //     }),
     ];

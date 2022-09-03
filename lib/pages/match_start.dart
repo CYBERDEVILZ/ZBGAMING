@@ -252,8 +252,10 @@ class _MatchStartState extends State<MatchStart> {
                                               setState(() {
                                                 isLoading = false;
                                               });
-                                              Navigator.pushReplacement(context,
-                                                  MaterialPageRoute(builder: ((context) => const Organizer())));
+                                              Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(builder: ((context) => const Organizer())),
+                                                  (route) => false);
                                             },
                                             child: isLoading
                                                 ? const CircularProgressIndicator(

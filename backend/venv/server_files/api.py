@@ -4,7 +4,17 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
+IMPORTANT!!!
+IMPLEMENT LEADERBOARD: Top 50 Players with the most points are shown.
+
+IMPORTANT!!!
 UPDATE AMOUNT GIVEN PARAMETER WHEN THE ORGANIZER SUCCESSFULLY ORGANIZE A MATCH THAT IS PAID. (only happens when the payout is successful)
+
+IMPORTANT!!!
+REFUND MONEY LOGIC AND ORGANIZER BAD RATING LOGIC WHEN HE CANCELS THE MATCH MUST BE IMPLEMENTED IN THE API
+
+IMPORTANT!!!
+VALIDATOR PAGE NOT ADDED. VALIDATOR CAN SIGN IN, SEE REPORTS, TAKE ACTIONS: BAN AN ORGANIZER, BAN A PLAYER, REFUND MONEY AND CANCEL MATCH.
 
 INSANE SECURITY ISSUE!!!
 ------------------------
@@ -17,47 +27,30 @@ Welcome Organizers!
 You have taken the right step by choosing us as the platform to host your tournaments. We hope you will co-operate with us and make this a wholesome experience for all.
 Since this app involves monetary transactions, we prefer you adhere to our policy in the strictest manner possible. Pivoting away from the rules, in whatever way possible, is not tolerated at all.
 
-
-IMPORTANT!!!
-CREATE BACKEND TO CALCULATE ORGANIZER LEVEL BASED ON AMOUNTGIVEN PARAMETER.
-
 IMPORTANT!!!
 I HAVE USED TOKENS FOR PUSH NOTIFICATION. CONVERT THEM INTO TOPICS FOR FASTER SENDING. OR USE BACKGROUND WORKER (LEAST PREFERRED)
-
-IMPORTANT!!!
-VALIDATE ORGANIZER SIGNIN AS WELL. NORMAL PLAYERS CAN ALSO SIGN IN AS ORGANIZERS AND THERE IS A BUG!
-
-IMPORTANT!!!
-ORGANIZER VERIFICATION
-IN ORDER TO CREATE MATCHES, THE ORGANIZER SHOULD BE VERIFIED (KYC).
 
 IMPORTANT!!!
 CREATE LOGIC FOR PAYOUTS
 
 IMPORTANT!!!
-USER KYC VERIFICATION PAGE LEFT
-
-Organizer account delete
+USER AND ORGANIZER KYC VERIFICATION PAGE LEFT (PART OF PAYOUT)
 
 
 ########################## DESIGN SECTION ###############################
 
 IMPORTANT!!!
-UPDATE RULES IN CONTEST DETAILS PAGE. THEY ARE OUTDATED
-
-IMPORTANT!!!
 I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN SHORT. MAKE SURE TO REPLACE THE ORIGINAL WITH SHORT AND 
 CHECK THE RESULT. REALLY IMPORTANT TO REDUCE SIZE!
-
-IMPORTANT!!!
-CREATE FRONTEND FOR ORGANIZER VERIFIED. JUST ADD VERIFY ME TAGS LIKE THAT OF USER VERIFICATION
 
 
 ###################### FEATURES FOR FUTURE DEVS ##############################
 
-OPTIMIZE USER LEVEL CALCULATION AS WELL AS ORGANIZER LEVEL CALCULATION (IF EXISTS)
+OPTIMIZE USER LEVEL CALCULATION
 
 ORGANIZER PAGE WHERE HE CAN UPLOAD POSTS AND SCORECARDS
+
+PREVENT SUBSEQUENT CALLS TO FIRESTORE. TRY TO CACHE AS MUCH AS POSSIBLE
 
 
 """
@@ -252,6 +245,7 @@ def organizerSignup():
                                 "special": special,
                                 "amountGiven": amountGiven,
                                 "rating": rating,
+                                "isKYCVerified": False
                             }
                         )
                         return "Success"
@@ -275,8 +269,6 @@ def register():
             userdata = user.to_dict()
             if userdata == None:
                 return "Failed: No such user"
-            if userdata["isVerified"] == False:
-                return "Failed: User not verified"
 
             # checking whether the user has linked his game account
             ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
@@ -954,8 +946,9 @@ def receivedNotification():
         return "Success"
     
     return "success"
-        
 
+
+# REPORT MATCH
 @app.get("/api/reportMatch")
 def reportMatch():
     muid = request.args.get("muid")
@@ -1025,7 +1018,7 @@ def reportMatch():
     return "Success"
     
 
-
+# RATING FOR ORGANIZER
 @app.get("/api/rate")
 def rate():
     ouid = request.args.get("ouid")
@@ -1063,6 +1056,7 @@ def rate():
     return "Success"
 
 
+# CANCEL MATCH
 @app.route("/api/cancelTheMatch")
 def cancelMatch():
     matchType = request.args.get("matchType")
@@ -1090,5 +1084,24 @@ def cancelMatch():
         return "Failed"
 
     return "Success"
+
+
+# ORGANIZER LEVEL CALCULATE
+@app.route("/api/organizerLevelCalculate")
+def organizerLevelCalculate():
+    ouid = request.args.get("ouid")
+
+    # checking for valid ouid
+    if ouid == None:
+        return "Failed"
+    if ouid == "":
+        return "Failed"
+    organizerData = db.collection("organizer").document(ouid).get().to_dict()
+    if organizerData == None:
+        return "Failed"
+    
+    # calculating organizer level
+    amountGiven = organizerData["amountGiven"]
+    
 
 app.run(debug=False)

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
+import 'package:zbgaming/pages/organizer.dart';
 import 'package:zbgaming/utils/apistring.dart';
 
 class CreateMatch extends StatefulWidget {
@@ -66,8 +67,8 @@ class _CreateMatchState extends State<CreateMatch> {
         if (value.statusCode == 200) {
           if (value.body == "Success") {
             Fluttertoast.showToast(msg: "Success");
-            Navigator.pop(context);
-            Navigator.pop(context);
+            Navigator.pushAndRemoveUntil(
+                context, MaterialPageRoute(builder: (context) => const Organizer()), (route) => false);
           }
           Fluttertoast.showToast(msg: value.body);
         } else {
@@ -276,7 +277,7 @@ class DropDownSolo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      items: <String>["Solo", "Team"]
+      items: <String>["Solo"] //, "Team"]
           .map<DropdownMenuItem<String>>((String e) => DropdownMenuItem<String>(
                 child: Text(e),
                 value: e,
@@ -299,7 +300,7 @@ class DropDownMatch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      items: <String>["Match", "Tournament"]
+      items: <String>["Match"] //, "Tournament"]
           .map<DropdownMenuItem<String>>((String e) => DropdownMenuItem<String>(
                 child: Text(e),
                 value: e,
@@ -356,7 +357,7 @@ class DropDownReward extends StatelessWidget {
       decoration: const InputDecoration(border: OutlineInputBorder()),
       validator: (value) {
         if (!isEligible && (value.toString() == "\u20b9 1000" || value.toString() == "\u20b9 5000")) {
-          return "You don't have required Organizer level";
+          return "Your current level must be OMEGA";
         }
         return null;
       },

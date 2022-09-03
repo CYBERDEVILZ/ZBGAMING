@@ -177,7 +177,7 @@ class PreviewPane extends StatelessWidget {
                       children: const [
                         Text("Requirements",
                             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white), textScaleFactor: 1.7),
-                        Requirements(),
+                        Requirements(paid: false),
                       ])),
 
               const CustomDivider(indent: 0, height: 10, radius: false),

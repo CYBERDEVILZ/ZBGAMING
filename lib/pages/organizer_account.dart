@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/src/provider.dart';
 import 'package:zbgaming/model/organizermodel.dart';
 import 'package:zbgaming/pages/organizer_preview_pane.dart';
+import 'package:zbgaming/utils/games.dart';
 
 class OrganizerAccount extends StatefulWidget {
   const OrganizerAccount({Key? key}) : super(key: key);
@@ -21,6 +22,37 @@ class OrganizerAccount extends StatefulWidget {
 
 class _OrganizerAccountState extends State<OrganizerAccount> {
   bool isLoading = false;
+  bool isKYCVerified = false;
+  bool isLoadingDialog = false;
+  String? level;
+
+  void fetchData() async {
+    isLoading = true;
+    setState(() {});
+    await FirebaseFirestore.instance
+        .collection("organizer")
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get()
+        .then((value) {
+      level = value["amountGiven"] <= 10000 ? "Omega" : "Alpha";
+      try {
+        isKYCVerified = value["isKYCVerified"];
+      } catch (e) {
+        isKYCVerified = false;
+      }
+    }).catchError((onError) {
+      Fluttertoast.showToast(msg: "Some error occurred");
+    });
+    isLoading = false;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     void updateImage() async {
@@ -113,12 +145,73 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                   textScaleFactor: 2,
                 ),
 
+                Text(
+                  context.watch<OrganizerModel>().email!,
+                  style: const TextStyle(color: Colors.blue),
+                  textScaleFactor: 1.2,
+                ),
+
+                const SizedBox(height: 10),
+
+                // Level
+                Container(
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(5), border: Border.all(color: Colors.blue)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius:
+                                const BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)),
+                            border: Border.all(color: Colors.blue)),
+                        child: const Text(
+                          "Level",
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      const SizedBox(width: 3),
+                      Padding(
+                          padding: const EdgeInsets.all(3),
+                          child: Text(
+                            "$level",
+                            style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.w600),
+                          ))
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                // kycverified label
+                isKYCVerified
+                    ? ElevatedButton(
+                        onPressed: () {},
+                        child: const Text("KYC Verified"),
+                      )
+                    : ElevatedButton(
+                        onPressed: () async {
+                          Fluttertoast.showToast(msg: "KYC Verification will be added soon");
+                        },
+                        child: const Text("Verify your KYC")),
+
                 const SizedBox(height: 30),
 
                 // Upload banner
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("Upload Banner [width:height = 4:1]"),
+                  child: RichText(
+                    text: const TextSpan(
+                        text: "Upload Banner",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+                        children: [
+                          TextSpan(
+                              text: " [width:height = 4:1]",
+                              style: TextStyle(color: Colors.blue, fontSize: 15, fontWeight: FontWeight.normal))
+                        ]),
+                  ),
                 ),
                 const SizedBox(height: 5),
                 Container(
@@ -134,19 +227,13 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
 
                 // preview button
                 Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: // navigate to preview pane
-                        () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const PreviewPane()));
-                    },
-                    child: const Text(
-                      "Preview",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.w500, decoration: TextDecoration.underline),
-                    ),
-                  ),
-                ),
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      child: const Text("Preview"),
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const PreviewPane()));
+                      },
+                    )),
 
                 const SizedBox(height: 20),
 
@@ -158,6 +245,105 @@ class _OrganizerAccountState extends State<OrganizerAccount> {
                     trailing: Icon(Icons.arrow_right),
                   ),
                 ),
+
+                const SizedBox(height: 20),
+
+                // Signout widget
+                OutlinedButton(
+                    onPressed: () async {
+                      Fluttertoast.showToast(msg: "Logging out...");
+                      await FirebaseAuth.instance.signOut();
+                    },
+                    child: const Text("Sign Out", style: TextStyle(fontSize: 20, color: Colors.red)),
+                    style: ButtonStyle(
+                        overlayColor: MaterialStateProperty.all(Colors.red.withOpacity(0.1)),
+                        side: MaterialStateProperty.all(const BorderSide(color: Colors.red)),
+                        fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 40)))),
+
+                // Delete widget
+                ElevatedButton(
+                    onPressed: () {
+                      TextEditingController loginController = TextEditingController();
+                      showDialog(
+                          context: context,
+                          builder: ((context) {
+                            return StatefulBuilder(builder: ((context, setState) {
+                              return AlertDialog(
+                                title: const Text("Reauthentication Required!"),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text("Enter you password below"),
+                                    TextFormField(controller: loginController)
+                                  ],
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('CANCEL')),
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        isLoadingDialog = true;
+                                        setState(() {});
+                                        try {
+                                          // check for ongoing matches of organizer first
+                                          for (String i in Games.games) {
+                                            QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
+                                                .collection(i)
+                                                .where("uid", isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+                                                .get();
+                                            if (data.docs.isNotEmpty) {
+                                              Fluttertoast.showToast(msg: "Complete ongoing matches first!");
+                                              isLoadingDialog = false;
+                                              setState(() {});
+                                              return;
+                                            }
+                                          }
+
+                                          // reauthenticate the user
+                                          AuthCredential credential = EmailAuthProvider.credential(
+                                              email: FirebaseAuth.instance.currentUser!.email!,
+                                              password: loginController.text);
+                                          await FirebaseAuth.instance.currentUser
+                                              ?.reauthenticateWithCredential(credential)
+                                              .then((value) async {
+                                            User? user1 = value.user;
+                                            if (user1 != null) {
+                                              // delete the user
+                                              await value.user!.delete().then((value) async {
+                                                // if delete is successful then delete data from firestore
+                                                try {
+                                                  FirebaseStorage.instance
+                                                      .ref("zbgaming/organizers/images/${user1.uid}}")
+                                                      .delete();
+                                                } catch (e) {
+                                                  Fluttertoast.showToast(
+                                                      msg: "Error occurred while deleting from database.");
+                                                }
+                                              });
+                                            } else {
+                                              Fluttertoast.showToast(msg: "Failed authentication");
+                                            }
+                                          });
+                                        } catch (e) {
+                                          Fluttertoast.showToast(msg: "$e");
+                                        }
+                                        isLoadingDialog = false;
+                                        setState(() {});
+                                      },
+                                      child:
+                                          isLoadingDialog ? const CircularProgressIndicator() : const Text('CONFIRM'))
+                                ],
+                              );
+                            }));
+                          }));
+                    },
+                    child: const Text("Delete Account", style: TextStyle(fontSize: 20, color: Colors.white)),
+                    style: ButtonStyle(
+                        fixedSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width, 40)),
+                        backgroundColor: MaterialStateProperty.all(Colors.red)))
               ],
             ),
           ),

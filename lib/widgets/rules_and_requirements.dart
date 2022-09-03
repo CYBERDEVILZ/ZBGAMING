@@ -9,15 +9,16 @@ class Rules extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String?> rules = [
       "Log into your account.",
-      "Connect this game with ZBunker (skip if already done).",
+      "Link this game from My Account section.",
       "Click on the Register button below.",
-      "If successful, you will be contacted by the Organizer for further briefing.",
-      "You will receive a notification 1 hour prior to the match from the Organizer."
+      "If successful, you will be contacted by the Organizer for further briefing in the Registered Matches section.",
+      "You will receive a notification when the organizer starts the match."
     ];
 
     List<String?> contestDetails = [
-      "Rewards (if any) will be dispatched to your Bank Accounts within 48 hours. If you failed to receive it, make sure to raise a query from the Customer Care section.",
-      "If the Organizer resorts to cheating, you can report the Organizer from History. Our team will begin the investigation. If it turns out to be a false report, then your account will be banned without warning. So report only and only if you think there is surely some foul play going on.",
+      "Rewards (if any) will be dispatched to your Bank Accounts within 48 hours.",
+      "If the Organizer resorts to cheating, you can report the Organizer from this page when the match ends.",
+      "Our team will begin the investigation when it receives a report. If it turns out to be a false report, then your account will be banned without warning. So report only and only if you think there is surely some foul play going on.",
     ];
 
     return Column(
@@ -74,7 +75,8 @@ class Rules extends StatelessWidget {
 
 // Requirements
 class Requirements extends StatelessWidget {
-  const Requirements({Key? key}) : super(key: key);
+  const Requirements({Key? key, required this.paid}) : super(key: key);
+  final bool paid;
 
   @override
   Widget build(BuildContext context) {
@@ -111,11 +113,11 @@ class Requirements extends StatelessWidget {
                 child: Container(
               margin: const EdgeInsets.only(left: 5),
               alignment: Alignment.centerLeft,
-              child: const Padding(
-                padding: EdgeInsets.only(left: 5),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 5),
                 child: Text(
-                  "User Must Be Verified",
-                  style: TextStyle(color: Colors.white),
+                  paid ? "User's KYC Must Be Verified" : "User's Email Must Be Verified",
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
               height: 40,
@@ -136,7 +138,7 @@ class Requirements extends StatelessWidget {
               child: const Padding(
                 padding: EdgeInsets.only(left: 5),
                 child: Text(
-                  "Game Account Must Be Connected with ZBunker",
+                  "Game Account Must Be Linked",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
