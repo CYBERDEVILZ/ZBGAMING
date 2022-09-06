@@ -252,6 +252,7 @@ class _PubgTournamentsState extends State<PubgTournaments> {
                       child: Image.asset(
                     "assets/images/no_data.png",
                     fit: BoxFit.fitHeight,
+                    height: 300,
                   ));
                 }
                 return SliverList(
