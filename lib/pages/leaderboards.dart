@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Leaderboard extends StatefulWidget {
   const Leaderboard({Key? key}) : super(key: key);
@@ -8,105 +10,181 @@ class Leaderboard extends StatefulWidget {
 }
 
 class _LeaderboardState extends State<Leaderboard> {
-  AppBar appBar = AppBar(
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    title: const Text(
-      "Leaderboard",
-      style: TextStyle(fontWeight: FontWeight.w300),
-    ),
-    centerTitle: true,
-  );
+  // variables
+  bool isLoading = true;
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> leaderboardValue = [];
+  bool notEnoughDetails = true;
+  String? leaderName;
+  String? leaderImageURL;
+  int? leaderPoints;
+  Blob? leaderHash;
+
+  // functions
+  void fetchData() async {
+    await FirebaseFirestore.instance
+        .collection("userinfo")
+        .orderBy("level", descending: true)
+        .limit(50)
+        .get()
+        .then((value) {
+      leaderboardValue = value.docs;
+      if (leaderboardValue.length >= 2) {
+        notEnoughDetails = false;
+        leaderName = leaderboardValue[0]["username"];
+        leaderPoints = leaderboardValue[0]["level"];
+        leaderImageURL = leaderboardValue[0]["imageurl"];
+        leaderHash = leaderboardValue[0]["hashedID"];
+        setState(() {});
+      }
+    }).catchError((onError) {
+      Fluttertoast.showToast(
+          msg: "Something Went Wrong :(", backgroundColor: const Color(0xff302b63), textColor: Colors.white);
+      notEnoughDetails = true;
+    });
+    isLoading = false;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    isLoading = true;
+    setState(() {});
+    fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
+    int index = 1;
+    // appbar widget
+    AppBar appBar = AppBar(
+      backgroundColor: Colors.transparent,
+      foregroundColor: notEnoughDetails ? const Color(0xff302b63) : Colors.white,
+      elevation: 0,
+      title: const Text(
+        "Leaderboard",
+        style: TextStyle(fontWeight: FontWeight.w300),
+      ),
+      centerTitle: true,
+    );
+
     return Scaffold(
       appBar: appBar,
       extendBodyBehindAppBar: true,
-      body: Column(children: [
-        // deep blue gradient container
-        Container(
-          height: 300,
-          padding: EdgeInsets.only(top: appBar.preferredSize.height * 2),
-          width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
-            boxShadow: <BoxShadow>[BoxShadow(color: Colors.black, spreadRadius: 0, blurRadius: 7)],
-            gradient: LinearGradient(
-              colors: <Color>[Color(0xff0f0c29), Color(0xff302b63), Color(0xff24243e)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(children: [
-                  // RANK OF THE TOPPER
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF302B63)))
+          : notEnoughDetails
+              ?
+              // not enough details dog image
+              Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset("assets/images/dog.png"),
+                      const Text(
+                        "Not Enough Data",
+                        style: TextStyle(fontWeight: FontWeight.w300),
+                      )
+                    ],
+                  ),
+                )
+              : Column(children: [
+                  // deep blue gradient container
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    alignment: Alignment.center,
-                    child: RichText(
-                      text: const TextSpan(
-                          text: "1",
-                          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                          children: [
-                            TextSpan(text: "st", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15))
+                    height: 300,
+                    padding: EdgeInsets.only(top: appBar.preferredSize.height * 2),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+                      boxShadow: <BoxShadow>[BoxShadow(color: Colors.black, spreadRadius: 0, blurRadius: 7)],
+                      gradient: LinearGradient(
+                        colors: <Color>[Color(0xff0f0c29), Color(0xff302b63), Color(0xff24243e)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        // Row containing 1st rank, image and points
+                        Expanded(
+                          child: Row(children: [
+                            // RANK OF THE TOPPER
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              alignment: Alignment.center,
+                              child: RichText(
+                                text: const TextSpan(
+                                    text: "1",
+                                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                    children: [
+                                      TextSpan(text: "st", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15))
+                                    ]),
+                              ),
+                            ),
+                            // IMAGE OF THE TOPPER
+                            Expanded(
+                                child: Container(
+                              alignment: Alignment.center,
+                              child: leaderImageURL == null
+                                  ? const CircleAvatar(
+                                      radius: 50,
+                                      backgroundColor: Color(0xff302b63),
+                                      child: Icon(
+                                        Icons.account_circle,
+                                        size: 100,
+                                      ),
+                                    )
+                                  : CircleAvatar(
+                                      radius: 50,
+                                      backgroundColor: const Color(0xff302b63),
+                                      foregroundImage: NetworkImage(leaderImageURL!),
+                                    ),
+                            )),
+                            // POINTS OF THE TOPPER
+                            Container(
+                              alignment: Alignment.center,
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: RichText(
+                                text: TextSpan(
+                                    text: "$leaderPoints",
+                                    style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                    children: const [
+                                      TextSpan(text: "pts", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15))
+                                    ]),
+                              ),
+                            )
                           ]),
+                        ),
+
+                        // Name of the topper
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: Text(
+                            "$leaderName",
+                            style: const TextStyle(fontSize: 20, color: Colors.white),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(
+                          height: appBar.preferredSize.height / 2,
+                        )
+                      ],
                     ),
                   ),
-                  // IMAGE OF THE TOPPER
-                  const Expanded(
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage("assets/images/csgo.jpg"),
-                    ),
-                  ),
-                  // POINTS OF THE TOPPER
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: RichText(
-                      text: const TextSpan(
-                          text: "20000",
-                          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                          children: [
-                            TextSpan(text: "pts", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15))
-                          ]),
+
+                  // leaderboard body
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.all(0),
+                      children: leaderboardValue.sublist(1).map((e) {
+                        index++;
+                        return CustomListTileForLeaderboard(
+                            name: e["username"], imageUrl: e["imageurl"], points: e["level"], rank: index);
+                      }).toList(),
                     ),
                   )
                 ]),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                child: Text(
-                  "Cyberdevilz",
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              SizedBox(
-                height: appBar.preferredSize.height / 2,
-              )
-            ],
-          ),
-        ),
-
-        // leaderboard body
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(0),
-            children: [
-              CustomListTileForLeaderboard(
-                  name: "haahahahalskjfljflksdjflksjflskjflsjldfkjsdlkfjslkdjf",
-                  imageUrl: "lskdjfs",
-                  points: 12345,
-                  rank: 2),
-              CustomListTileForLeaderboard(name: "jldfkjsdlkfjslkdjf", imageUrl: "lskdjfs", points: 200395, rank: 50),
-            ],
-          ),
-        )
-      ]),
     );
   }
 }
@@ -117,7 +195,7 @@ class CustomListTileForLeaderboard extends StatelessWidget {
       {Key? key, required this.name, required this.imageUrl, required this.points, required this.rank})
       : super(key: key);
   final String name;
-  final String imageUrl;
+  final String? imageUrl;
   final int points;
   final int rank;
 
@@ -139,10 +217,24 @@ class CustomListTileForLeaderboard extends StatelessWidget {
           CircleAvatar(
             backgroundColor: const Color(0xff24243e),
             radius: 32,
-            child: const CircleAvatar(
-              backgroundImage: AssetImage("assets/images/csgo.jpg"),
-              radius: 28,
-            ),
+            child: imageUrl == null
+                ? const CircleAvatar(
+                    backgroundColor: Color(0xff302b63),
+                    child: Icon(
+                      Icons.account_circle,
+                      size: 56,
+                    ),
+                    radius: 28,
+                  )
+                : CircleAvatar(
+                    backgroundColor: const Color(0xff24243e),
+                    radius: 32,
+                    child: CircleAvatar(
+                      backgroundColor: const Color(0xff302b63),
+                      foregroundImage: NetworkImage(imageUrl!),
+                      radius: 28,
+                    ),
+                  ),
           ),
           Expanded(
             child: Padding(
