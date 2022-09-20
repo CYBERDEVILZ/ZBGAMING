@@ -5,9 +5,6 @@ OPTIMIZATIONS / IDEAS
 ########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
-IMPLEMENT LEADERBOARD: Top 50 Players with the most points are shown.
-
-IMPORTANT!!!
 EXPORT TO CSV REQUIRED
 
 IMPORTANT!!!
@@ -38,6 +35,9 @@ CREATE LOGIC FOR PAYOUTS
 
 IMPORTANT!!!
 USER AND ORGANIZER KYC VERIFICATION PAGE LEFT (PART OF PAYOUT)
+
+IMPORTANT!!!
+PREVENT SCHEDULER FROM RUNNING OVER AND OVER. KEEP AN INTERVAL OF 24 HOURS
 
 
 ########################## DESIGN SECTION ###############################
@@ -134,12 +134,16 @@ def schedule_1_are_matches_over():
         date_over_matches = db.collection(game).where("date", "<", datetime.now()).get()
         for matches in date_over_matches:
             match_data = matches.to_dict()
+
+            # if match was never started
             if (match_data["started"] == 0):
                 print("match was never started! lets refund all the money and show it cancelled")
                 refund()
                 deleteChat(match_data["notificationId"])
                 updateHistoryToCancelled(game, matches.id)
                 deleteGame(game, matches.id)
+            
+            # if match was started but not stopped
             if (match_data["started"] == 1):
                 db.collection()
                 print("match started but not stopped. lets refund all the money and show it cancelled")
@@ -147,6 +151,8 @@ def schedule_1_are_matches_over():
                 deleteChat(match_data["notificationId"])
                 updateHistoryToCancelled(game, matches.id)
                 deleteGame(game, matches.id)
+
+            # if match was stopped
             if (match_data["started"] == 2):
                 print("match was stopped. Nice organizer. Give him a hug")
                 deleteGame(game, matches.id)

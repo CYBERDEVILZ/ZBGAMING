@@ -226,7 +226,7 @@ class _UserAccountState extends State<UserAccount> {
       // blue rectangle in the back
       Container(
         color: colorCodeForHeading[levelAttrib],
-        height: 200,
+        height: 150 + MediaQuery.of(context).viewPadding.top,
         width: MediaQuery.of(context).size.width,
       ),
 

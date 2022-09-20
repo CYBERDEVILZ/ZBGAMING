@@ -80,10 +80,10 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                 ApiEndpoints.baseUrl + ApiEndpoints.userLevelCalculateAlternative + "?uid=${value.docs[0]['tempUid']}"))
             .then((responseValue) async {
           if (responseValue.statusCode != 200) {
-            Fluttertoast.showToast(msg: "Something went wrong :( coz nothing");
+            Fluttertoast.showToast(msg: "Something went wrong :(");
           } else {
             if (responseValue.body == "Failed") {
-              Fluttertoast.showToast(msg: "Something went wrong :( cossa");
+              Fluttertoast.showToast(msg: "Something went wrong :(");
             }
           }
         });
@@ -189,7 +189,7 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
       // blue rectangle in the back
       Container(
         color: colorCodeForHeading[levelAttrib],
-        height: 125,
+        height: 125 + MediaQuery.of(context).viewPadding.top,
         width: MediaQuery.of(context).size.width,
       ),
 
