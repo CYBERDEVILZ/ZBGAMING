@@ -5,7 +5,7 @@ OPTIMIZATIONS / IDEAS
 ########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
-IMPLEMENT RLT LEADERBOARD. THE SCORES OF EACH PLAYER NEEDS TO BE CALCULATED SEPARATELY AFTER AN EVENT GETS OVER.
+IMPLEMENT RLT LEADERBOARD (UPDATED EVERY 1 MINUTE). ✔️
 
 IMPORTANT!!!
 EXPORT TO CSV REQUIRED
@@ -160,13 +160,45 @@ def schedule_1_are_matches_over():
                 print("match was stopped. Nice organizer. Give him a hug")
                 deleteGame(game, matches.id)
                 deleteChat(match_data["notificationId"])
+    print("scheduler1 running....")
+
+# scheduler2: update player score every few intervals
+def scheduler2_update_player_scores():
+    print("scheduler2 running....")
+    users = db.collection("userinfo").get()
+    for user in users:
+        won = 0
+        paid_matches = user.reference.collection("history").where("paid", "!=", 0).get()
+        print(paid_matches)
+        if len(paid_matches) == 0:
+            user.reference.update({"level": 0})
+            continue
+        participation = len(paid_matches) * 20
+        print(participation)
+        for match in paid_matches:
+            match_data = match.to_dict()
+            if match_data["won"] == 1:
+                if match_data["paid"] == 1:
+                    won += 300
+                elif match_data["paid"] == 2:
+                    won += 500
+                elif match_data["paid"] == 3:
+                    won += 1500
+                elif match_data["paid"] == 4:
+                    won += 2000
+                else:
+                    won += 0
+        user.reference.update({"level": won + participation})
+        
+
+
                 
 # run every 24 hours
 job = scheduler.add_job(schedule_1_are_matches_over, "interval", seconds=10)
+job = scheduler.add_job(scheduler2_update_player_scores, "interval", seconds=60)
 scheduler.start()
 
-            
-
+        
 
 # HOME
 @app.route("/")
