@@ -5,6 +5,9 @@ OPTIMIZATIONS / IDEAS
 ########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
+IMPLEMENT RLT LEADERBOARD. THE SCORES OF EACH PLAYER NEEDS TO BE CALCULATED SEPARATELY AFTER AN EVENT GETS OVER.
+
+IMPORTANT!!!
 EXPORT TO CSV REQUIRED
 
 IMPORTANT!!!
@@ -157,7 +160,6 @@ def schedule_1_are_matches_over():
                 print("match was stopped. Nice organizer. Give him a hug")
                 deleteGame(game, matches.id)
                 deleteChat(match_data["notificationId"])
-        print("scheduler running -------------------")
                 
 # run every 24 hours
 job = scheduler.add_job(schedule_1_are_matches_over, "interval", seconds=10)

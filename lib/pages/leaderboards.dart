@@ -22,12 +22,13 @@ class _LeaderboardState extends State<Leaderboard> {
 
   // functions
   void fetchData() async {
-    await FirebaseFirestore.instance
+    // STREAM
+    FirebaseFirestore.instance
         .collection("userinfo")
         .orderBy("level", descending: true)
         .limit(50)
-        .get()
-        .then((value) {
+        .snapshots()
+        .listen((value) {
       leaderboardValue = value.docs;
       if (leaderboardValue.length >= 2) {
         notEnoughDetails = false;
@@ -37,10 +38,6 @@ class _LeaderboardState extends State<Leaderboard> {
         leaderHash = leaderboardValue[0]["hashedID"];
         setState(() {});
       }
-    }).catchError((onError) {
-      Fluttertoast.showToast(
-          msg: "Something Went Wrong :(", backgroundColor: const Color(0xff302b63), textColor: Colors.white);
-      notEnoughDetails = true;
     });
     isLoading = false;
     setState(() {});
