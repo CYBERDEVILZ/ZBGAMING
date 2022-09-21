@@ -68,6 +68,17 @@ class _LeaderboardState extends State<Leaderboard> {
 
     return Scaffold(
       appBar: appBar,
+      bottomNavigationBar: Container(
+          color: Colors.black.withOpacity(0.1),
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.only(top: 10),
+          child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            Image.asset("assets/images/ripple.gif", height: 30),
+            const Text(
+              "The leaderboard is updated every minute.",
+              style: TextStyle(color: Color(0xff302b63)),
+            ),
+          ])),
       extendBodyBehindAppBar: true,
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Color(0xFF302B63)))
