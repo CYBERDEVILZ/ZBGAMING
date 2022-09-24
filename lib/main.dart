@@ -12,7 +12,8 @@ import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
 import 'package:zbgaming/pages/signup.dart';
 import 'package:zbgaming/pages/user_account.dart';
-import 'package:zbgaming/pages/validators_sign_up.dart';
+import 'package:zbgaming/pages/verifer_login.dart';
+import 'package:zbgaming/pages/verifier_sign_up.dart';
 import 'package:zbgaming/pages/valorant.dart';
 import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/utils/routes.dart';
@@ -57,7 +58,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       // home: const HomePage(),
-      home: ValidatorSignUp(),
+      home: VerifierSignIn(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",
       routes: {

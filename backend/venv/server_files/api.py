@@ -16,6 +16,11 @@ VERIFIER FUNCTIONALITIES:
 (OPTIONAL AS OF NOW: GENERATE WARNING TO USERS WHO ARE BANNED / SUSPENDED)
 
 IMPORTANT!!!
+VERIFIER:
+WRITE LOGIC FOR SIGNING UP THE VERIFIER API SIDE AND CLIENT SIDE
+WRITE LOGIC FOR LOGIN
+
+IMPORTANT!!!
 UPDATE AMOUNT GIVEN PARAMETER WHEN THE ORGANIZER SUCCESSFULLY ORGANIZE A MATCH THAT IS PAID. (only happens when the payout is successful)
 
 IMPORTANT!!!
@@ -23,10 +28,6 @@ REFUND MONEY LOGIC AND ORGANIZER BAD RATING LOGIC WHEN HE CANCELS THE MATCH MUST
 
 IMPORTANT!!!
 VALIDATOR PAGE NOT ADDED. VALIDATOR CAN SIGN IN, SEE REPORTS, TAKE ACTIONS: BAN AN ORGANIZER, BAN A PLAYER, REFUND MONEY AND CANCEL MATCH.
-
-INSANE SECURITY ISSUE!!!
-------------------------
-START MATCH, STOP MATCH, CANCEL MATCH, ETC ARE NOT PROTECTED FROM CSRF! MAKE SURE TO AUTHENTICATE THE SOURCE OF REQUEST!
 
 IMPORTANT!!!
 POLICY NOT ADDED FOR ORGANIZER SIGNUP
@@ -55,6 +56,17 @@ I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN
 CHECK THE RESULT. REALLY IMPORTANT TO REDUCE SIZE!
 
 
+########################## SECURITY SECTION ###############################
+
+INSANE SECURITY ISSUE!!!
+------------------------
+START MATCH, STOP MATCH, CANCEL MATCH, ETC ARE NOT PROTECTED FROM CSRF! MAKE SURE TO AUTHENTICATE THE SOURCE OF REQUEST!
+
+SECURITY ISSUE!!!
+-----------------
+CONVERT GET METHOD TO POST FOR SENDING PASSWORDS
+
+
 ###################### FEATURES FOR FUTURE DEVS ##############################
 
 OPTIMIZE USER LEVEL CALCULATION
@@ -73,7 +85,7 @@ from flask import Flask
 from flask import request
 import firebase_admin
 from firebase_admin import credentials, messaging
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 from pytz import timezone
 import pytz
 import razorpay
@@ -418,6 +430,7 @@ def register():
 
     return "Failed"
 
+
 # CREATE ORDER
 # Only creates order for the client  
 @app.route("/api/createOrder")
@@ -624,7 +637,6 @@ def validate():
         return "Something went wrong"
         
 
-
 # CREATE MATCHES
 @app.route("/api/create")
 # date, fee, match, name, skill, solo, reg=0, special, uid
@@ -736,6 +748,7 @@ def create():
     else:
         return "Failed"
 
+
 # VERIFY USER
 @app.route("/api/verify/user")
 def verifyUser():
@@ -764,27 +777,35 @@ def verifyUser():
 
     return "Failed"
 
+
 # VERIFIER SIGNUP
 @app.route("/api/verifier/thiswillmakefindingthisapidifficult/signup")
 def verifierSignup():
     username = request.args.get("username")
     email = request.args.get("email")
+    password = request.args.get("password")
 
-    if username != None and email != None:
-        if username != "" and email != "":
-            if validateEmail(email):
-                docs = db.collection("verifier").where("email", "==", email).get()
-                if len(docs) == 0:
-                    db.collection("verifier").document().set(
-                        {
-                            "username": username,
-                            "email": email,
-                        }
-                    )
+    # validate the inputs (basic)
+    if username == None or email == None or password == None or username == "" or email == "" or password == "":
+        return "Failed"
+    
+    # validate email
+    if not validateEmail(email=email):
+        return "Failed"
+    
+    # validate the password
+    if len(password) < 6:
+        return "Failed"
+    
+    try:
+        userObject = auth.create_user(email=email, password=password)
+        if userObject.uid == None or userObject.uid == "":
+            return "Failed"
+        return "Success"
+    except:
+        print("something went wrong while signing up")
+        return "Failed"
 
-                    return "Success"
-
-    return "Failed"
 
 # USER LEVEL CALCULATION
 @app.route("/api/userlevelcalculate")
@@ -887,6 +908,7 @@ def userLevelCalculateAlternative():
     
     return "Failed"
 
+
 # START MATCH LOGIC
 @app.route("/api/startMatch")
 def startMatch():
@@ -931,6 +953,7 @@ def startMatch():
     except:
         return "Failed: Something went wrong"
 
+
 # STOP MATCH LOGIC
 @app.route("/api/stopMatch")
 def stopMatch():
@@ -971,6 +994,7 @@ def stopMatch():
         return "Success"
     except:
         return "Failed"
+
 
 # NOTIFICATION WHEN ORGANIZER SENDS MESSAGE
 @app.route("/api/receivedNotification")
