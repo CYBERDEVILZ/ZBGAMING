@@ -95,8 +95,8 @@ import requests
 import base64
 from apscheduler.schedulers.background import BackgroundScheduler
 
-
-games = ["pubg"]
+# GAMES LIST TO BE MENTIONED HERE
+games = ["pubg", "freefire"]
 
 # FIREBASE INIT
 cred = credentials.Certificate("zbgaming-v1-firebase-adminsdk-2ozhj-4f38e5fc3e.json")
@@ -186,12 +186,10 @@ def scheduler2_update_player_scores():
     for user in users:
         won = 0
         paid_matches = user.reference.collection("history").where("paid", "!=", 0).get()
-        print(paid_matches)
         if len(paid_matches) == 0:
             user.reference.update({"level": 0})
             continue
         participation = len(paid_matches) * 20
-        print(participation)
         for match in paid_matches:
             match_data = match.to_dict()
             if match_data["won"] == 1:
@@ -207,10 +205,6 @@ def scheduler2_update_player_scores():
                     won += 0
         user.reference.update({"level": won + participation})
         
-
-
-                
-# run every 24 hours
 job = scheduler.add_job(schedule_1_are_matches_over, "interval", seconds=10)
 job = scheduler.add_job(scheduler2_update_player_scores, "interval", seconds=60)
 scheduler.start()
@@ -272,8 +266,6 @@ def userSignup():
                         )
                         return "Success"
                         
-                        
-
     return "Failed"
 
 
