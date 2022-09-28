@@ -19,17 +19,16 @@ class _VerifierHomePageState extends State<VerifierHomePage> {
       }
     });
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verifier Home Page, no need for an appbar, we will remove this for aesthetics'),
+      body: SafeArea(
+        child: Column(children: [
+          Text("Welcome, " + "${FirebaseAuth.instance.currentUser?.uid}"),
+          ElevatedButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+              },
+              child: const Text("signout"))
+        ]),
       ),
-      body: Column(children: [
-        Text("${FirebaseAuth.instance.currentUser?.email}"),
-        ElevatedButton(
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-            },
-            child: Text("signout"))
-      ]),
     );
   }
 }

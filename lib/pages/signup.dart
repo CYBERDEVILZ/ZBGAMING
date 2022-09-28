@@ -141,7 +141,7 @@ class _SignUpState extends State<SignUp> {
         if (emailController.text.isEmpty) {
           return "Email field cannot be empty";
         }
-        if (!RegExp("^[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]+\$").hasMatch(emailController.text)) {
+        if (!RegExp(r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$").hasMatch(emailController.text)) {
           return "Invalid Email";
         }
         return null;
@@ -207,6 +207,7 @@ class _SignUpState extends State<SignUp> {
       body: SingleChildScrollView(
         child: Form(
           key: formKey,
+          autovalidateMode: AutovalidateMode.always,
           child: Column(
             children: [
               Stack(children: [

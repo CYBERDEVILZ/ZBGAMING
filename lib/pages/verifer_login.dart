@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/pages/verifier_home_page.dart';
@@ -14,6 +15,7 @@ class VerifierSignIn extends StatefulWidget {
 class _VerifierSignInState extends State<VerifierSignIn> {
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
+  bool showPass = false;
 
   // TextEditingControllers
   TextEditingController emailController = TextEditingController();
@@ -25,6 +27,7 @@ class _VerifierSignInState extends State<VerifierSignIn> {
     setState(() {});
     await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: emailController.text, password: passwordController.text)
+        .then((value) => null)
         .catchError((onError) {
       Fluttertoast.showToast(msg: "Something went wrong :(");
       isLoading = false;
@@ -56,7 +59,7 @@ class _VerifierSignInState extends State<VerifierSignIn> {
             if (value == null || value.isEmpty) {
               return "Field cannot be empty";
             }
-            if (!RegExp(r"^[A-Za-z0-9\.]+[@][A-Za-z0-9\.]+$").hasMatch(value)) {
+            if (!RegExp(r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$").hasMatch(value)) {
               return "Invalid Email";
             }
             return null;
@@ -66,9 +69,17 @@ class _VerifierSignInState extends State<VerifierSignIn> {
         padding: const EdgeInsets.all(10),
         child: TextFormField(
           controller: passwordController,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+          obscureText: showPass,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
             hintText: "Password (min 6 chars)",
+            suffixIcon: GestureDetector(
+              onTap: () {
+                showPass = !showPass;
+                setState(() {});
+              },
+              child: Icon(showPass ? CupertinoIcons.eye_fill : CupertinoIcons.eye_slash),
+            ),
           ),
           validator: ((value) {
             if (value == null || value.isEmpty) {

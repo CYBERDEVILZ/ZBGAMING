@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
-import 'package:zbgaming/pages/verifer_login.dart';
 import 'package:zbgaming/utils/apistring.dart';
 
 class VerifierSignUp extends StatefulWidget {
@@ -24,10 +25,11 @@ class _VerifierSignUpState extends State<VerifierSignUp> {
       isLoading = true;
     });
     if (formKey.currentState!.validate()) {
-      await get(Uri.parse(ApiEndpoints.baseUrl +
-              ApiEndpoints.verifierSignup +
-              "?username=${usernameController.text}&email=${emailController.text}&password=${passwordController.text}"))
-          .then((value) {
+      await post(Uri.parse(ApiEndpoints.baseUrl + ApiEndpoints.verifierSignup), body: {
+        "username": usernameController.text,
+        "email": emailController.text,
+        "password": passwordController.text
+      }).then((value) {
         // if server errors out
         if (value.statusCode != 200) {
           Fluttertoast.showToast(msg: "Server Error :(");
@@ -114,7 +116,7 @@ class _VerifierSignUpState extends State<VerifierSignUp> {
             if (value == null || value.isEmpty) {
               return "Field cannot be empty";
             }
-            if (!RegExp(r"^[A-Za-z0-9\.]+[@][A-Za-z0-9\.]+$").hasMatch(value)) {
+            if (!RegExp(r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$").hasMatch(value)) {
               return "Invalid Email";
             }
             return null;
@@ -124,6 +126,7 @@ class _VerifierSignUpState extends State<VerifierSignUp> {
         padding: const EdgeInsets.all(10),
         child: TextFormField(
           controller: passwordController,
+          obscureText: true,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             hintText: "Password (min 6 chars)",
@@ -142,6 +145,7 @@ class _VerifierSignUpState extends State<VerifierSignUp> {
         padding: const EdgeInsets.all(10),
         child: TextFormField(
           controller: confirmPasswordController,
+          obscureText: true,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             hintText: "Confirm Password",

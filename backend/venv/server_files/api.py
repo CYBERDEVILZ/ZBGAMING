@@ -16,11 +16,6 @@ VERIFIER FUNCTIONALITIES:
 (OPTIONAL AS OF NOW: GENERATE WARNING TO USERS WHO ARE BANNED / SUSPENDED)
 
 IMPORTANT!!!
-VERIFIER:
-WRITE LOGIC FOR SIGNING UP THE VERIFIER API SIDE AND CLIENT SIDE
-WRITE LOGIC FOR LOGIN
-
-IMPORTANT!!!
 UPDATE AMOUNT GIVEN PARAMETER WHEN THE ORGANIZER SUCCESSFULLY ORGANIZE A MATCH THAT IS PAID. (only happens when the payout is successful)
 
 IMPORTANT!!!
@@ -64,7 +59,7 @@ START MATCH, STOP MATCH, CANCEL MATCH, ETC ARE NOT PROTECTED FROM CSRF! MAKE SUR
 
 SECURITY ISSUE!!!
 -----------------
-CONVERT GET METHOD TO POST FOR SENDING PASSWORDS
+CONVERT GET METHOD TO POST FOR SIGNING UP CALLS
 
 
 ###################### FEATURES FOR FUTURE DEVS ##############################
@@ -113,7 +108,7 @@ client = razorpay.Client(auth=("rzp_test_rKi9TFV4sMHvz2", secret_key))
 # FUNCTIONS
 # email validation
 def validateEmail(email):
-    result = re.match("[^@]+@[^@]+\.[A-Za-z0-9]+$", email)
+    result = re.match(r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$", email)
     if result:
         return True
     else:
@@ -771,11 +766,11 @@ def verifyUser():
 
 
 # VERIFIER SIGNUP
-@app.route("/api/verifier/thiswillmakefindingthisapidifficult/signup")
+@app.route("/api/verifier/thiswillmakefindingthisapidifficult/signup", methods=['POST'])
 def verifierSignup():
-    username = request.args.get("username")
-    email = request.args.get("email")
-    password = request.args.get("password")
+    username = request.form.get("username")
+    email = request.form.get("email")
+    password = request.form.get("password")
 
     # validate the inputs (basic)
     if username == None or email == None or password == None or username == "" or email == "" or password == "":
