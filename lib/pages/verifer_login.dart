@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,22 +31,31 @@ class _VerifierSignInState extends State<VerifierSignIn> {
         .then((value) => null)
         .catchError((onError) {
       Fluttertoast.showToast(msg: "Something went wrong :(");
-      isLoading = false;
-      setState(() {});
     });
     isLoading = false;
     setState(() {});
   }
 
   @override
-  Widget build(BuildContext context) {
-    // auth state change
-    FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const VerifierHomePage()));
-      }
-    });
+  void initState() {
+    super.initState();
+    isLoading = true;
+    if (mounted) setState(() {});
+    if (mounted) {
+      FirebaseAuth.instance.authStateChanges().listen((User? event) {
+        if (event?.uid != null) {
+          if (mounted) {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const VerifierHomePage()));
+          }
+        }
+      });
+    }
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
 
+  @override
+  Widget build(BuildContext context) {
     // TextFormField Widgets
     Widget emailFieldWidget = Padding(
         padding: const EdgeInsets.all(10),
@@ -69,7 +79,7 @@ class _VerifierSignInState extends State<VerifierSignIn> {
         padding: const EdgeInsets.all(10),
         child: TextFormField(
           controller: passwordController,
-          obscureText: showPass,
+          obscureText: !showPass,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             hintText: "Password (min 6 chars)",
@@ -78,7 +88,7 @@ class _VerifierSignInState extends State<VerifierSignIn> {
                 showPass = !showPass;
                 setState(() {});
               },
-              child: Icon(showPass ? CupertinoIcons.eye_fill : CupertinoIcons.eye_slash),
+              child: Icon(showPass ? CupertinoIcons.eye_slash_fill : CupertinoIcons.eye_fill),
             ),
           ),
           validator: ((value) {
@@ -110,22 +120,23 @@ class _VerifierSignInState extends State<VerifierSignIn> {
     return Form(
       key: formKey,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: SafeArea(
-          child: Scaffold(
+      child: Scaffold(
         appBar: AppBar(
           title: const Text('Verifier Sign In'),
           elevation: 0,
         ),
-        body: SingleChildScrollView(
-            child: Column(
-          children: [
-            emailFieldWidget,
-            passwordFieldWidget,
-            submitButton,
-            register,
-          ],
-        )),
-      )),
+        body: SafeArea(
+          child: SingleChildScrollView(
+              child: Column(
+            children: [
+              emailFieldWidget,
+              passwordFieldWidget,
+              submitButton,
+              register,
+            ],
+          )),
+        ),
+      ),
     );
   }
 }

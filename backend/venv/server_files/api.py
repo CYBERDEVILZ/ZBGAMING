@@ -5,6 +5,10 @@ OPTIMIZATIONS / IDEAS
 ########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
+REVENUE!!!
+INTRODUCE COIN REWARD SYSTEM AS WELL
+
+IMPORTANT!!!
 EXPORT TO CSV REQUIRED
 
 IMPORTANT!!!
@@ -785,9 +789,12 @@ def verifierSignup():
         return "Failed"
     
     try:
+        # create user
         userObject = auth.create_user(email=email, password=password)
         if userObject.uid == None or userObject.uid == "":
             return "Failed"
+        # send data to firebase
+        db.collection("verifier").document(userObject.uid).set({"username": username, "email": email})
         return "Success"
     except:
         print("something went wrong while signing up")
