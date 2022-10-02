@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:zbgaming/pages/verifer_login.dart';
+import 'package:zbgaming/pages/verifier_kyc_verification.dart';
 
 class VerifierHomePage extends StatefulWidget {
   const VerifierHomePage({Key? key}) : super(key: key);
@@ -108,96 +109,101 @@ class _VerifierHomePageState extends State<VerifierHomePage> {
             padding: const EdgeInsets.all(8),
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : Column(children: [
-                    // Container for username and signout button
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // username
-                          Container(
-                            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 2),
-                            child: RichText(
-                              text: TextSpan(
-                                children: <TextSpan>[
-                                  const TextSpan(text: "Welcome, "),
-                                  TextSpan(
-                                    text: username,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                : index == 0
+                    ? Column(children: [
+                        // Container for username and signout button
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // username
+                              Container(
+                                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 2),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: <TextSpan>[
+                                      const TextSpan(text: "Welcome, "),
+                                      TextSpan(
+                                        text: username,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                    style: const TextStyle(color: Colors.black, fontSize: 20),
                                   ),
-                                ],
-                                style: const TextStyle(color: Colors.black, fontSize: 20),
+                                ),
                               ),
-                            ),
-                          ),
 
-                          // signout button
-                          ElevatedButton(
-                            onPressed: () async {
-                              await FirebaseAuth.instance.signOut();
-                            },
-                            child: const Text("signout"),
-                          )
-                        ],
-                      ),
-                    ),
-
-                    // Container for Action Tiles
-                    Container(
-                      margin: const EdgeInsets.all(20),
-                      width: double.infinity,
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        shrinkWrap: true,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              index = 1;
-                              setState(() {});
-                            },
-                            child: Tile(
-                              text: "Verify KYC",
-                              color: Colors.green[400]!,
-                              numberOfRequests: kycNumber,
-                            ),
+                              // signout button
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await FirebaseAuth.instance.signOut();
+                                },
+                                child: const Text("signout"),
+                              )
+                            ],
                           ),
-                          GestureDetector(
-                              onTap: () {
-                                index = 2;
-                                setState(() {});
-                              },
-                              child: Tile(
-                                text: "Manage Reports",
-                                color: Colors.red[400]!,
-                                numberOfRequests: reportNumber,
-                              )),
-                          GestureDetector(
-                              onTap: () {
-                                index = 3;
-                                setState(() {});
-                              },
-                              child: Tile(
-                                text: "Special Match Requests",
-                                color: Colors.teal[400]!,
-                                numberOfRequests: specialMatchNumber,
-                              )),
-                          GestureDetector(
-                              onTap: () {
-                                index = 4;
-                                setState(() {});
-                              },
-                              child: Tile(
-                                text: "Issues",
-                                color: Colors.pink[400]!,
-                                numberOfRequests: issueNumber,
-                              )),
-                        ],
-                      ),
-                    )
-                  ]),
+                        ),
+
+                        // Container for Action Tiles
+                        Container(
+                          margin: const EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: GridView.count(
+                            cacheExtent: 0.5,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            shrinkWrap: true,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  index = 1;
+                                  setState(() {});
+                                },
+                                child: Tile(
+                                  text: "Verify KYC",
+                                  color: Colors.green[400]!,
+                                  numberOfRequests: kycNumber,
+                                ),
+                              ),
+                              GestureDetector(
+                                  onTap: () {
+                                    index = 2;
+                                    setState(() {});
+                                  },
+                                  child: Tile(
+                                    text: "Manage Reports",
+                                    color: Colors.red[400]!,
+                                    numberOfRequests: reportNumber,
+                                  )),
+                              GestureDetector(
+                                  onTap: () {
+                                    index = 3;
+                                    setState(() {});
+                                  },
+                                  child: Tile(
+                                    text: "Special Match Requests",
+                                    color: Colors.teal[400]!,
+                                    numberOfRequests: specialMatchNumber,
+                                  )),
+                              GestureDetector(
+                                  onTap: () {
+                                    index = 4;
+                                    setState(() {});
+                                  },
+                                  child: Tile(
+                                    text: "Issues",
+                                    color: Colors.pink[400]!,
+                                    numberOfRequests: issueNumber,
+                                  )),
+                            ],
+                          ),
+                        )
+                      ])
+                    : index == 1
+                        ? const KYCverificationPageForVerifier()
+                        : Text("sldkfjsldkfj"),
           ),
         ),
 
