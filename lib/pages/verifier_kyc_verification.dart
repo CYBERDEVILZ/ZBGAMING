@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:zbgaming/pages/verify_kyc_main.dart';
 
 class KYCverificationPageForVerifier extends StatefulWidget {
   const KYCverificationPageForVerifier({Key? key}) : super(key: key);
@@ -95,7 +96,7 @@ class _KYCTileState extends State<KYCTile> {
     return GestureDetector(
       onTap: () {
         widget.assignedId == null
-            ? print("push him")
+            ? Navigator.of(context).push(MaterialPageRoute(builder: (context) => VerifyKYCMain(uid: widget.hashedId!)))
             : Fluttertoast.showToast(msg: "being verified by: ${widget.assignedId}");
       },
       child: Container(
@@ -115,7 +116,7 @@ class _KYCTileState extends State<KYCTile> {
             ),
             Text(
               "${widget.email}",
-              style: TextStyle(color: Colors.white, fontSize: 12),
+              style: const TextStyle(color: Colors.white, fontSize: 12),
             ),
             const SizedBox(
               height: 5,
@@ -148,7 +149,9 @@ class _KYCTileState extends State<KYCTile> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           gradient: LinearGradient(
-              colors: [Colors.green[300]!, Colors.green], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+              colors: [Colors.green[800]!, Colors.green[600]!],
+              begin: Alignment.bottomRight,
+              end: Alignment.bottomCenter),
         ),
       ),
     );

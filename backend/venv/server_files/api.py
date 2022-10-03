@@ -5,6 +5,11 @@ OPTIMIZATIONS / IDEAS
 ########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
+KYC VERIFICATION
+When the user submits data for kyc verification, show him a page where it says "submitted for rverification"
+When the reviewer successfully verifies the account, show the user a screen the kyc has been verified else an error page
+
+IMPORTANT!!!
 REVENUE!!!
 INTRODUCE COIN REWARD SYSTEM AS WELL
 
@@ -223,7 +228,7 @@ def userSignup():
     email = request.args.get("email")
     docId = request.args.get("docId")
     idToken = request.args.get("idToken")
-    isVerified = False
+    isVerified = 0
     imageurl = None
 
     if username != None and email != None and docId != None:

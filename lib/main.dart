@@ -56,8 +56,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // home: const HomePage(),
-      home: const VerifierSignIn(),
+      home: const HomePage(),
+      // home: const VerifierSignIn(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",
       routes: {
