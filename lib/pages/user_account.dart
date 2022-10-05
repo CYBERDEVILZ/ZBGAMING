@@ -445,8 +445,7 @@ class _UserAccountState extends State<UserAccount> {
                     GestureDetector(
                         // send user to verification page
                         onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => VerifyStatusKYC(status: isKYCVerified!)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const VerifyStatusKYC()));
                         },
                         child: Container(
                             height: 18,

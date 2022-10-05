@@ -1,8 +1,18 @@
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:provider/provider.dart';
+import 'package:zbgaming/model/usermodel.dart';
 
 class VerifyStatusKYC extends StatefulWidget {
-  const VerifyStatusKYC({Key? key, required this.status}) : super(key: key);
-  final int status;
+  const VerifyStatusKYC({Key? key}) : super(key: key);
 
   @override
   State<VerifyStatusKYC> createState() => _VerifyStatusKYCState();
@@ -11,11 +21,11 @@ class VerifyStatusKYC extends StatefulWidget {
 class _VerifyStatusKYCState extends State<VerifyStatusKYC> {
   @override
   Widget build(BuildContext context) {
-    return widget.status == 0 ? const SendDocuments() : const VerificationPending();
+    return const SendDocuments();
   }
 }
 
-// SEND DOCUMENTS
+// ATTACH DOCUMENTS
 class SendDocuments extends StatefulWidget {
   const SendDocuments({Key? key}) : super(key: key);
 
@@ -24,20 +34,235 @@ class SendDocuments extends StatefulWidget {
 }
 
 class _SendDocumentsState extends State<SendDocuments> {
+  late List<CameraDescription> cameraList;
+  late CameraController cameraController;
+  bool isLoading = true;
+  int? docType;
+  final Map<int, String> docTypetoStorageRef = {
+    0: "/govt_id_image_front.jpg",
+    1: "/govt_id_image_back.jpg",
+    2: "/govt_id_image_with_face.jpg"
+  };
+  final Map<int, String> docTypetoKey = {
+    0: "govt_id_image_front",
+    1: "govt_id_image_back",
+    2: "govt_id_image_with_face"
+  };
+
+  // functions
+  checkStatusAndInitCamera() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+    // CHECKING WHATS LEFT TO SEND
+    await FirebaseFirestore.instance
+        .collection("kycPending")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) {
+      if (!value.exists) {
+        docType = 0;
+      } else {
+        try {
+          if (value["govt_id_image_front"] != null) {
+            try {
+              if (value["govt_id_image_back"] != null) {
+                try {
+                  if (value["govt_id_image_with_face"] != null) {
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: ((context) => const VerificationPending())));
+                  }
+                } catch (e) {
+                  docType = 2;
+                }
+              }
+            } catch (e) {
+              docType = 1;
+            }
+          }
+        } catch (e) {
+          docType = 0;
+        }
+      }
+    }).catchError((onError) {
+      Fluttertoast.showToast(msg: "Something went wrong.");
+      Navigator.pop(context);
+    });
+    // INIT CAMERA
+    cameraList = await availableCameras();
+    cameraController = CameraController(cameraList.first, ResolutionPreset.high);
+    await cameraController.initialize();
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkStatusAndInitCamera();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Attach Documents"),
-        elevation: 0,
+    return SafeArea(
+      child: Scaffold(
+        body: isLoading
+            ? const CircularProgressIndicator(
+                color: Colors.blue,
+              )
+            : Stack(children: [
+                // camera preview
+                Positioned.fill(
+                    child: Stack(
+                  children: [
+                    Positioned.fill(child: CameraPreview(cameraController)),
+                    Center(
+                        child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: AspectRatio(
+                        aspectRatio: docType == 2 ? 1 / 1 : 1920 / 1080,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white, width: 3),
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                      ),
+                    ))
+                  ],
+                )),
+
+                // APP BAR
+                Positioned(
+                  child: SizedBox(
+                    height: 70,
+                    width: MediaQuery.of(context).size.width,
+                    child: ClipRect(
+                      child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                          child: Row(
+                            children: [
+                              BackButton(
+                                color: Colors.white,
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              Expanded(
+                                child: Text(
+                                  docType == 0
+                                      ? "Govt ID (FRONT SIDE)"
+                                      : docType == 1
+                                          ? "Govt ID (BACK SIDE)"
+                                          : docType == 2
+                                              ? "Govt ID and your Face"
+                                              : "null",
+                                  style:
+                                      const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            ],
+                          )),
+                    ),
+                  ),
+                  top: 0,
+                  left: 0,
+                ),
+
+                // CAPTURE BUTTON
+                Positioned(
+                    bottom: 10,
+                    child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        alignment: Alignment.center,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              final XFile image = await cameraController.takePicture();
+                              final CroppedFile? croppedImage = await ImageCropper().cropImage(
+                                sourcePath: image.path,
+                                aspectRatio: docType == 0
+                                    ? const CropAspectRatio(ratioX: 1920, ratioY: 1080)
+                                    : docType == 1
+                                        ? const CropAspectRatio(ratioX: 1920, ratioY: 1080)
+                                        : const CropAspectRatio(ratioX: 1, ratioY: 1),
+                                compressQuality: 100,
+                                compressFormat: ImageCompressFormat.jpg,
+                                uiSettings: [
+                                  AndroidUiSettings(
+                                      cropFrameColor: Colors.white,
+                                      statusBarColor: Colors.blue,
+                                      dimmedLayerColor: Colors.black,
+                                      showCropGrid: false,
+                                      toolbarTitle: "Submit Image",
+                                      hideBottomControls: true)
+                                ],
+                              );
+                              if (croppedImage != null) {
+                                try {
+                                  isLoading = true;
+                                  setState(() {});
+                                  await FirebaseStorage.instance
+                                      .ref("zbgaming/users/images/" +
+                                          FirebaseAuth.instance.currentUser!.uid +
+                                          docTypetoStorageRef[docType!]!)
+                                      .putFile(File(croppedImage.path))
+                                      .then((p0) async {
+                                    if (p0.state == TaskState.running) {
+                                      Fluttertoast.showToast(msg: "Image getting uploaded");
+                                      isLoading = false;
+                                      if (mounted) setState(() {});
+                                    }
+                                    if (p0.state == TaskState.canceled) {
+                                      Fluttertoast.showToast(msg: "Image upload canceled");
+                                      Fluttertoast.showToast(msg: "Navigate to govt_id_back_side");
+                                      isLoading = false;
+                                      if (mounted) setState(() {});
+                                    }
+                                    if (p0.state == TaskState.success) {
+                                      final url = await FirebaseStorage.instance
+                                          .ref("zbgaming/users/images/" +
+                                              FirebaseAuth.instance.currentUser!.uid +
+                                              "/govt_id_front.jpg")
+                                          .getDownloadURL();
+                                      if (docType == 0) {
+                                        await FirebaseFirestore.instance
+                                            .collection("kycPending")
+                                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                                            .set({
+                                          "email": context.read<UserModel>().email,
+                                          "username": context.read<UserModel>().username,
+                                        });
+                                      }
+                                      await FirebaseFirestore.instance
+                                          .collection("kycPending")
+                                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                                          .update({
+                                        docTypetoKey[docType]!: url,
+                                      });
+                                      Fluttertoast.showToast(msg: "Image upload success");
+                                      isLoading = false;
+                                      if (mounted) setState(() {});
+                                      Navigator.pushReplacement(
+                                          context, MaterialPageRoute(builder: (context) => const SendDocuments()));
+                                    }
+                                    if (p0.state == TaskState.error) {
+                                      Fluttertoast.showToast(msg: "Some error occurred");
+                                      isLoading = false;
+                                      if (mounted) setState(() {});
+                                    }
+                                  });
+                                } catch (e) {
+                                  Fluttertoast.showToast(msg: "Something went wrong :(");
+                                  isLoading = false;
+                                  if (mounted) setState(() {});
+                                }
+                              }
+                            },
+                            child: const Icon(
+                              Icons.camera,
+                              size: 30,
+                            ))))
+              ]),
       ),
-      body: SingleChildScrollView(
-          child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [],
-        ),
-      )),
     );
   }
 }
