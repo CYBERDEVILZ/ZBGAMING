@@ -5,9 +5,16 @@ OPTIMIZATIONS / IDEAS
 ########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
-KYC VERIFICATION
-When the user submits data for kyc verification, show him a page where it says "submitted for rverification"
-When the reviewer successfully verifies the account, show the user a screen the kyc has been verified else an error page
+If isVerified is 0, then send him to send documents page.
+If isVerified is 1, then HE IS VERIFIED
+If isVerified is 2, then he is being verified.
+If isVerified is 3, then send him to rejected page and click again to retry the same.
+
+IMPORTANT!!!
+Beautiful loading widget for submitting data as well as a loading screen for the transition between image capture and crop
+
+IMPORTANT!!!
+VERIFIER STATISTIC: HOW MUCH HE VERIFIED ETC SHOULD BE SHOWN
 
 IMPORTANT!!!
 REVENUE!!!

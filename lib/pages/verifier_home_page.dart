@@ -55,19 +55,19 @@ class _VerifierHomePageState extends State<VerifierHomePage> {
     // STREAMS
     FirebaseFirestore.instance.collection("kycPending").snapshots().listen((event) {
       kycNumber = event.docs.length;
-      setState(() {});
+      if (mounted) setState(() {});
     });
     FirebaseFirestore.instance.collection("reports").snapshots().listen((event) {
       reportNumber = event.docs.length;
-      setState(() {});
+      if (mounted) setState(() {});
     });
     FirebaseFirestore.instance.collection("specialMatchRequests").snapshots().listen((event) {
       specialMatchNumber = event.docs.length;
-      setState(() {});
+      if (mounted) setState(() {});
     });
     FirebaseFirestore.instance.collection("issues").snapshots().listen((event) {
       issueNumber = event.docs.length;
-      setState(() {});
+      if (mounted) setState(() {});
     });
   }
 

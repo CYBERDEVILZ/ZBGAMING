@@ -143,7 +143,7 @@ class _UserAccountState extends State<UserAccount> {
         } catch (e) {
           isKYCVerified = 0;
         }
-        setState(() {});
+        if (mounted) setState(() {});
       });
     } catch (e) {
       Fluttertoast.showToast(msg: "An error occurred");

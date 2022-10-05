@@ -108,7 +108,7 @@ class _VerifyKYCMainState extends State<VerifyKYCMain> {
                         child: AspectRatio(
                           aspectRatio: 1.77,
                           child: Image.network(
-                            govtIdImageFront!,
+                            govtIdImageBack!,
                             errorBuilder: (context, error, stackTrace) =>
                                 const Text("error occurred while loading image"),
                           ),
@@ -127,7 +127,7 @@ class _VerifyKYCMainState extends State<VerifyKYCMain> {
                         child: AspectRatio(
                           aspectRatio: 1,
                           child: Image.network(
-                            govtIdImageFront!,
+                            govtIdImageWithFace!,
                             errorBuilder: (context, error, stackTrace) =>
                                 const Text("error occurred while loading image"),
                           ),
@@ -137,8 +137,40 @@ class _VerifyKYCMainState extends State<VerifyKYCMain> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          ElevatedButton(onPressed: () {}, child: const Text("Accept")),
-                          ElevatedButton(onPressed: () {}, child: const Text("Reject"))
+                          ElevatedButton(
+                              onPressed: () async {
+                                isLoading = true;
+                                if (mounted) setState(() {});
+                                await FirebaseFirestore.instance
+                                    .collection("userinfo")
+                                    .doc(widget.uid)
+                                    .update({"isVerified": 1}).then((value) async {
+                                  await FirebaseFirestore.instance.collection("kycPending").doc(widget.uid).delete();
+                                  Navigator.pop(context);
+                                }).catchError((onError) {
+                                  Fluttertoast.showToast(msg: "something went wrong");
+                                });
+                                isLoading = false;
+                                if (mounted) setState(() {});
+                              },
+                              child: const Text("Accept")),
+                          ElevatedButton(
+                              onPressed: () async {
+                                isLoading = true;
+                                if (mounted) setState(() {});
+                                await FirebaseFirestore.instance
+                                    .collection("userinfo")
+                                    .doc(widget.uid)
+                                    .update({"isVerified": 3}).then((value) async {
+                                  await FirebaseFirestore.instance.collection("kycPending").doc(widget.uid).delete();
+                                  Navigator.pop(context);
+                                }).catchError((onError) {
+                                  Fluttertoast.showToast(msg: "something went wrong");
+                                });
+                                isLoading = false;
+                                if (mounted) setState(() {});
+                              },
+                              child: const Text("Reject"))
                         ],
                       )
                     ],

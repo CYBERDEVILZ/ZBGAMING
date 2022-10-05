@@ -221,7 +221,7 @@ class _SendDocumentsState extends State<SendDocuments> {
                                       final url = await FirebaseStorage.instance
                                           .ref("zbgaming/users/images/" +
                                               FirebaseAuth.instance.currentUser!.uid +
-                                              "/govt_id_front.jpg")
+                                              docTypetoStorageRef[docType]!)
                                           .getDownloadURL();
                                       if (docType == 0) {
                                         await FirebaseFirestore.instance
@@ -230,6 +230,7 @@ class _SendDocumentsState extends State<SendDocuments> {
                                             .set({
                                           "email": context.read<UserModel>().email,
                                           "username": context.read<UserModel>().username,
+                                          "assigned": null
                                         });
                                       }
                                       await FirebaseFirestore.instance
@@ -255,6 +256,8 @@ class _SendDocumentsState extends State<SendDocuments> {
                                   isLoading = false;
                                   if (mounted) setState(() {});
                                 }
+                              } else {
+                                setState(() {});
                               }
                             },
                             child: const Icon(
