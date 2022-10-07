@@ -161,7 +161,7 @@ class _VerifyKYCMainState extends State<VerifyKYCMain> {
                                 await FirebaseFirestore.instance
                                     .collection("userinfo")
                                     .doc(widget.uid)
-                                    .update({"isVerified": 3}).then((value) async {
+                                    .update({"isVerified": 0}).then((value) async {
                                   await FirebaseFirestore.instance.collection("kycPending").doc(widget.uid).delete();
                                   Navigator.pop(context);
                                 }).catchError((onError) {
