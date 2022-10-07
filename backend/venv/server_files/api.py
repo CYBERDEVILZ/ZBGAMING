@@ -3,6 +3,17 @@ OPTIMIZATIONS / IDEAS
 ---------------------
 
 ########################## LOGIC SECTION ###############################
+IMPORTANT!!!
+ORGANIZER KYC NEEDS TO BE IMPLEMENTED
+
+IMPORTANT!!!
+ADD REDEEM PAGE
+
+IMPORTANT!!!
+ADD COIN BUYING PAGE
+
+IMPORTANT!!!
+UPDATE LOGIC OF JOINING MATCHES. In order to redeem money, you need to verify yourself
 
 IMPORTANT!!!
 VERIFIER STATISTIC: HOW MUCH HE VERIFIED ETC SHOULD BE SHOWN
@@ -317,11 +328,18 @@ def register():
     if matchuid != None and useruid != None and matchType != None and token != None:
         if matchType.lower() == "pubg":
 
-            # checking whether user is verified (KYC)
+            # checking whether user exists
             user = db.collection("userinfo").document(useruid).get()
             userdata = user.to_dict()
             if userdata == None:
                 return "Failed: No such user"
+
+            # checking whether user's email is verified
+            userData = auth.get_user(uid=userdata.id)
+            if not userData.email_verified:
+                return "Failed: Email Not Verified"
+
+            
 
             # checking whether the user has linked his game account
             ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
@@ -437,13 +455,16 @@ def paidRegister():
         amount = None
         if matchType.lower() == "pubg":
 
-            # checking whether user is verified (KYC)
+            # checking whether user exists
             user = db.collection("userinfo").document(useruid).get()
             userdata = user.to_dict()
             if userdata == None:
                 return "Failed: No such user"
-            if userdata["isVerified"] == False:
-                return "Failed: User not verified"
+            
+            # checking whether user's email is verified
+            userData = auth.get_user(uid=userdata.id)
+            if not userData.email_verified:
+                return "Failed: Email Not Verified"
 
             # checking if matchuid exists
             matchData = db.collection(matchType.lower()).document(matchuid).get()

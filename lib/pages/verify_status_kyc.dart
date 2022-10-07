@@ -91,7 +91,7 @@ class _SendDocumentsState extends State<SendDocuments> {
     });
     // INIT CAMERA
     cameraList = await availableCameras();
-    cameraController = CameraController(cameraList.first, ResolutionPreset.high);
+    cameraController = CameraController(docType == 2 ? cameraList[1] : cameraList.first, ResolutionPreset.high);
     await cameraController.initialize();
     isLoading = false;
     if (mounted) setState(() {});

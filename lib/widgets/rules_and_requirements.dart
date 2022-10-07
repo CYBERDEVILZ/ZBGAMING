@@ -116,7 +116,7 @@ class Requirements extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(left: 5),
                 child: Text(
-                  paid ? "User's KYC Must Be Verified" : "User's Email Must Be Verified",
+                  paid ? "Must have enough balance" : "User's Email Must Be Verified",
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
