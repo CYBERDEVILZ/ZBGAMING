@@ -6,6 +6,7 @@ import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/history.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/utils/routes.dart';
+import 'package:zbgaming/widgets/zcoin.dart';
 
 // drawer after login
 class AfterLoginDrawer extends StatelessWidget {
@@ -68,13 +69,21 @@ class AfterLoginDrawer extends StatelessWidget {
                                       radius: 45),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 30),
-                                child: Text(
-                                  context.watch<UserModel>().username == null
-                                      ? "null"
-                                      : context.watch<UserModel>().username!,
-                                  style: const TextStyle(fontSize: 20),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        context.watch<UserModel>().username == null
+                                            ? "null"
+                                            : context.watch<UserModel>().username!,
+                                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Zcoin()
+                                  ],
                                 ),
                               )
                             ]),

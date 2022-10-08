@@ -1,29 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-class UserCoins extends StatefulWidget {
-  const UserCoins({Key? key}) : super(key: key);
+class Zcoin extends StatefulWidget {
+  const Zcoin({Key? key}) : super(key: key);
 
   @override
-  State<UserCoins> createState() => _UserCoinsState();
+  State<Zcoin> createState() => _ZcoinState();
 }
 
-class _UserCoinsState extends State<UserCoins> {
+class _ZcoinState extends State<Zcoin> {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return GestureDetector(
+      onTap: () {
+        Fluttertoast.showToast(msg: "take to coin shop");
+      },
       child: Container(
-          padding: const EdgeInsets.only(top: 8, bottom: 8, right: 16, left: 16),
-          constraints: const BoxConstraints(minWidth: 50, minHeight: 50),
-          decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(500)), color: Colors.white),
+          padding: const EdgeInsets.all(5),
+          constraints: const BoxConstraints(minWidth: 50, minHeight: 10),
+          decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(500)),
+              color: Colors.white,
+              border: Border.all(color: Colors.amber[700]!, width: 2)),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
-            children: const [
-              Image(
+            children: [
+              const Image(
                 image: AssetImage("assets/images/zcoin.png"),
-                height: 50,
+                height: 18,
               ),
-              Text("200000", style: TextStyle(fontSize: 27))
+              const Text(" 200000", style: TextStyle(fontSize: 14)),
+              Icon(
+                Icons.add,
+                size: 18,
+                color: Colors.amber[700]!,
+              )
             ],
           )),
     );
