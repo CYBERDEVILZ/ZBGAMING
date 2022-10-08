@@ -18,6 +18,7 @@ import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/utils/routes.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:zbgaming/widgets/user_coins.dart';
 
 import 'model/organizermodel.dart';
 import 'model/usermodel.dart';
@@ -56,8 +57,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const HomePage(),
-      // home: const VerifierSignIn(),
+      // home: const HomePage(),
+      home: const UserCoins(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",
       routes: {

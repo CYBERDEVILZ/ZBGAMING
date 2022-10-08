@@ -3,6 +3,7 @@ OPTIMIZATIONS / IDEAS
 ---------------------
 
 ########################## LOGIC SECTION ###############################
+
 IMPORTANT!!!
 ORGANIZER KYC NEEDS TO BE IMPLEMENTED
 
@@ -11,6 +12,9 @@ ADD REDEEM PAGE
 
 IMPORTANT!!!
 ADD COIN BUYING PAGE
+
+IMPORTANT!!!
+SPECIAL MATCH REQUEST FORM ORGANIZER
 
 IMPORTANT!!!
 UPDATE LOGIC OF JOINING MATCHES. In order to redeem money, you need to verify yourself
