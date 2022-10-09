@@ -36,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   }; // mapping for bottom nav bar
 
   bool isLogged = false;
+  int? coin;
 
   void registerNotification() async {
     // initialize firebase app
@@ -90,6 +91,7 @@ class _HomePageState extends State<HomePage> {
           context.read<UserModel>().setusername(data["username"]);
           context.read<UserModel>().setemail(data["email"]);
           context.read<UserModel>().setimageurl(data["imageurl"]);
+          coin = data["zcoins"];
           isLogged = true;
 
           if (mounted) setState(() {});
@@ -124,7 +126,11 @@ class _HomePageState extends State<HomePage> {
                   )
                 : null,
             body: showBody[index], // contains list of games
-            drawer: isLogged ? const AfterLoginDrawer() : const BeforeLoginDrawer(),
+            drawer: isLogged
+                ? AfterLoginDrawer(
+                    coin: coin,
+                  )
+                : const BeforeLoginDrawer(),
             bottomNavigationBar: !isLogged
                 ? null
                 : BottomNavigationBar(

@@ -91,6 +91,8 @@ ORGANIZER PAGE WHERE HE CAN UPLOAD POSTS AND SCORECARDS
 
 PREVENT SUBSEQUENT CALLS TO FIRESTORE. TRY TO CACHE AS MUCH AS POSSIBLE
 
+OPT OUT OF JOINED MATCH --> AFTER A SPECIFIC TIME YOU CANT OPT OUT
+
 
 """
 
@@ -1196,5 +1198,17 @@ def organizerLevelCalculate():
     # calculating organizer level
     amountGiven = organizerData["amountGiven"]
     
+
+# BUY ZCOINS
+@app.route("/api/buyCoins")
+def buyCoins():
+    coinType = request.args.get("type")
+    uid = request.args.get("uid")
+
+    if coinType == None or uid == None:
+        return "Failed"
+    
+    else:
+        return "Success"
 
 app.run(debug=False)

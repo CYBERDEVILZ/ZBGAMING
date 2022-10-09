@@ -10,7 +10,8 @@ import 'package:zbgaming/widgets/zcoin.dart';
 
 // drawer after login
 class AfterLoginDrawer extends StatelessWidget {
-  const AfterLoginDrawer({Key? key}) : super(key: key);
+  const AfterLoginDrawer({Key? key, required this.coin}) : super(key: key);
+  final int? coin;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +83,7 @@ class AfterLoginDrawer extends StatelessWidget {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    Zcoin()
+                                    Zcoin(coin: coin)
                                   ],
                                 ),
                               )

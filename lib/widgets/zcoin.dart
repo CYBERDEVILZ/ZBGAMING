@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
+import '../pages/buy_coins.dart';
 
 class Zcoin extends StatefulWidget {
-  const Zcoin({Key? key}) : super(key: key);
+  const Zcoin({Key? key, this.coin}) : super(key: key);
+  final int? coin;
 
   @override
   State<Zcoin> createState() => _ZcoinState();
@@ -13,7 +15,7 @@ class _ZcoinState extends State<Zcoin> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Fluttertoast.showToast(msg: "take to coin shop");
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const BuyCoins()));
       },
       child: Container(
           padding: const EdgeInsets.all(5),
@@ -30,7 +32,7 @@ class _ZcoinState extends State<Zcoin> {
                 image: AssetImage("assets/images/zcoin.png"),
                 height: 18,
               ),
-              const Text(" 200000", style: TextStyle(fontSize: 14)),
+              Text("${widget.coin}", style: const TextStyle(fontSize: 14)),
               Icon(
                 Icons.add,
                 size: 18,
