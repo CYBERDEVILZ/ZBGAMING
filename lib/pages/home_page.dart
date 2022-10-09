@@ -126,11 +126,7 @@ class _HomePageState extends State<HomePage> {
                   )
                 : null,
             body: showBody[index], // contains list of games
-            drawer: isLogged
-                ? AfterLoginDrawer(
-                    coin: coin,
-                  )
-                : const BeforeLoginDrawer(),
+            drawer: isLogged ? const AfterLoginDrawer() : const BeforeLoginDrawer(),
             bottomNavigationBar: !isLogged
                 ? null
                 : BottomNavigationBar(

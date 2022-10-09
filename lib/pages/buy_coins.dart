@@ -1,10 +1,11 @@
-import 'dart:isolate';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:zbgaming/utils/apistring.dart';
 
 class BuyCoins extends StatefulWidget {
@@ -42,14 +43,14 @@ class _BuyCoinsState extends State<BuyCoins> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 8, right: 8),
-              child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              padding: const EdgeInsets.only(top: 16, left: 16, bottom: 16),
+              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                 GestureDetector(
                   onTap: () {
-                    Fluttertoast.showToast(msg: "Navigate to recent transactions");
+                    Navigator.pop(context);
                   },
                   child: const Icon(
-                    Icons.history_sharp,
+                    Icons.arrow_back,
                     color: Colors.black,
                     size: 27,
                   ),
@@ -68,7 +69,7 @@ class _BuyCoinsState extends State<BuyCoins> {
 
             // scroll to view and tiles
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 const Padding(
                   padding: EdgeInsets.all(8.0),
@@ -79,6 +80,7 @@ class _BuyCoinsState extends State<BuyCoins> {
                 SizedBox(
                   height: 170,
                   child: ListView(
+                    physics: const BouncingScrollPhysics(),
                     children: const [
                       BuyCoinsContainer(coinsValue: 100),
                       BuyCoinsContainer(coinsValue: 500),
@@ -136,7 +138,7 @@ class _ZCoinsYouHaveState extends State<ZCoinsYouHave> {
               height: 50,
             ),
             Text(
-              widget.coins == null ? "Loading..." : "${widget.coins}",
+              widget.coins == null ? "Loading..." : "${widget.coins} coins",
               style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
             ),
           ],
@@ -157,6 +159,45 @@ class BuyCoinsContainer extends StatefulWidget {
 
 class _BuyCoinsContainerState extends State<BuyCoinsContainer> {
   bool isLoading = false;
+  final Razorpay _razorpay = Razorpay();
+
+  // FUNCTIONS
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    isLoading = true;
+    setState(() {});
+    // verify payment
+    await get(Uri.parse(ApiEndpoints.baseUrl +
+            ApiEndpoints.verifyOrderForCoins +
+            "?order_id=${response.orderId}&payment_id=${response.paymentId}&signature=${response.signature}"))
+        .then((value) {
+      if (value.statusCode != 200) {
+        Fluttertoast.showToast(msg: "Server Side error");
+      } else {
+        Fluttertoast.showToast(msg: value.body, textColor: Colors.white, backgroundColor: Colors.blue);
+      }
+    }).catchError((onError) {
+      Fluttertoast.showToast(msg: "Something went wrong");
+    });
+    isLoading = false;
+    setState(() {});
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    Fluttertoast.showToast(msg: "Payment Failed!", backgroundColor: Colors.blue, textColor: Colors.white);
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    Fluttertoast.showToast(msg: "External wallet selected", backgroundColor: Colors.blue, textColor: Colors.white);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Razorpay event listeners
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +228,41 @@ class _BuyCoinsContainerState extends State<BuyCoinsContainer> {
                 onPressed: () async {
                   isLoading = true;
                   setState(() {});
-                  // RAZORPAY INTEGRATION!!
+                  await get(Uri.parse(ApiEndpoints.baseUrl +
+                          ApiEndpoints.buyCoins +
+                          "?uid=${FirebaseAuth.instance.currentUser!.uid}&type=${widget.coinsValue}"))
+                      .then((value) {
+                    if (value.statusCode != 200) {
+                      Fluttertoast.showToast(
+                          msg: "Server error", textColor: Colors.white, backgroundColor: Colors.blue);
+                    } else {
+                      if (value.body.contains("Failed")) {
+                        Fluttertoast.showToast(msg: value.body, textColor: Colors.white, backgroundColor: Colors.blue);
+                      } else {
+                        try {
+                          Fluttertoast.showToast(
+                              msg: "Creating order...", textColor: Colors.white, backgroundColor: Colors.blue);
+                          var result = jsonDecode(value.body);
+                          var options = {
+                            'key': 'rzp_test_rKi9TFV4sMHvz2',
+                            'amount': result["amount"],
+                            'name': 'ZBGaming',
+                            'order_id': result['id'],
+                            'timeout': 60,
+                          };
+                          _razorpay.open(options);
+                        } catch (e) {
+                          Fluttertoast.showToast(
+                              msg: "Cannot create order at the moment",
+                              textColor: Colors.white,
+                              backgroundColor: Colors.blue);
+                        }
+                      }
+                    }
+                  }).catchError((e) {
+                    Fluttertoast.showToast(
+                        msg: "Somehting went wrong", textColor: Colors.white, backgroundColor: Colors.blue);
+                  });
                   isLoading = false;
                   setState(() {});
                 },

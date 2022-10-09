@@ -4,6 +4,11 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
+INSANSE SECURITY VULNERABILITY!!!
+ORDER MANIPULATION!
+VERIFY ORDER MAKES CHANGES TO THE DATABASE. THIS IS ABSOLUTELY WRONG. ANYONE CAN VERIFY FOR A SMALL AMOUNT AND UPDATE PARAMETERS TO ADD HIMSELF
+TO A MORE EXPENSIVE MATCH.
+
 IMPORTANT!!!
 ORGANIZER KYC NEEDS TO BE IMPLEMENTED
 
@@ -554,13 +559,11 @@ def validate():
         if matchuid != None and useruid != None and matchType != None and token!=None:
             if matchType.lower() == "pubg":
 
-                # checking whether user is verified (KYC)
+                # checking whether user exists
                 user = db.collection("userinfo").document(useruid).get()
                 userdata = user.to_dict()
                 if userdata == None:
                     return "Failed: No such user"
-                if userdata["isVerified"] == False:
-                    return "Failed: User not verified"
 
                 # checking if matchuid exists
                 matchData = db.collection(matchType.lower()).document(matchuid).get()
@@ -598,7 +601,7 @@ def validate():
                 except:
                     return "Failed: No such match"
                 
-                # retrieve the total registered and increase it by one [USE TRANSACTION!]
+                # retrieve the total registered and increase it by one
                 transaction = db.transaction()
 
                 @firestore.transactional
@@ -618,7 +621,7 @@ def validate():
                 result = updateRegisteredTeams(transaction, ref)
 
                 if result:
-                    
+            
                     # add to registered
                     db.collection("userinfo").document(useruid).collection(
                         "registered"
@@ -1205,10 +1208,66 @@ def buyCoins():
     coinType = request.args.get("type")
     uid = request.args.get("uid")
 
+    # basic checks
     if coinType == None or uid == None:
         return "Failed"
+    if coinType == "" or uid == "":
+        return "Failed"
+
+    # checking if uid exists
+    userdata = db.collection("userinfo").document(uid).get().to_dict()
+    if userdata == None:
+        return "Failed: User does not exist"
     
+    # checking if coinType is correct
+    if coinType not in ["100", "500", "1000", "5000"]:
+        return "Failed: Invalid parameter value sent"
+    
+    # creating order
+    data = {
+        "amount": int(coinType) * 100,
+        "currency": "INR",
+        "notes": {
+            "coins": int(coinType) * 100,
+            "uid": uid
+        }
+    }
+    result = client.order.create(data=data)
+
+    # return the result
+    return result
+
+
+# VERIFY BUYING
+@app.route("/api/verifyBuyingCoins")
+def verifybuyingcoins():
+    payment_id = request.args.get("payment_id")
+    signature = request.args.get("signature")
+    order_id = request.args.get("order_id")
+
+    # verifying order
+    verifyStatus = client.utility.verify_payment_signature({
+    'razorpay_order_id': order_id,
+    'razorpay_payment_id': payment_id,
+    'razorpay_signature': signature
+    })
+
+    # if order verification successful
+    if verifyStatus:
+        try:
+            data = client.order.fetch(order_id)
+            # update zcoins of user
+            zcoins = db.collection("userinfo").document(data["notes"]["uid"]).get().to_dict()["zcoins"]
+            db.collection("userinfo").document(data["notes"]["uid"]).update({"zcoins":data["notes"]["coins"] // 100 + zcoins})
+            # include in transaction history
+
+        except:
+            return "Failed"
     else:
-        return "Success"
+        return "Failed"
+    
+    return "Payment Successful!"
+
+
 
 app.run(debug=False)
