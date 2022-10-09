@@ -102,7 +102,7 @@ class _AfterLoginDrawerState extends State<AfterLoginDrawer> {
                                         decoration: BoxDecoration(
                                             border: Border.all(color: Colors.blue, width: 2),
                                             color: Colors.white,
-                                            borderRadius: BorderRadius.all(Radius.circular(50))),
+                                            borderRadius: const BorderRadius.all(Radius.circular(50))),
                                         child: Text(
                                           context.watch<UserModel>().username == null
                                               ? "null"
