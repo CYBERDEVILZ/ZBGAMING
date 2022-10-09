@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:zbgaming/utils/apistring.dart';
+import 'package:zbgaming/widgets/date_to_string.dart';
 
 class BuyCoins extends StatefulWidget {
   const BuyCoins({Key? key}) : super(key: key);
@@ -17,18 +18,20 @@ class BuyCoins extends StatefulWidget {
 
 class _BuyCoinsState extends State<BuyCoins> {
   int? coins;
+  List transactions = [];
 
   @override
   void initState() {
     super.initState();
 
-    // fetch coins stream subscription
+    // fetch coins and transactions stream
     FirebaseFirestore.instance
         .collection("userinfo")
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .snapshots()
         .listen((event) {
       coins = event["zcoins"];
+      transactions = event["transactions"];
       setState(() {});
     });
   }
@@ -102,7 +105,14 @@ class _BuyCoinsState extends State<BuyCoins> {
               ),
             ),
 
+            transactions.isEmpty
+                ? Container(padding: const EdgeInsets.all(32), child: const Text("Nothing to show here"))
+                : Container(),
+
             // Transaction History shown here
+            ...transactions
+                .map((e) => TransactionTile(timestamp: e["timestamp"], amount: e["amount"], type: e["type"]))
+                .toList()
           ],
         ),
       )),
@@ -147,7 +157,6 @@ class _ZCoinsYouHaveState extends State<ZCoinsYouHave> {
 }
 
 // BUY COINS CONTAINERS
-
 class BuyCoinsContainer extends StatefulWidget {
   const BuyCoinsContainer({Key? key, required this.coinsValue}) : super(key: key);
 
@@ -278,6 +287,25 @@ class _BuyCoinsContainerState extends State<BuyCoinsContainer> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// TRANSACTION WIDGET
+class TransactionTile extends StatelessWidget {
+  const TransactionTile({Key? key, required this.timestamp, required this.amount, required this.type})
+      : super(key: key);
+  final Timestamp timestamp;
+  final int amount;
+  final String type;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.token),
+      title: Text(type),
+      subtitle: Text(DateToString().dateToString(timestamp.toDate())),
+      trailing: Text("$amount"),
     );
   }
 }

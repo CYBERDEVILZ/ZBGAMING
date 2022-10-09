@@ -347,7 +347,7 @@ def register():
                 return "Failed: No such user"
 
             # checking whether user's email is verified
-            userData = auth.get_user(uid=userdata.id)
+            userData = auth.get_user(uid=user.id)
             if not userData.email_verified:
                 return "Failed: Email Not Verified"
 
@@ -474,7 +474,7 @@ def paidRegister():
                 return "Failed: No such user"
             
             # checking whether user's email is verified
-            userData = auth.get_user(uid=userdata.id)
+            userData = auth.get_user(uid=user.id)
             if not userData.email_verified:
                 return "Failed: Email Not Verified"
 
@@ -1257,10 +1257,18 @@ def verifybuyingcoins():
     if verifyStatus:
         try:
             data = client.order.fetch(order_id)
-            # update zcoins of user
+            # update zcoins of user and transactions
             zcoins = db.collection("userinfo").document(data["notes"]["uid"]).get().to_dict()["zcoins"]
-            db.collection("userinfo").document(data["notes"]["uid"]).update({"zcoins":data["notes"]["coins"] // 100 + zcoins})
-            # include in transaction history
+            db.collection("userinfo").document(data["notes"]["uid"]).update({"zcoins":data["notes"]["coins"] // 100 + zcoins, 
+                "transactions": firestore.ArrayUnion([
+                    {
+                        "amount": data["notes"]["coins"] // 100, 
+                        "timestamp": datetime.now(),
+                        "type": "bought coins",
+                    }
+                ]
+            )})
+
 
         except:
             return "Failed"
