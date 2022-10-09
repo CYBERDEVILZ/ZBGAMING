@@ -96,13 +96,21 @@ class _AfterLoginDrawerState extends State<AfterLoginDrawer> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Expanded(
-                                      child: Text(
-                                        context.watch<UserModel>().username == null
-                                            ? "null"
-                                            : context.watch<UserModel>().username!,
-                                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(6),
+                                        margin: const EdgeInsets.only(right: 5),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.blue, width: 2),
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.all(Radius.circular(50))),
+                                        child: Text(
+                                          context.watch<UserModel>().username == null
+                                              ? "null"
+                                              : context.watch<UserModel>().username!,
+                                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ),
                                     Zcoin(coin: coin)

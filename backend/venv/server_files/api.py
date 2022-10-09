@@ -284,7 +284,8 @@ def userSignup():
                                 "level": 0,
                                 "isVerified": isVerified,
                                 "hashedID": hashlib.sha256(docId.encode()).digest(),
-                                "tempUid": tempUid
+                                "tempUid": tempUid,
+                                "zcoins": 0
                             }
                         )
                         return "Success"
