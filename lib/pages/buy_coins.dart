@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:zbgaming/utils/apistring.dart';
-import 'package:zbgaming/widgets/date_to_string.dart';
 
 class BuyCoins extends StatefulWidget {
   const BuyCoins({Key? key}) : super(key: key);
@@ -41,80 +39,95 @@ class _BuyCoinsState extends State<BuyCoins> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 16, left: 16, bottom: 16),
-              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                    size: 27,
-                  ),
-                )
-              ]),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.width / 4,
-              color: Colors.white,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [ZCoinsYouHave(coins: coins)],
-              ),
-            ),
-
-            // scroll to view and tiles
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text("scroll to view more >>>"),
+          child: CustomScrollView(
+        slivers: [
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                // back button
+                Padding(
+                  padding: const EdgeInsets.only(top: 16, left: 16, bottom: 16),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                        size: 27,
+                      ),
+                    )
+                  ]),
                 ),
 
-                // list view
-                SizedBox(
-                  height: 170,
-                  child: ListView(
-                    physics: const BouncingScrollPhysics(),
-                    children: const [
-                      BuyCoinsContainer(coinsValue: 100),
-                      BuyCoinsContainer(coinsValue: 500),
-                      BuyCoinsContainer(coinsValue: 1000),
-                      BuyCoinsContainer(coinsValue: 5000),
+                // coins
+                Container(
+                  height: MediaQuery.of(context).size.width / 4,
+                  color: Colors.white,
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [ZCoinsYouHave(coins: coins)],
+                  ),
+                ),
+
+                // scroll to view and tiles
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("scroll to view more >>>"),
+                      ),
+
+                      // list view
+                      SizedBox(
+                        height: 170,
+                        child: ListView(
+                          physics: const BouncingScrollPhysics(),
+                          children: const [
+                            BuyCoinsContainer(coinsValue: 100),
+                            BuyCoinsContainer(coinsValue: 500),
+                            BuyCoinsContainer(coinsValue: 1000),
+                            BuyCoinsContainer(coinsValue: 5000),
+                          ],
+                          scrollDirection: Axis.horizontal,
+                        ),
+                      ),
+
+                      // Transaction History
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: const EdgeInsets.only(top: 40, bottom: 10),
+                        child: const Text(
+                          "Transaction History",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.black, fontSize: 20),
+                        ),
+                      ),
+
+                      transactions.isEmpty
+                          ? Container(padding: const EdgeInsets.all(32), child: const Text("Nothing to show here"))
+                          : Container(),
                     ],
-                    scrollDirection: Axis.horizontal,
                   ),
                 ),
-              ]),
+              ],
             ),
-
-            // Transaction History
-            Container(
-              margin: const EdgeInsets.only(top: 30, bottom: 10),
-              child: const Text(
-                "Transaction History",
-                style: TextStyle(color: Colors.black, fontSize: 20),
-              ),
-            ),
-
-            transactions.isEmpty
-                ? Container(padding: const EdgeInsets.all(32), child: const Text("Nothing to show here"))
-                : Container(),
-
-            // Transaction History shown here
-            ...transactions
-                .map((e) => TransactionTile(timestamp: e["timestamp"], amount: e["amount"], type: e["type"]))
-                .toList()
-          ],
-        ),
+          ),
+          SliverList(
+              delegate: SliverChildListDelegate(transactions
+                  .map((e) => TransactionTile(timestamp: e["timestamp"], amount: e["amount"], type: e["type"]))
+                  .toList()))
+        ],
+        //  Column(
+        //     mainAxisAlignment: MainAxisAlignment.start,
+        //     children: [
+        //     ],
+        //   ),
       )),
     );
   }
@@ -301,11 +314,48 @@ class TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color color = type == "bought coins"
+        ? Colors.green[700]!
+        : type == "withdraw"
+            ? Colors.red
+            : type == "rewarded"
+                ? Colors.green[700]!
+                : type == "refunded"
+                    ? Colors.green
+                    : type == "joined game"
+                        ? Colors.red
+                        : Colors.black;
+    String image = type == "bought coins"
+        ? "assets/images/bank.png"
+        : type == "withdraw"
+            ? "assets/images/bank.png"
+            : type == "rewarded"
+                ? "assets/images/reward.png"
+                : type == "refunded"
+                    ? "assets/images/refund.png"
+                    : type == "spent"
+                        ? "assets/images/controller.png"
+                        : "assets/images/bank.png";
+
+    String time = timestamp.toDate().toUtc().toString().substring(0, 19);
+    try {} catch (e) {
+      time = "error occurred";
+    }
+
     return ListTile(
-      leading: const Icon(Icons.token),
+      leading: SizedBox(
+          height: 35,
+          child: Image.asset(
+            image,
+            fit: BoxFit.fitHeight,
+            color: color,
+          )),
       title: Text(type),
-      subtitle: Text(DateToString().dateToString(timestamp.toDate())),
-      trailing: Text("$amount"),
+      subtitle: Text(time),
+      trailing: Text(
+        amount >= 0 ? "+$amount" : "$amount",
+        style: TextStyle(color: color, fontWeight: FontWeight.bold),
+      ),
     );
   }
 }
