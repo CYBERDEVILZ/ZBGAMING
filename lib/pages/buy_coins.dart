@@ -53,8 +53,8 @@ class _BuyCoinsState extends State<BuyCoins> {
                 [
                   // back button
                   Padding(
-                    padding: const EdgeInsets.only(top: 16, left: 16, bottom: 16),
-                    child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    padding: const EdgeInsets.all(16),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
@@ -63,6 +63,15 @@ class _BuyCoinsState extends State<BuyCoins> {
                           Icons.arrow_back,
                           color: Colors.amber,
                           size: 27,
+                        ),
+                      ),
+
+                      // navigate to withdraw
+                      GestureDetector(
+                        onTap: () {},
+                        child: const Icon(
+                          Icons.account_balance_wallet,
+                          color: Colors.amber,
                         ),
                       )
                     ]),
