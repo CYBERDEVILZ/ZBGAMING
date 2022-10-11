@@ -121,6 +121,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # GAMES LIST TO BE MENTIONED HERE
 games = ["pubg", "freefire"]
 
+# FEES DICTIONARY
+fees = {0: 0, 1: 100, 2: 500, 3: 1000, 4: 5000}
+
 # FIREBASE INIT
 cred = credentials.Certificate("zbgaming-v1-firebase-adminsdk-2ozhj-4f38e5fc3e.json")
 firebase_admin.initialize_app(cred)
@@ -143,8 +146,20 @@ def validateEmail(email):
         return False
 
 # refund money logic
-def refund():
-    print("refund all the money BLYAT! and Give organizer bad rating!")
+def refund(game, matchId, fee):
+    # fetch users
+    registeredUsersDoc = db.collection(game).document(matchId).collection("registeredUsers").get()
+    for doc in registeredUsersDoc:
+        docData = doc.to_dict()
+        # update the amount of each user
+        user = db.collection("userinfo").where("hashedID", "==", docData["hashedID"]).get()[0]
+        zcoins = user.to_dict()["zcoins"]
+        user.reference.update({"zcoins":zcoins + fees[fee],"transactions": firestore.ArrayUnion([{
+            "amount": fees[fee],
+            "type": "refunded",
+            "timestamp": datetime.now()
+        }])})
+
 
 # delete game from database
 def deleteGame(game, gameID):
@@ -181,7 +196,9 @@ def schedule_1_are_matches_over():
             # if match was never started
             if (match_data["started"] == 0):
                 print("match was never started! lets refund all the money and show it cancelled")
-                refund()
+                # refund only if match is paid
+                if (match_data["fee"] != 0):
+                    refund(game, matches.id, match_data["fee"])
                 deleteChat(match_data["notificationId"])
                 updateHistoryToCancelled(game, matches.id)
                 deleteGame(game, matches.id)

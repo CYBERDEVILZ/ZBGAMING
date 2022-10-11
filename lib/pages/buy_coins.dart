@@ -30,61 +30,63 @@ class _BuyCoinsState extends State<BuyCoins> {
         .listen((event) {
       coins = event["zcoins"];
       transactions = event["transactions"];
+      transactions = transactions.reversed.toList();
       setState(() {});
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-          child: CustomScrollView(
-        slivers: [
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                // back button
-                Padding(
-                  padding: const EdgeInsets.only(top: 16, left: 16, bottom: 16),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.black,
-                        size: 27,
-                      ),
-                    )
-                  ]),
-                ),
-
-                // coins
-                Container(
-                  height: MediaQuery.of(context).size.width / 4,
-                  color: Colors.white,
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [ZCoinsYouHave(coins: coins)],
+    return Material(
+      child: Container(
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+          colors: [Color(0xff333399), Color(0xffff00cc)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        )),
+        child: SafeArea(
+            child: CustomScrollView(
+          slivers: [
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  // back button
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, left: 16, bottom: 16),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.amber,
+                          size: 27,
+                        ),
+                      )
+                    ]),
                   ),
-                ),
 
-                // scroll to view and tiles
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
+                  // coins
+                  Container(
+                    height: MediaQuery.of(context).size.width / 4,
+                    color: Colors.transparent,
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [ZCoinsYouHave(coins: coins)],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // scroll to view and tiles
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text("scroll to view more >>>"),
-                      ),
-
                       // list view
-                      SizedBox(
+                      Container(
+                        padding: const EdgeInsets.all(8),
                         height: 170,
                         child: ListView(
                           physics: const BouncingScrollPhysics(),
@@ -100,35 +102,53 @@ class _BuyCoinsState extends State<BuyCoins> {
 
                       // Transaction History
                       Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: const EdgeInsets.only(top: 40, bottom: 10),
-                        child: const Text(
-                          "Transaction History",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black, fontSize: 20),
+                        margin: const EdgeInsets.only(top: 40),
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50)),
+                          color: Colors.white,
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              width: MediaQuery.of(context).size.width,
+                              child: const Text(
+                                "Transaction History",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.black, fontSize: 20),
+                              ),
+                            ),
+                            transactions.isEmpty
+                                ? Container(
+                                    padding: const EdgeInsets.all(16),
+                                    child: const Text("Nothing to show here"),
+                                    color: Colors.white,
+                                  )
+                                : Container(
+                                    color: Colors.white,
+                                    child: Column(
+                                      children: transactions
+                                          .map((e) => TransactionTile(
+                                              timestamp: e["timestamp"], amount: e["amount"], type: e["type"]))
+                                          .toList(),
+                                    ),
+                                  ),
+                          ],
                         ),
                       ),
-
-                      transactions.isEmpty
-                          ? Container(padding: const EdgeInsets.all(32), child: const Text("Nothing to show here"))
-                          : Container(),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          SliverList(
-              delegate: SliverChildListDelegate(transactions
-                  .map((e) => TransactionTile(timestamp: e["timestamp"], amount: e["amount"], type: e["type"]))
-                  .toList()))
-        ],
-        //  Column(
-        //     mainAxisAlignment: MainAxisAlignment.start,
-        //     children: [
-        //     ],
-        //   ),
-      )),
+          ],
+          //  Column(
+          //     mainAxisAlignment: MainAxisAlignment.start,
+          //     children: [
+          //     ],
+          //   ),
+        )),
+      ),
     );
   }
 }
@@ -146,7 +166,7 @@ class _ZCoinsYouHaveState extends State<ZCoinsYouHave> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(10),
         constraints: const BoxConstraints(minWidth: 50, minHeight: 10),
         decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(500)),
@@ -227,7 +247,15 @@ class _BuyCoinsContainerState extends State<BuyCoinsContainer> {
       margin: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
         constraints: const BoxConstraints(minWidth: 150, minHeight: 125),
-        decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(
+            color: Colors.blue,
+            border: Border.all(color: Colors.amber, width: 2),
+            borderRadius: BorderRadius.circular(10),
+            gradient: const LinearGradient(
+                colors: [Color(0xff8E2DE2), Color(0xff4A00E0)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0.1, 0.7])),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
