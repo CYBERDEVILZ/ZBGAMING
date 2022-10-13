@@ -31,7 +31,7 @@ class _BuyCoinsState extends State<BuyCoins> {
       coins = event["zcoins"];
       transactions = event["transactions"];
       transactions = transactions.reversed.toList();
-      setState(() {});
+      if (mounted) setState(() {});
     });
   }
 
@@ -108,48 +108,50 @@ class _BuyCoinsState extends State<BuyCoins> {
                           scrollDirection: Axis.horizontal,
                         ),
                       ),
-
-                      // Transaction History
-                      Container(
-                        margin: const EdgeInsets.only(top: 40),
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50)),
-                          color: Colors.white,
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              width: MediaQuery.of(context).size.width,
-                              child: const Text(
-                                "Transaction History",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.black, fontSize: 20),
-                              ),
-                            ),
-                            transactions.isEmpty
-                                ? Container(
-                                    padding: const EdgeInsets.all(16),
-                                    child: const Text("Nothing to show here"),
-                                    color: Colors.white,
-                                  )
-                                : Container(
-                                    color: Colors.white,
-                                    child: Column(
-                                      children: transactions
-                                          .map((e) => TransactionTile(
-                                              timestamp: e["timestamp"], amount: e["amount"], type: e["type"]))
-                                          .toList(),
-                                    ),
-                                  ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ],
               ),
             ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: // Transaction History
+                  Container(
+                margin: const EdgeInsets.only(top: 40),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50)),
+                  color: Colors.white,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      width: MediaQuery.of(context).size.width,
+                      child: const Text(
+                        "Transaction History",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.black, fontSize: 20),
+                      ),
+                    ),
+                    transactions.isEmpty
+                        ? Container(
+                            padding: const EdgeInsets.all(16),
+                            child: const Text("Nothing to show here"),
+                            color: Colors.white,
+                          )
+                        : Container(
+                            color: Colors.white,
+                            child: Column(
+                              children: transactions
+                                  .map((e) =>
+                                      TransactionTile(timestamp: e["timestamp"], amount: e["amount"], type: e["type"]))
+                                  .toList(),
+                            ),
+                          ),
+                  ],
+                ),
+              ),
+            )
           ],
           //  Column(
           //     mainAxisAlignment: MainAxisAlignment.start,
@@ -359,19 +361,19 @@ class TransactionTile extends StatelessWidget {
                 ? Colors.green[700]!
                 : type == "refunded"
                     ? Colors.green
-                    : type == "joined game"
+                    : type == "spent"
                         ? Colors.red
                         : Colors.black;
     String image = type == "bought coins"
-        ? "assets/images/bank.png"
+        ? "assets/images/wallet-plus.png"
         : type == "withdraw"
-            ? "assets/images/bank.png"
+            ? "assets/images/wihdraw.png"
             : type == "rewarded"
                 ? "assets/images/reward.png"
                 : type == "refunded"
                     ? "assets/images/refund.png"
                     : type == "spent"
-                        ? "assets/images/controller.png"
+                        ? "assets/images/wallet-minus.png"
                         : "assets/images/bank.png";
 
     String time = timestamp.toDate().toUtc().toString().substring(0, 19);

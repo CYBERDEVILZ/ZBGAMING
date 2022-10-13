@@ -13,23 +13,22 @@ IMPORTANT!!!
 ORGANIZER KYC NEEDS TO BE IMPLEMENTED
 
 IMPORTANT!!!
-ADD REDEEM PAGE
+REVAMP MATCH JOINING LOGIC. USE COINS TO BUY 
 
 IMPORTANT!!!
-ADD COIN BUYING PAGE
+COIN SYSTEM FOR ORGANIZERS: USE IT TO PROMOTE ADS AND CREATE SPECIAL MATCHES
+
+IMPORTANT!!!
+REDEEM PAGE REQUIRED
+
+IMPORTANT!!!
+ADD REDEEM PAGE
 
 IMPORTANT!!!
 SPECIAL MATCH REQUEST FORM ORGANIZER
 
 IMPORTANT!!!
-UPDATE LOGIC OF JOINING MATCHES. In order to redeem money, you need to verify yourself
-
-IMPORTANT!!!
 VERIFIER STATISTIC: HOW MUCH HE VERIFIED ETC SHOULD BE SHOWN
-
-IMPORTANT!!!
-REVENUE!!!
-INTRODUCE COIN REWARD SYSTEM AS WELL
 
 IMPORTANT!!!
 EXPORT TO CSV REQUIRED
@@ -302,7 +301,8 @@ def userSignup():
                                 "isVerified": isVerified,
                                 "hashedID": hashlib.sha256(docId.encode()).digest(),
                                 "tempUid": tempUid,
-                                "zcoins": 0
+                                "zcoins": 0,
+                                "transactions": []
                             }
                         )
                         return "Success"
@@ -557,125 +557,121 @@ def paidRegister():
 
 
 # ORDER VALIDATION AND PAID REGISTRATION
-@app.route("/api/validateOrder")
+@app.route("/api/paidOrder")
 def validate():
-    order_id = request.args.get("order_id")
-    razorpay_signature = request.args.get("razorpay_signature")
-    razorpay_payment_id = request.args.get("razorpay_payment_id")
     matchType = request.args.get("matchType")
     matchuid = request.args.get("matchuid")
     useruid = request.args.get("useruid")
     token = request.args.get("token")
 
-    verifyStatus = client.utility.verify_payment_signature({
-   'razorpay_order_id': order_id,
-   'razorpay_payment_id': razorpay_payment_id,
-   'razorpay_signature': razorpay_signature
-   })
+    if matchuid != None and useruid != None and matchType != None and token!=None:
+        if matchType.lower() == "pubg":
 
-    if verifyStatus:
-        if matchuid != None and useruid != None and matchType != None and token!=None:
-            if matchType.lower() == "pubg":
+            # checking whether user exists
+            user = db.collection("userinfo").document(useruid).get()
+            userdata = user.to_dict()
+            if userdata == None:
+                return "Failed: No such user"
 
-                # checking whether user exists
-                user = db.collection("userinfo").document(useruid).get()
-                userdata = user.to_dict()
-                if userdata == None:
-                    return "Failed: No such user"
+            # checking if matchuid exists
+            matchData = db.collection(matchType.lower()).document(matchuid).get()
+            matchData = matchData.to_dict()
+            if matchData == None:
+                return "Failed: Match Doesn't Exist"
 
-                # checking if matchuid exists
-                matchData = db.collection(matchType.lower()).document(matchuid).get()
-                matchData = matchData.to_dict()
-                if matchData == None:
-                    return "Failed: Match Doesn't Exist"
+            # checking for already registered..
+            user = (
+                db.collection("userinfo").document(useruid).collection("registered").get()
+            )
+            user = [user.id for user in user]
+            if matchuid in user:
+                return "Failed: Already registered"
 
-                # checking for already registered..
-                user = (
-                    db.collection("userinfo").document(useruid).collection("registered").get()
-                )
-                user = [user.id for user in user]
-                if matchuid in user:
-                    return "Failed: Already registered"
+            # checking whether the user has linked his game account
+            ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
+            ids_dict = ids.to_dict()
+            if ids_dict == None:
+                return "Failed: Account not linked"
+            if ids_dict["id"] == None or ids_dict["id"] == "":
+                return "Failed: Account not linked"
 
-                # checking whether the user has linked his game account
-                ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
-                ids_dict = ids.to_dict()
-                if ids_dict == None:
-                    return "Failed: Account not linked"
-                if ids_dict["id"] == None or ids_dict["id"] == "":
-                    return "Failed: Account not linked"
+            # if all conditions passed,
+            ref = db.collection("pubg").document(matchuid)
+            ref_obj = ref.get().to_dict()
+            try:
+                date = ref_obj["date"]
+                matchType = "pubg"
+                uid = matchuid
+                name = ref_obj["name"]
+                paid = ref_obj["fee"]
+                skill = ref_obj["skill"]
+                notifId = ref_obj["notificationId"]
+            except:
+                return "Failed: No such match"
 
-                # if all conditions passed, then check for valid matchuid
-                ref = db.collection("pubg").document(matchuid)
-                ref_obj = ref.get().to_dict()
-                try:
-                    date = ref_obj["date"]
-                    matchType = "pubg"
-                    uid = matchuid
-                    name = ref_obj["name"]
-                    paid = ref_obj["fee"]
-                    skill = ref_obj["skill"]
-                    notifId = ref_obj["notificationId"]
-                except:
-                    return "Failed: No such match"
-                
-                # retrieve the total registered and increase it by one
-                transaction = db.transaction()
-
-                @firestore.transactional
-                def updateRegisteredTeams(transaction, ref):
-                    snapshot = ref.get(transaction=transaction)
-                    reg = snapshot.get("reg")
-                    total = snapshot.get("total")
-                    try:
-                        if reg < total:
-                            transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
-                            return True
-                        else:
-                            return False
-                    except:
-                        return False
-
-                result = updateRegisteredTeams(transaction, ref)
-
-                if result:
+             # checking if the user has ample balance
+            balance = userdata["zcoins"]
+            if balance < fees[paid]:
+                return "Failed: Not enough balance"
             
-                    # add to registered
-                    db.collection("userinfo").document(useruid).collection(
-                        "registered"
-                    ).document(matchuid).set({
-                        "date": date,
-                        "matchType": matchType, 
-                        "name": name, 
-                        "uid": uid, 
-                        "notificationId": notifId, 
-                        "hasRated": False
-                    })
-
-                    # add to match's registration list
-                    ref.collection("registeredUsers").document().set({
-                        "email": userdata["email"],
-                        "username": userdata["username"],
-                        "IGID": ids_dict["id"],
-                        "hashedID": hashlib.sha256(useruid.encode()).digest()
-                    })
-
-                    # add to history
-                    db.collection("userinfo").document(useruid).collection("history").document(
-                        matchuid
-                    ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill, "amount": 0})
+            # reference for user document
+            ref_user = db.collection("userinfo").document(useruid)
+            
+            # TRANSACTION
+            transaction = db.transaction()
+            @firestore.transactional
+            def updateRegisteredTeams(transaction, ref):
+                snapshot = ref.get(transaction=transaction)
+                reg = snapshot.get("reg")
+                total = snapshot.get("total")
+                try:
+                    if reg < total:
+                        transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
+                        transaction.update(ref_user, {"zcoins": balance - fees[paid],"transactions": firestore.ArrayUnion([{"type": "spent", "amount": 0 - fees[paid], "timestamp": datetime.now()}])})
+                        return True
+                    else:
+                        return False
+                except:
+                    return False
 
 
-                    return "Success"
-                else:
-                    return "Failed"
-            else: 
+            result = updateRegisteredTeams(transaction, ref)
+
+            if result:
+        
+                # add to registered
+                db.collection("userinfo").document(useruid).collection(
+                    "registered"
+                ).document(matchuid).set({
+                    "date": date,
+                    "matchType": matchType, 
+                    "name": name, 
+                    "uid": uid, 
+                    "notificationId": notifId, 
+                    "hasRated": False
+                })
+
+                # add to match's registration list
+                ref.collection("registeredUsers").document().set({
+                    "email": userdata["email"],
+                    "username": userdata["username"],
+                    "IGID": ids_dict["id"],
+                    "hashedID": hashlib.sha256(useruid.encode()).digest()
+                })
+
+                # add to history
+                db.collection("userinfo").document(useruid).collection("history").document(
+                    matchuid
+                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill, "amount": 0})
+
+
+                return "Success"
+            else:
                 return "Failed"
+        else: 
+            return "Failed"
 
-        return "Failed"
-
-    else:
-        return "Something went wrong"
+    return "Failed"
         
 
 # CREATE MATCHES
@@ -1178,6 +1174,7 @@ def cancelMatch():
     matchType = request.args.get("matchType")
     matchUid = request.args.get("muid")
 
+    # basic parameter checks
     if matchUid == None or matchType == None:
         return "Failed"
     
@@ -1187,17 +1184,19 @@ def cancelMatch():
     if matchType.lower() not in games:
         return "Failed"
 
+    # if match is ongoing or finished, you can't cancel
     try:
         ref = db.collection(matchType).document(matchUid).get().to_dict()
         notifID = ref["notificationId"]
         started = ref["started"]
+        fee = ref["fee"]
         if started == 2 or started == 1:
-            return "Failed"
-        refund()
+            return "Failed: Match has already been started or finished"
+        refund(matchType, matchUid, fee)
         deleteChat(chatID=notifID)
         deleteGame(game=matchType.lower(), gameID=matchUid)
     except:
-        return "Failed"
+        return "Failed: Something went wrong"
 
     return "Success"
 

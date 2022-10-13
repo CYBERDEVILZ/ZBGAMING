@@ -245,8 +245,8 @@ class _MatchStartState extends State<MatchStart> {
                                                       ApiEndpoints.cancel +
                                                       "?matchType=${widget.matchType}&muid=${widget.matchuid}"))
                                                   .then((value) {
-                                                if (value.body == "Failed") {
-                                                  Fluttertoast.showToast(msg: "Failed");
+                                                if (value.body != "Success") {
+                                                  Fluttertoast.showToast(msg: value.body);
                                                 }
                                               });
                                               setState(() {

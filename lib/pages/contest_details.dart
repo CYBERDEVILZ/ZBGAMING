@@ -14,7 +14,8 @@ import 'package:zbgaming/widgets/organizer_card.dart';
 import 'package:zbgaming/widgets/organizer_info.dart';
 import 'package:zbgaming/widgets/rate_builder.dart';
 import 'package:zbgaming/widgets/rules_and_requirements.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
+
+Map<int, int> feeToZcoins = {0: 0, 1: 100, 2: 500, 3: 1000, 4: 5000};
 
 class ContestDetails extends StatefulWidget {
   const ContestDetails({Key? key, required this.uid, required this.matchType}) : super(key: key);
@@ -90,35 +91,6 @@ class _ContestDetailsState extends State<ContestDetails> {
     });
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    isButtonLoading = true;
-    setState(() {});
-    Fluttertoast.showToast(msg: "validating payment...");
-    await get(Uri.parse(ApiEndpoints.baseUrl +
-            ApiEndpoints.validateOrder +
-            "?order_id=${response.orderId}&razorpay_signature=${response.signature}&razorpay_payment_id=${response.paymentId}&matchuid=${widget.uid}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchType=${widget.matchType}&token=$token&secretKey=DO_NOT_TAMPER_THIS_REQUEST"))
-        .then((value) {
-      if (value.statusCode == 200) {
-        Fluttertoast.showToast(msg: value.body);
-      } else {
-        Fluttertoast.showToast(msg: "Something went wrong");
-      }
-    }).catchError((onError) {
-      Fluttertoast.showToast(msg: "Something Went Wrong!");
-    });
-    areYouRegistered();
-  }
-
-  void _handlePaymentError(PaymentFailureResponse response) {
-    Fluttertoast.showToast(msg: "Failure in handling payment");
-  }
-
-  void _handleExternalWallet(ExternalWalletResponse response) {
-    Fluttertoast.showToast(msg: "Failure in handling external wallet");
-  }
-
-  final Razorpay _razorpay = Razorpay();
-
   void areYouRegistered() async {
     isButtonLoading = true;
     setState(() {});
@@ -158,9 +130,6 @@ class _ContestDetailsState extends State<ContestDetails> {
   void initState() {
     super.initState();
     documentStream = FirebaseFirestore.instance.collection(widget.matchType).doc(widget.uid).snapshots();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     areYouRegistered();
     fetchMatchData();
     getToken();
@@ -169,7 +138,6 @@ class _ContestDetailsState extends State<ContestDetails> {
   @override
   void dispose() {
     super.dispose();
-    _razorpay.clear();
   }
 
   @override
@@ -666,7 +634,7 @@ class _ContestDetailsState extends State<ContestDetails> {
           return;
         }
 
-        // fetch user level
+        // fetch user data
         DocumentSnapshot<Map<String, dynamic>> data =
             await FirebaseFirestore.instance.collection("userinfo").doc(FirebaseAuth.instance.currentUser?.uid).get();
         if (skill == null) {
@@ -727,31 +695,31 @@ class _ContestDetailsState extends State<ContestDetails> {
           if (regTeams! < totalTeams!) {
             String? token = await FirebaseMessaging.instance.getToken();
 
+            isButtonLoading = true;
+            setState(() {});
+            // check if user has ample balance
+            if (fee == null) {
+              return;
+            } else {
+              if (data["zcoins"] < feeToZcoins[rewards]) {
+                Fluttertoast.showToast(msg: "Not enough balance");
+                return;
+              }
+            }
+            Fluttertoast.showToast(msg: "validating payment...");
             await get(Uri.parse(ApiEndpoints.baseUrl +
-                    ApiEndpoints.createOrder +
-                    "?matchType=${widget.matchType}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchuid=${widget.uid}&token=$token"))
+                    ApiEndpoints.paidOrder +
+                    "?matchuid=${widget.uid}&useruid=${FirebaseAuth.instance.currentUser?.uid}&matchType=${widget.matchType}&token=$token&secretKey=DO_NOT_TAMPER_THIS_REQUEST"))
                 .then((value) {
               if (value.statusCode == 200) {
-                if (!value.body.contains("Failed")) {
-                  Fluttertoast.showToast(msg: "redirecting you to payment gateway");
-                  Map<String, dynamic> checkout = {
-                    'key': 'rzp_test_rKi9TFV4sMHvz2',
-                    'amount': fee! * 100, //in the smallest currency sub-unit.
-                    'name': 'ZBGaming',
-                    'order_id': value.body, // Generate order_id using Orders API
-                    'description': 'Registration Fees',
-                    'timeout': 300, // in seconds
-                  };
-                  _razorpay.open(checkout);
-                } else {
-                  Fluttertoast.showToast(msg: value.body);
-                }
+                Fluttertoast.showToast(msg: value.body);
               } else {
                 Fluttertoast.showToast(msg: "Something went wrong");
               }
             }).catchError((onError) {
-              Fluttertoast.showToast(msg: "An error occurred");
+              Fluttertoast.showToast(msg: "Something Went Wrong!");
             });
+            areYouRegistered();
           }
         }
       }
@@ -785,11 +753,17 @@ class _ContestDetailsState extends State<ContestDetails> {
                             alignment: Alignment.center,
                             child: FittedBox(
                               child: rewards != 0
-                                  ? Text(
-                                      "\u20b9 $fee",
-                                      style: const TextStyle(
-                                          fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
-                                    )
+                                  ? Row(children: [
+                                      Container(
+                                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                                          width: 30,
+                                          child: Image.asset("assets/images/zcoin.png")),
+                                      Text(
+                                        "$fee",
+                                        style: const TextStyle(
+                                            fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+                                      )
+                                    ])
                                   : const Text(
                                       "FREE",
                                       style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
