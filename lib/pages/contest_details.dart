@@ -534,18 +534,24 @@ class _ContestDetailsState extends State<ContestDetails> {
                                       ),
                                       Expanded(
                                         child: FittedBox(
-                                          child: regTeams! <= 1
-                                              ? const Text(
-                                                  "[Waiting for more players]",
-                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                                )
-                                              : Text(
-                                                  "\u20b9 $amount",
-                                                  style:
-                                                      const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                                  textScaleFactor: 4,
-                                                ),
-                                        ),
+                                            child: regTeams! <= 1
+                                                ? const Text(
+                                                    "[Waiting for more players]",
+                                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                  )
+                                                : Row(children: [
+                                                    Container(
+                                                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                                                        width: 30,
+                                                        child: Image.asset("assets/images/zcoin.png")),
+                                                    Text(
+                                                      "$amount",
+                                                      style: const TextStyle(
+                                                          fontSize: 30,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold),
+                                                    )
+                                                  ])),
                                       ),
                                       const Text("Bring more players to increase the PRIZE POOL!",
                                           style: TextStyle(color: Colors.white))
@@ -703,6 +709,8 @@ class _ContestDetailsState extends State<ContestDetails> {
             } else {
               if (data["zcoins"] < feeToZcoins[rewards]) {
                 Fluttertoast.showToast(msg: "Not enough balance");
+                isButtonLoading = false;
+                setState(() {});
                 return;
               }
             }

@@ -4,25 +4,17 @@ OPTIMIZATIONS / IDEAS
 
 ########################## LOGIC SECTION ###############################
 
-INSANSE SECURITY VULNERABILITY!!!
-ORDER MANIPULATION!
-VERIFY ORDER MAKES CHANGES TO THE DATABASE. THIS IS ABSOLUTELY WRONG. ANYONE CAN VERIFY FOR A SMALL AMOUNT AND UPDATE PARAMETERS TO ADD HIMSELF
-TO A MORE EXPENSIVE MATCH.
-
 IMPORTANT!!!
 ORGANIZER KYC NEEDS TO BE IMPLEMENTED
-
-IMPORTANT!!!
-REVAMP MATCH JOINING LOGIC. USE COINS TO BUY 
 
 IMPORTANT!!!
 COIN SYSTEM FOR ORGANIZERS: USE IT TO PROMOTE ADS AND CREATE SPECIAL MATCHES
 
 IMPORTANT!!!
-REDEEM PAGE REQUIRED
+FRONTEND - CONTEST DETAILS, CONTEST CARD
 
 IMPORTANT!!!
-ADD REDEEM PAGE
+REDEEM PAGE REQUIRED
 
 IMPORTANT!!!
 SPECIAL MATCH REQUEST FORM ORGANIZER
@@ -163,9 +155,15 @@ def refund(game, matchId, fee):
 # delete game from database
 def deleteGame(game, gameID):
     docs1 = db.collection(game).document(gameID).collection("registeredUsers").get()
+    # delete from organzier's account
     for doc in docs1:
+        userHashedId = doc.to_dict()["hashedID"]
+        userdata = db.collection("userinfo").where("hashedID", "==", userHashedId).get()
+        userdata[0].reference.collection("registered").document(gameID).delete()
         doc.reference.delete()
+
     db.collection(game).document(gameID).delete()
+    
 
 # delete chats
 def deleteChat(chatID):
@@ -179,7 +177,6 @@ def updateHistoryToCancelled(game, gameID):
         hashedID = doc_data["hashedID"]
         users = db.collection("userinfo").where("hashedID", "==", hashedID).get()
         for user in users:
-            print(user.id)
             user.reference.collection("history").document(gameID).update({"won": 2})
 
 
@@ -471,92 +468,7 @@ def register():
     return "Failed"
 
 
-# CREATE ORDER
-# Only creates order for the client  
-@app.route("/api/createOrder")
-def paidRegister():
-    matchType = request.args.get("matchType")
-    matchuid = request.args.get("matchuid")
-    useruid = request.args.get("useruid")
-    token = request.args.get("token")
-
-    if matchuid != None and useruid != None and matchType != None and token != None:
-        amount = None
-        if matchType.lower() == "pubg":
-
-            # checking whether user exists
-            user = db.collection("userinfo").document(useruid).get()
-            userdata = user.to_dict()
-            if userdata == None:
-                return "Failed: No such user"
-            
-            # checking whether user's email is verified
-            userData = auth.get_user(uid=user.id)
-            if not userData.email_verified:
-                return "Failed: Email Not Verified"
-
-            # checking if matchuid exists
-            matchData = db.collection(matchType.lower()).document(matchuid).get()
-            matchData = matchData.to_dict()
-            if matchData == None:
-                return "Failed: Match Doesn't Exist"
-
-            # checking for already registered..
-            user = (
-                db.collection("userinfo").document(useruid).collection("registered").get()
-            )
-            user = [user.id for user in user]
-            if matchuid in user:
-                return "Failed: Already registered"
-
-             # checking whether the user has linked his game account
-            ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
-            ids_dict = ids.to_dict()
-            if ids_dict == None:
-                return "Failed: Account not linked"
-            if ids_dict["id"] == None or ids_dict["id"] == "":
-                return "Failed: Account not linked"
-
-            # if all conditions passed, then check for valid matchuid
-            ref = db.collection("pubg").document(matchuid)
-            ref_obj = ref.get().to_dict()
-            try:
-                matchType = "pubg"
-                paid = ref_obj["fee"]
-            except:
-                return "Failed: No such match"
-            
-            if paid == 1:
-                amount = 100 * 100
-            elif paid == 2:
-                amount = 500 * 100
-            elif paid == 3:
-                amount = 1000 * 100
-            elif paid == 4:
-                amount = 2000 * 100
-            else:
-                
-                return "Failed: Price mismatch"
-
-            DATA = {
-                "amount": amount,
-                "currency": "INR",
-            }
-
-            # CREATING ORDER
-            response = client.order.create(data=DATA)
-            order_id = response["id"]
-
-            # RETURNING ORDER FOR CHECKOUT
-            return order_id
-            
-        else: 
-            return "Failed: matchType doesn't exist"
-
-    return "Failed: Request parameters missing" 
-
-
-# ORDER VALIDATION AND PAID REGISTRATION
+# PAID ORDER
 @app.route("/api/paidOrder")
 def validate():
     matchType = request.args.get("matchType")
@@ -1184,19 +1096,20 @@ def cancelMatch():
     if matchType.lower() not in games:
         return "Failed"
 
-    # if match is ongoing or finished, you can't cancel
     try:
+        # if match is ongoing or finished, you can't cancel
         ref = db.collection(matchType).document(matchUid).get().to_dict()
         notifID = ref["notificationId"]
         started = ref["started"]
         fee = ref["fee"]
         if started == 2 or started == 1:
             return "Failed: Match has already been started or finished"
+        updateHistoryToCancelled(matchType, matchUid)
         refund(matchType, matchUid, fee)
         deleteChat(chatID=notifID)
         deleteGame(game=matchType.lower(), gameID=matchUid)
     except:
-        return "Failed: Something went wrong"
+         return "Failed: Something went wrong"
 
     return "Success"
 

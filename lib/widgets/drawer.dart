@@ -29,9 +29,11 @@ class _AfterLoginDrawerState extends State<AfterLoginDrawer> {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .snapshots()
         .listen((event) {
-      setState(() {
-        coin = event["zcoins"];
-      });
+      if (mounted) {
+        setState(() {
+          coin = event["zcoins"];
+        });
+      }
     });
   }
 
