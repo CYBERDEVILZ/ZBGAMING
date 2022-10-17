@@ -61,14 +61,17 @@ class _SelectWinnerState extends State<SelectWinner> {
                           .collection("userinfo")
                           .where("hashedID", isEqualTo: hashedID)
                           .get();
+
                       if (data.docs.isEmpty) {
                         Fluttertoast.showToast(msg: "Something went wrong");
                         Navigator.pop(context);
                         Navigator.pop(context);
                       }
-                      String id = data.docs[0].id;
 
+                      int zcoins = data.docs[0]["zcoins"];
                       int amount = 0;
+
+                      QueryDocumentSnapshot<Map<String, dynamic>> userdata = data.docs[0];
                       await FirebaseFirestore.instance
                           .collection(widget.matchType)
                           .doc(widget.matchUid)
@@ -87,13 +90,19 @@ class _SelectWinnerState extends State<SelectWinner> {
                         }
                       });
 
-                      // INFORMATION DISCLOSURE VULNERABILITY HERE!!! update status to "won"
-                      await FirebaseFirestore.instance
-                          .collection("userinfo")
-                          .doc(id)
+                      // update to won in history
+                      await userdata.reference
                           .collection("history")
                           .doc(widget.matchUid)
                           .update({"won": 1, "amount": amount});
+
+                      // update zcoins
+                      await userdata.reference.update({
+                        "zcoins": zcoins + amount,
+                        "transactions": FieldValue.arrayUnion([
+                          {"amount": amount, "timestamp": DateTime.now(), "type": "rewarded"}
+                        ])
+                      });
 
                       // update the same at contest detail page
                       await FirebaseFirestore.instance
