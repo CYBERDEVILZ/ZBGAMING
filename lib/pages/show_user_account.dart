@@ -36,8 +36,9 @@ Map<String, Color> colorCodeForCanvas = {
 };
 
 class ShowUserAccount extends StatefulWidget {
-  const ShowUserAccount({Key? key, required this.hashedId}) : super(key: key);
-  final Blob hashedId;
+  const ShowUserAccount({Key? key, this.hashedId, this.tempUid}) : super(key: key);
+  final Blob? hashedId;
+  final String? tempUid;
 
   @override
   State<ShowUserAccount> createState() => _ShowUserAccountState();
@@ -71,7 +72,7 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
     // fetch data
     await FirebaseFirestore.instance
         .collection("userinfo")
-        .where("hashedID", isEqualTo: widget.hashedId)
+        .where(widget.hashedId != null ? "hashedID" : "tempUid", isEqualTo: widget.hashedId ?? widget.tempUid)
         .get()
         .then((value) async {
       if (value.docs.length == 1) {

@@ -44,7 +44,7 @@ class _ContestDetailsState extends State<ContestDetails> {
   int? totalTeams;
   // organizer id
   String? ouid;
-  Blob? winnerhash;
+  String? winnerhash;
   String? winnerName;
   int? matchStarted;
   bool cancelled = false;
@@ -71,7 +71,7 @@ class _ContestDetailsState extends State<ContestDetails> {
           winnerhash = value["winnerhash"];
           FirebaseFirestore.instance
               .collection("userinfo")
-              .where("hashedID", isEqualTo: winnerhash)
+              .where("tempUid", isEqualTo: winnerhash)
               .snapshots()
               .listen((event) {
             winnerName = event.docs[0]["username"];
@@ -230,7 +230,7 @@ class _ContestDetailsState extends State<ContestDetails> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => ShowUserAccount(hashedId: winnerhash!)));
+                                              builder: (context) => ShowUserAccount(tempUid: winnerhash!)));
                                     },
                                     child: Text(
                                       "$winnerName",

@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
+import 'package:zbgaming/utils/apistring.dart';
 
 class SelectWinner extends StatefulWidget {
   const SelectWinner({Key? key, required this.matchType, required this.matchUid}) : super(key: key);
@@ -13,6 +16,7 @@ class SelectWinner extends StatefulWidget {
 
 class _SelectWinnerState extends State<SelectWinner> {
   late Stream<QuerySnapshot<Map<String, dynamic>>> data;
+  bool isButtonLoading = false;
 
   @override
   void initState() {
@@ -34,97 +38,102 @@ class _SelectWinnerState extends State<SelectWinner> {
       showDialog(
           context: context,
           builder: ((context) {
-            return AlertDialog(
-              title: const Text(
-                "Confirm",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.blue, fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              content: Text("Are you sure this player is the winner?\n\nUsername: $name\nGame ID: $id\n",
-                  textAlign: TextAlign.center),
-              actions: [
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("Cancel"),
-                  style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(Colors.blue),
-                      overlayColor: MaterialStateProperty.all(Colors.blue.withOpacity(0.1)),
-                      side: MaterialStateProperty.all(const BorderSide(color: Colors.blue))),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      // fetch user with winner's hashedid
-                      QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
-                          .collection("userinfo")
-                          .where("hashedID", isEqualTo: hashedID)
-                          .get();
+            return StatefulBuilder(
+                builder: ((context, setState) => AlertDialog(
+                      title: const Text(
+                        "Confirm",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.blue, fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                      content: Text("Are you sure this player is the winner?\n\nUsername: $name\nGame ID: $id\n",
+                          textAlign: TextAlign.center),
+                      actions: [
+                        OutlinedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Cancel"),
+                          style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(Colors.blue),
+                              overlayColor: MaterialStateProperty.all(Colors.blue.withOpacity(0.1)),
+                              side: MaterialStateProperty.all(const BorderSide(color: Colors.blue))),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            isButtonLoading = true;
+                            setState(() {});
+                            try {
+                              // fetch user with winner's hashedid
+                              QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
+                                  .collection("userinfo")
+                                  .where("hashedID", isEqualTo: hashedID)
+                                  .get();
 
-                      if (data.docs.isEmpty) {
-                        Fluttertoast.showToast(msg: "Something went wrong");
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      }
+                              if (data.docs.isEmpty) {
+                                Fluttertoast.showToast(msg: "Something went wrong");
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              }
 
-                      int zcoins = data.docs[0]["zcoins"];
-                      int amount = 0;
+                              // fetch tempUid
+                              String tempUid = data.docs[0]["tempUid"];
 
-                      QueryDocumentSnapshot<Map<String, dynamic>> userdata = data.docs[0];
-                      await FirebaseFirestore.instance
-                          .collection(widget.matchType)
-                          .doc(widget.matchUid)
-                          .get()
-                          .then((value) {
-                        int registered = value["reg"];
-                        int fee = value["fee"];
-                        if (fee == 1) {
-                          amount = registered * 60;
-                        } else if (fee == 2) {
-                          amount = registered * 300;
-                        } else if (fee == 3) {
-                          amount = registered * 600;
-                        } else if (fee == 4) {
-                          amount = registered * 3000;
-                        }
-                      });
-
-                      // update to won in history
-                      await userdata.reference
-                          .collection("history")
-                          .doc(widget.matchUid)
-                          .update({"won": 1, "amount": amount});
-
-                      // update zcoins
-                      await userdata.reference.update({
-                        "zcoins": zcoins + amount,
-                        "transactions": FieldValue.arrayUnion([
-                          {"amount": amount, "timestamp": DateTime.now(), "type": "rewarded"}
-                        ])
-                      });
-
-                      // update the same at contest detail page
-                      await FirebaseFirestore.instance
-                          .collection(widget.matchType)
-                          .doc(widget.matchUid)
-                          .update({"winnerhash": hashedID});
-
-                      Navigator.pop(context);
-                      Navigator.pop(context, id);
-                    } catch (e) {
-                      Fluttertoast.showToast(msg: "Something went wrong");
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text("Confirm"),
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(0),
-                  ),
-                )
-              ],
-            );
+                              // call API
+                              await get(Uri.parse(ApiEndpoints.baseUrl +
+                                      ApiEndpoints.selectWinner +
+                                      "?organizer_uid=${FirebaseAuth.instance.currentUser?.uid}&match_uid=${widget.matchUid}&match_type=${widget.matchType}&winner_uid=" +
+                                      Uri.encodeComponent(tempUid)))
+                                  .then((value) {
+                                if (value.statusCode != 200) {
+                                  Fluttertoast.showToast(msg: "Server side error");
+                                  isButtonLoading = false;
+                                  setState(() {});
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                }
+                                if (value.body.contains("Failed")) {
+                                  Fluttertoast.showToast(msg: value.body);
+                                  isButtonLoading = false;
+                                  setState(() {});
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                } else {
+                                  Fluttertoast.showToast(msg: "success");
+                                  isButtonLoading = false;
+                                  setState(() {});
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                }
+                              }).catchError((onError) {
+                                Fluttertoast.showToast(msg: "Something went wrong :(");
+                                isButtonLoading = false;
+                                setState(() {});
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              });
+                              isButtonLoading = false;
+                              if (mounted) setState(() {});
+                            } catch (e) {
+                              Fluttertoast.showToast(msg: "Something went wrong");
+                              isButtonLoading = false;
+                              setState(() {});
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: const Text("Confirm"),
+                          style: ButtonStyle(
+                            elevation: MaterialStateProperty.all(0),
+                          ),
+                        )
+                      ],
+                    )));
           }));
     }
 

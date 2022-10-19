@@ -5,7 +5,13 @@ OPTIMIZATIONS / IDEAS
 ########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
+ADD FIRESTORE RULES
+
+IMPORTANT!!!
 ORGANIZER KYC NEEDS TO BE IMPLEMENTED
+
+IMPORTANT!!!
+CREATE API FOR SELECT WINNER
 
 IMPORTANT!!!
 BACKEND AMOUNT WON CALCULATION FOR USER IS PATHETIC. REVAMP THE WHOLE SYSTEM LATER FOR OPTIMIZATION 
@@ -1204,5 +1210,71 @@ def verifybuyingcoins():
     return "Payment Successful!"
 
 
+# SELECT WINNER
+@app.route("/api/selectWinner")
+def selectWinner():
+    winner_uid = request.args.get("winner_uid")
+    print(winner_uid)
+    match_uid = request.args.get("match_uid")
+    match_type = request.args.get("match_type")
+    organizer_uid = request.args.get("organizer_uid")
+
+    # update user coins ✔️
+    # update user transaction history ✔️
+    # update user history ✔️
+    # update contest winner ✔️
+    # update organizer amountgiven ✔️
+    # update organizer coins ✔️
+    # update match to finished
+
+    if match_type not in games:
+        return "Failed: match_type invalid"
+
+    try:
+
+        # fetch user data
+        user_data = db.collection("userinfo").where("tempUid", "==", winner_uid).get()[0]
+        zcoins = user_data.to_dict()["zcoins"]
+
+        # fetch organizer data
+        organizer_data = db.collection("organizer").document(organizer_uid).get().to_dict()
+        if organizer_data == None:
+            return "Failed: wrong organizer_uid"
+        amountGiven = organizer_data["amountGiven"]
+        organizer_zcoins = organizer_data["zcoins"]
+
+        # fetch match data
+        match_reference = db.collection(match_type).document(match_uid)
+        match_data = match_reference.get().to_dict()
+        if match_data == None:
+            return "Failed: No such match"
+        
+        # fetch prize pool
+        match_fees = match_data["fee"]
+        prize_pool = fees[match_fees]
+
+        # based on number of registered users and the match fees, decide the amount to be paid
+        registered_users = match_reference.collection("registeredUsers").get()
+        users = len(registered_users)
+        amount_to_pay_winner = prize_pool * users * 60 // 100
+        amount_to_pay_organizer = prize_pool * 30 // 100
+
+        # update user data and user history
+        user_data.reference.collection("history").document(match_uid).update({"won": 1, "amount": amount_to_pay_winner})
+        user_data.reference.update({"zcoins": zcoins + amount_to_pay_winner, "transactions": firestore.ArrayUnion([{"type": "rewarded", "amount": amount_to_pay_winner, "timestamp": datetime.now()}])})
+        
+        # update contest history
+        db.collection(match_type).document(match_uid).update({"winnerhash": winner_uid})
+
+        # update organizer amount
+        db.collection("organizer").document(organizer_uid).update({"amountGiven": amountGiven + amount_to_pay_winner, "zcoins": amount_to_pay_organizer + organizer_zcoins})
+
+        # update match to finished
+        match_reference.update({"started": 2})
+
+        return "Success"
+
+    except:
+        return "Failed: Server side error"
 
 app.run(debug=False)
