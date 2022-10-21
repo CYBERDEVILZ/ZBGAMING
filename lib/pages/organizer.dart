@@ -23,7 +23,6 @@ class Organizer extends StatefulWidget {
 
 class _OrganizerState extends State<Organizer> {
   bool eligible = false;
-  bool isKYCVerified = false;
   // streams to subscribe
   Stream<QuerySnapshot> csgoStream = FirebaseFirestore.instance
       .collection("csgo")
@@ -73,11 +72,6 @@ class _OrganizerState extends State<Organizer> {
                 eligible = data["amountGiven"] <= 10000 ? true : false;
               } catch (e) {
                 eligible = false;
-              }
-              try {
-                isKYCVerified = data["isKYCVerified"];
-              } catch (e) {
-                isKYCVerified = false;
               }
               context.read<OrganizerModel>().setuid(FirebaseAuth.instance.currentUser!.uid);
               context.read<OrganizerModel>().setusername(data["username"]);
@@ -218,15 +212,13 @@ class _OrganizerState extends State<Organizer> {
             elevation: 0,
             // add matches page
             onPressed: () {
-              isKYCVerified
-                  ? Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddMatches(
-                          eligible: eligible,
-                        ),
-                      ))
-                  : Fluttertoast.showToast(msg: "KYC Must be verified");
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddMatches(
+                      eligible: eligible,
+                    ),
+                  ));
             },
             child: const Icon(Icons.add),
           )),
