@@ -33,6 +33,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:provider/provider.dart';
 import 'package:zbgaming/pages/link_game.dart';
+import 'package:zbgaming/pages/verify_status_kyc.dart';
 import 'package:zbgaming/utils/apistring.dart';
 import 'package:zbgaming/widgets/search_user.dart';
 
@@ -79,7 +80,7 @@ class _UserAccountState extends State<UserAccount> {
   int? level;
   String levelAttrib = "Unidentified";
   bool? isEmailVerified;
-  bool? isKYCVerified;
+  int? isKYCVerified;
   bool isVerifying = false;
   bool isLoading = false;
   bool isImageLoad = false;
@@ -140,9 +141,9 @@ class _UserAccountState extends State<UserAccount> {
         try {
           isKYCVerified = value["isVerified"];
         } catch (e) {
-          isKYCVerified = false;
+          isKYCVerified = 0;
         }
-        setState(() {});
+        if (mounted) setState(() {});
       });
     } catch (e) {
       Fluttertoast.showToast(msg: "An error occurred");
@@ -226,7 +227,7 @@ class _UserAccountState extends State<UserAccount> {
       // blue rectangle in the back
       Container(
         color: colorCodeForHeading[levelAttrib],
-        height: 200,
+        height: 150 + MediaQuery.of(context).viewPadding.top,
         width: MediaQuery.of(context).size.width,
       ),
 
@@ -429,7 +430,7 @@ class _UserAccountState extends State<UserAccount> {
                   style: TextStyle(fontWeight: FontWeight.w300, color: colorCodeForHeading[levelAttrib]),
                 ),
               ]
-            : isKYCVerified!
+            : isKYCVerified == 1
                 ? [
                     Text(
                       "Verified",
@@ -443,8 +444,8 @@ class _UserAccountState extends State<UserAccount> {
                 : [
                     GestureDetector(
                         // send user to verification page
-                        onTap: () async {
-                          Fluttertoast.showToast(msg: "Navigate to user verification page");
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const VerifyStatusKYC()));
                         },
                         child: Container(
                             height: 18,

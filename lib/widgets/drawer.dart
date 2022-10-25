@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // ignore: implementation_imports
@@ -6,10 +7,35 @@ import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/history.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/utils/routes.dart';
+import 'package:zbgaming/widgets/zcoin.dart';
 
 // drawer after login
-class AfterLoginDrawer extends StatelessWidget {
+class AfterLoginDrawer extends StatefulWidget {
   const AfterLoginDrawer({Key? key}) : super(key: key);
+
+  @override
+  State<AfterLoginDrawer> createState() => _AfterLoginDrawerState();
+}
+
+class _AfterLoginDrawerState extends State<AfterLoginDrawer> {
+  int? coin;
+
+  @override
+  void initState() {
+    super.initState();
+    // streams
+    FirebaseFirestore.instance
+        .collection("userinfo")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .snapshots()
+        .listen((event) {
+      if (mounted) {
+        setState(() {
+          coin = event["zcoins"];
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,13 +94,29 @@ class AfterLoginDrawer extends StatelessWidget {
                                       radius: 45),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 30),
-                                child: Text(
-                                  context.watch<UserModel>().username == null
-                                      ? "null"
-                                      : context.watch<UserModel>().username!,
-                                  style: const TextStyle(fontSize: 20),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(6),
+                                        margin: const EdgeInsets.only(right: 5),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.blue, width: 2),
+                                            color: Colors.white,
+                                            borderRadius: const BorderRadius.all(Radius.circular(50))),
+                                        child: Text(
+                                          context.watch<UserModel>().username == null
+                                              ? "null"
+                                              : context.watch<UserModel>().username!,
+                                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    Zcoin(coin: coin)
+                                  ],
                                 ),
                               )
                             ]),
@@ -248,7 +290,7 @@ class BeforeLoginDrawer extends StatelessWidget {
                       "NEVER STOP BELIEVING",
                       style: TextStyle(color: Colors.white, letterSpacing: 4),
                       textScaleFactor: 0.7,
-                    )
+                    ),
                   ],
                 ), // zbgaming (copyrighted thing)
               ),

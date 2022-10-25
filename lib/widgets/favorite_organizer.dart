@@ -66,6 +66,7 @@ class BuildTiles extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Favorite Organizers"),
+        backgroundColor: Colors.blue[700],
         elevation: 0,
       ),
       body: fav.isEmpty

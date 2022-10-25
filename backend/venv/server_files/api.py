@@ -5,20 +5,36 @@ OPTIMIZATIONS / IDEAS
 ########################## LOGIC SECTION ###############################
 
 IMPORTANT!!!
-IMPLEMENT LEADERBOARD: Top 50 Players with the most points are shown.
+ADD FIRESTORE RULES
 
 IMPORTANT!!!
-UPDATE AMOUNT GIVEN PARAMETER WHEN THE ORGANIZER SUCCESSFULLY ORGANIZE A MATCH THAT IS PAID. (only happens when the payout is successful)
+ORGANIZER KYC NEEDS TO BE IMPLEMENTED
 
 IMPORTANT!!!
-REFUND MONEY LOGIC AND ORGANIZER BAD RATING LOGIC WHEN HE CANCELS THE MATCH MUST BE IMPLEMENTED IN THE API
+BACKEND AMOUNT WON CALCULATION FOR USER IS PATHETIC. REVAMP THE WHOLE SYSTEM LATER FOR OPTIMIZATION 
 
 IMPORTANT!!!
-VALIDATOR PAGE NOT ADDED. VALIDATOR CAN SIGN IN, SEE REPORTS, TAKE ACTIONS: BAN AN ORGANIZER, BAN A PLAYER, REFUND MONEY AND CANCEL MATCH.
+COIN SYSTEM FOR ORGANIZERS: USE IT TO PROMOTE ADS AND CREATE SPECIAL MATCHES AND RETRIEVE AMOUNT
 
-INSANE SECURITY ISSUE!!!
-------------------------
-START MATCH, STOP MATCH, CANCEL MATCH, ETC ARE NOT PROTECTED FROM CSRF! MAKE SURE TO AUTHENTICATE THE SOURCE OF REQUEST!
+IMPORTANT!!!
+REDEEM PAGE REQUIRED
+
+IMPORTANT!!!
+SPECIAL MATCH REQUEST FORM ORGANIZER
+
+IMPORTANT!!!
+VERIFIER STATISTIC: HOW MUCH HE VERIFIED ETC SHOULD BE SHOWN
+
+IMPORTANT!!!
+EXPORT TO CSV REQUIRED
+
+IMPORTANT!!!
+VERIFIER FUNCTIONALITIES: 
+2. BAN OR SUPSEND USERS BASED ON WRONG REPORTS
+3. CANCEL MATCHES AND REFUND MONEY
+4. BAN ORGANIZERS OR SUSPEND THEM
+(OPTIONAL AS OF NOW: GENERATE WARNING TO USERS WHO ARE BANNED / SUSPENDED)
+
 
 IMPORTANT!!!
 POLICY NOT ADDED FOR ORGANIZER SIGNUP
@@ -31,10 +47,10 @@ IMPORTANT!!!
 I HAVE USED TOKENS FOR PUSH NOTIFICATION. CONVERT THEM INTO TOPICS FOR FASTER SENDING. OR USE BACKGROUND WORKER (LEAST PREFERRED)
 
 IMPORTANT!!!
-CREATE LOGIC FOR PAYOUTS
+USER AND ORGANIZER KYC VERIFICATION PAGE LEFT (PART OF PAYOUT)
 
 IMPORTANT!!!
-USER AND ORGANIZER KYC VERIFICATION PAGE LEFT (PART OF PAYOUT)
+PREVENT SCHEDULER FROM RUNNING OVER AND OVER. KEEP AN INTERVAL OF 24 HOURS
 
 
 ########################## DESIGN SECTION ###############################
@@ -44,6 +60,17 @@ I HAVE ADDED TWO NEW IMAGES: ZBUNKER BANNER SHORT AND ZBUNKER BANNER UPSIDE DOWN
 CHECK THE RESULT. REALLY IMPORTANT TO REDUCE SIZE!
 
 
+########################## SECURITY SECTION ###############################
+
+INSANE SECURITY ISSUE!!!
+------------------------
+START MATCH, STOP MATCH, CANCEL MATCH, ETC ARE NOT PROTECTED FROM CSRF! MAKE SURE TO AUTHENTICATE THE SOURCE OF REQUEST!
+
+SECURITY ISSUE!!!
+-----------------
+CONVERT GET METHOD TO POST FOR SIGNING UP CALLS
+
+
 ###################### FEATURES FOR FUTURE DEVS ##############################
 
 OPTIMIZE USER LEVEL CALCULATION
@@ -51,6 +78,8 @@ OPTIMIZE USER LEVEL CALCULATION
 ORGANIZER PAGE WHERE HE CAN UPLOAD POSTS AND SCORECARDS
 
 PREVENT SUBSEQUENT CALLS TO FIRESTORE. TRY TO CACHE AS MUCH AS POSSIBLE
+
+OPT OUT OF JOINED MATCH --> AFTER A SPECIFIC TIME YOU CANT OPT OUT
 
 
 """
@@ -62,7 +91,7 @@ from flask import Flask
 from flask import request
 import firebase_admin
 from firebase_admin import credentials, messaging
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 from pytz import timezone
 import pytz
 import razorpay
@@ -72,8 +101,11 @@ import requests
 import base64
 from apscheduler.schedulers.background import BackgroundScheduler
 
+# GAMES LIST TO BE MENTIONED HERE
+games = ["pubg", "freefire"]
 
-games = ["pubg"]
+# FEES DICTIONARY
+fees = {0: 0, 1: 100, 2: 500, 3: 1000, 4: 5000}
 
 # FIREBASE INIT
 cred = credentials.Certificate("zbgaming-v1-firebase-adminsdk-2ozhj-4f38e5fc3e.json")
@@ -90,22 +122,40 @@ client = razorpay.Client(auth=("rzp_test_rKi9TFV4sMHvz2", secret_key))
 # FUNCTIONS
 # email validation
 def validateEmail(email):
-    result = re.match("[^@]+@[^@]+\.[A-Za-z0-9]+$", email)
+    result = re.match(r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$", email)
     if result:
         return True
     else:
         return False
 
 # refund money logic
-def refund():
-    print("refund all the money BLYAT! and Give organizer bad rating!")
+def refund(game, matchId, fee):
+    # fetch users
+    registeredUsersDoc = db.collection(game).document(matchId).collection("registeredUsers").get()
+    for doc in registeredUsersDoc:
+        docData = doc.to_dict()
+        # update the amount of each user
+        user = db.collection("userinfo").where("hashedID", "==", docData["hashedID"]).get()[0]
+        zcoins = user.to_dict()["zcoins"]
+        user.reference.update({"zcoins":zcoins + fees[fee],"transactions": firestore.ArrayUnion([{
+            "amount": fees[fee],
+            "type": "refunded",
+            "timestamp": datetime.now()
+        }])})
+
 
 # delete game from database
 def deleteGame(game, gameID):
     docs1 = db.collection(game).document(gameID).collection("registeredUsers").get()
+    # delete from organzier's account
     for doc in docs1:
+        userHashedId = doc.to_dict()["hashedID"]
+        userdata = db.collection("userinfo").where("hashedID", "==", userHashedId).get()
+        userdata[0].reference.collection("registered").document(gameID).delete()
         doc.reference.delete()
+
     db.collection(game).document(gameID).delete()
+    
 
 # delete chats
 def deleteChat(chatID):
@@ -119,7 +169,6 @@ def updateHistoryToCancelled(game, gameID):
         hashedID = doc_data["hashedID"]
         users = db.collection("userinfo").where("hashedID", "==", hashedID).get()
         for user in users:
-            print(user.id)
             user.reference.collection("history").document(gameID).update({"won": 2})
 
 
@@ -131,12 +180,18 @@ def schedule_1_are_matches_over():
         date_over_matches = db.collection(game).where("date", "<", datetime.now()).get()
         for matches in date_over_matches:
             match_data = matches.to_dict()
+
+            # if match was never started
             if (match_data["started"] == 0):
                 print("match was never started! lets refund all the money and show it cancelled")
-                refund()
+                # refund only if match is paid
+                if (match_data["fee"] != 0):
+                    refund(game, matches.id, match_data["fee"])
                 deleteChat(match_data["notificationId"])
                 updateHistoryToCancelled(game, matches.id)
                 deleteGame(game, matches.id)
+            
+            # if match was started but not stopped
             if (match_data["started"] == 1):
                 db.collection()
                 print("match started but not stopped. lets refund all the money and show it cancelled")
@@ -144,18 +199,45 @@ def schedule_1_are_matches_over():
                 deleteChat(match_data["notificationId"])
                 updateHistoryToCancelled(game, matches.id)
                 deleteGame(game, matches.id)
+
+            # if match was stopped
             if (match_data["started"] == 2):
                 print("match was stopped. Nice organizer. Give him a hug")
                 deleteGame(game, matches.id)
                 deleteChat(match_data["notificationId"])
-        print("scheduler running -------------------")
-                
-# run every 24 hours
+    print("scheduler1 running....")
+
+# scheduler2: update player score every few intervals
+def scheduler2_update_player_scores():
+    print("scheduler2 running....")
+    users = db.collection("userinfo").get()
+    for user in users:
+        won = 0
+        paid_matches = user.reference.collection("history").where("paid", "!=", 0).get()
+        if len(paid_matches) == 0:
+            user.reference.update({"level": 0})
+            continue
+        participation = len(paid_matches) * 20
+        for match in paid_matches:
+            match_data = match.to_dict()
+            if match_data["won"] == 1:
+                if match_data["paid"] == 1:
+                    won += 300
+                elif match_data["paid"] == 2:
+                    won += 500
+                elif match_data["paid"] == 3:
+                    won += 1500
+                elif match_data["paid"] == 4:
+                    won += 2000
+                else:
+                    won += 0
+        user.reference.update({"level": won + participation})
+        
 job = scheduler.add_job(schedule_1_are_matches_over, "interval", seconds=10)
+job = scheduler.add_job(scheduler2_update_player_scores, "interval", seconds=60)
 scheduler.start()
 
-            
-
+        
 
 # HOME
 @app.route("/")
@@ -170,7 +252,7 @@ def userSignup():
     email = request.args.get("email")
     docId = request.args.get("docId")
     idToken = request.args.get("idToken")
-    isVerified = False
+    isVerified = 0
     imageurl = None
 
     if username != None and email != None and docId != None:
@@ -207,13 +289,13 @@ def userSignup():
                                 "level": 0,
                                 "isVerified": isVerified,
                                 "hashedID": hashlib.sha256(docId.encode()).digest(),
-                                "tempUid": tempUid
+                                "tempUid": tempUid,
+                                "zcoins": 0,
+                                "transactions": []
                             }
                         )
                         return "Success"
                         
-                        
-
     return "Failed"
 
 
@@ -242,10 +324,12 @@ def organizerSignup():
                                 "username": username,
                                 "email": email,
                                 "imageurl": imageurl,
+                                "bannerurl": None,
                                 "special": special,
                                 "amountGiven": amountGiven,
                                 "rating": rating,
-                                "isKYCVerified": False
+                                "isKYCVerified": False,
+                                "zcoins": 0,
                             }
                         )
                         return "Success"
@@ -264,11 +348,18 @@ def register():
     if matchuid != None and useruid != None and matchType != None and token != None:
         if matchType.lower() == "pubg":
 
-            # checking whether user is verified (KYC)
+            # checking whether user exists
             user = db.collection("userinfo").document(useruid).get()
             userdata = user.to_dict()
             if userdata == None:
                 return "Failed: No such user"
+
+            # checking whether user's email is verified
+            userData = auth.get_user(uid=user.id)
+            if not userData.email_verified:
+                return "Failed: Email Not Verified"
+
+            
 
             # checking whether the user has linked his game account
             ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
@@ -370,26 +461,23 @@ def register():
 
     return "Failed"
 
-# CREATE ORDER
-# Only creates order for the client  
-@app.route("/api/createOrder")
-def paidRegister():
+
+# PAID ORDER
+@app.route("/api/paidOrder")
+def validate():
     matchType = request.args.get("matchType")
     matchuid = request.args.get("matchuid")
     useruid = request.args.get("useruid")
     token = request.args.get("token")
 
-    if matchuid != None and useruid != None and matchType != None and token != None:
-        amount = None
+    if matchuid != None and useruid != None and matchType != None and token!=None:
         if matchType.lower() == "pubg":
 
-            # checking whether user is verified (KYC)
+            # checking whether user exists
             user = db.collection("userinfo").document(useruid).get()
             userdata = user.to_dict()
             if userdata == None:
                 return "Failed: No such user"
-            if userdata["isVerified"] == False:
-                return "Failed: User not verified"
 
             # checking if matchuid exists
             matchData = db.collection(matchType.lower()).document(matchuid).get()
@@ -405,7 +493,7 @@ def paidRegister():
             if matchuid in user:
                 return "Failed: Already registered"
 
-             # checking whether the user has linked his game account
+            # checking whether the user has linked his game account
             ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
             ids_dict = ids.to_dict()
             if ids_dict == None:
@@ -413,169 +501,84 @@ def paidRegister():
             if ids_dict["id"] == None or ids_dict["id"] == "":
                 return "Failed: Account not linked"
 
-            # if all conditions passed, then check for valid matchuid
+            # if all conditions passed,
             ref = db.collection("pubg").document(matchuid)
             ref_obj = ref.get().to_dict()
             try:
+                date = ref_obj["date"]
                 matchType = "pubg"
+                uid = matchuid
+                name = ref_obj["name"]
                 paid = ref_obj["fee"]
+                skill = ref_obj["skill"]
+                notifId = ref_obj["notificationId"]
             except:
                 return "Failed: No such match"
+
+             # checking if the user has ample balance
+            balance = userdata["zcoins"]
+            if balance < fees[paid]:
+                return "Failed: Not enough balance"
             
-            if paid == 1:
-                amount = 100 * 100
-            elif paid == 2:
-                amount = 500 * 100
-            elif paid == 3:
-                amount = 1000 * 100
-            elif paid == 4:
-                amount = 2000 * 100
-            else:
-                
-                return "Failed: Price mismatch"
-
-            DATA = {
-                "amount": amount,
-                "currency": "INR",
-            }
-
-            # CREATING ORDER
-            response = client.order.create(data=DATA)
-            order_id = response["id"]
-
-            # RETURNING ORDER FOR CHECKOUT
-            return order_id
+            # reference for user document
+            ref_user = db.collection("userinfo").document(useruid)
             
-        else: 
-            return "Failed: matchType doesn't exist"
-
-    return "Failed: Request parameters missing" 
-
-
-# ORDER VALIDATION AND PAID REGISTRATION
-@app.route("/api/validateOrder")
-def validate():
-    order_id = request.args.get("order_id")
-    razorpay_signature = request.args.get("razorpay_signature")
-    razorpay_payment_id = request.args.get("razorpay_payment_id")
-    matchType = request.args.get("matchType")
-    matchuid = request.args.get("matchuid")
-    useruid = request.args.get("useruid")
-    token = request.args.get("token")
-
-    verifyStatus = client.utility.verify_payment_signature({
-   'razorpay_order_id': order_id,
-   'razorpay_payment_id': razorpay_payment_id,
-   'razorpay_signature': razorpay_signature
-   })
-
-    if verifyStatus:
-        if matchuid != None and useruid != None and matchType != None and token!=None:
-            if matchType.lower() == "pubg":
-
-                # checking whether user is verified (KYC)
-                user = db.collection("userinfo").document(useruid).get()
-                userdata = user.to_dict()
-                if userdata == None:
-                    return "Failed: No such user"
-                if userdata["isVerified"] == False:
-                    return "Failed: User not verified"
-
-                # checking if matchuid exists
-                matchData = db.collection(matchType.lower()).document(matchuid).get()
-                matchData = matchData.to_dict()
-                if matchData == None:
-                    return "Failed: Match Doesn't Exist"
-
-                # checking for already registered..
-                user = (
-                    db.collection("userinfo").document(useruid).collection("registered").get()
-                )
-                user = [user.id for user in user]
-                if matchuid in user:
-                    return "Failed: Already registered"
-
-                # checking whether the user has linked his game account
-                ids = db.collection("userinfo").document(useruid).collection("linkedAccounts").document("Player Unknown Battlegrounds").get()
-                ids_dict = ids.to_dict()
-                if ids_dict == None:
-                    return "Failed: Account not linked"
-                if ids_dict["id"] == None or ids_dict["id"] == "":
-                    return "Failed: Account not linked"
-
-                # if all conditions passed, then check for valid matchuid
-                ref = db.collection("pubg").document(matchuid)
-                ref_obj = ref.get().to_dict()
+            # TRANSACTION
+            transaction = db.transaction()
+            @firestore.transactional
+            def updateRegisteredTeams(transaction, ref):
+                snapshot = ref.get(transaction=transaction)
+                reg = snapshot.get("reg")
+                total = snapshot.get("total")
                 try:
-                    date = ref_obj["date"]
-                    matchType = "pubg"
-                    uid = matchuid
-                    name = ref_obj["name"]
-                    paid = ref_obj["fee"]
-                    skill = ref_obj["skill"]
-                    notifId = ref_obj["notificationId"]
-                except:
-                    return "Failed: No such match"
-                
-                # retrieve the total registered and increase it by one [USE TRANSACTION!]
-                transaction = db.transaction()
-
-                @firestore.transactional
-                def updateRegisteredTeams(transaction, ref):
-                    snapshot = ref.get(transaction=transaction)
-                    reg = snapshot.get("reg")
-                    total = snapshot.get("total")
-                    try:
-                        if reg < total:
-                            transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
-                            return True
-                        else:
-                            return False
-                    except:
+                    if reg < total:
+                        transaction.update(ref, {"reg": reg + 1, "userMessageTokens": firestore.ArrayUnion([token])})
+                        transaction.update(ref_user, {"zcoins": balance - fees[paid],"transactions": firestore.ArrayUnion([{"type": "spent", "amount": 0 - fees[paid], "timestamp": datetime.now()}])})
+                        return True
+                    else:
                         return False
-
-                result = updateRegisteredTeams(transaction, ref)
-
-                if result:
-                    
-                    # add to registered
-                    db.collection("userinfo").document(useruid).collection(
-                        "registered"
-                    ).document(matchuid).set({
-                        "date": date,
-                        "matchType": matchType, 
-                        "name": name, 
-                        "uid": uid, 
-                        "notificationId": notifId, 
-                        "hasRated": False
-                    })
-
-                    # add to match's registration list
-                    ref.collection("registeredUsers").document().set({
-                        "email": userdata["email"],
-                        "username": userdata["username"],
-                        "IGID": ids_dict["id"],
-                        "hashedID": hashlib.sha256(useruid.encode()).digest()
-                    })
-
-                    # add to history
-                    db.collection("userinfo").document(useruid).collection("history").document(
-                        matchuid
-                    ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill, "amount": 0})
+                except:
+                    return False
 
 
-                    return "Success"
-                else:
-                    return "Failed"
-            else: 
-                return "Failed"
+            result = updateRegisteredTeams(transaction, ref)
 
-        return "Failed"
-
-    else:
-        return "Something went wrong"
+            if result:
         
+                # add to registered
+                db.collection("userinfo").document(useruid).collection(
+                    "registered"
+                ).document(matchuid).set({
+                    "date": date,
+                    "matchType": matchType, 
+                    "name": name, 
+                    "uid": uid, 
+                    "notificationId": notifId, 
+                    "hasRated": False
+                })
 
+                # add to match's registration list
+                ref.collection("registeredUsers").document().set({
+                    "email": userdata["email"],
+                    "username": userdata["username"],
+                    "IGID": ids_dict["id"],
+                    "hashedID": hashlib.sha256(useruid.encode()).digest()
+                })
+
+                # add to history
+                db.collection("userinfo").document(useruid).collection("history").document(
+                    matchuid
+                ).set({"date": date, "matchType": matchType, "name": name, "uid": uid, "paid": paid, "won": -1, "skill": skill, "amount": 0})
+
+
+                return "Success"
+            else:
+                return "Failed"
+        else: 
+            return "Failed"
+
+    return "Failed"
+        
 
 # CREATE MATCHES
 @app.route("/api/create")
@@ -688,6 +691,7 @@ def create():
     else:
         return "Failed"
 
+
 # VERIFY USER
 @app.route("/api/verify/user")
 def verifyUser():
@@ -716,27 +720,38 @@ def verifyUser():
 
     return "Failed"
 
-# VALIDATOR SIGNUP
-@app.route("/api/verifier/thiswillmakefindingthisapidifficult/signup")
+
+# VERIFIER SIGNUP
+@app.route("/api/verifier/thiswillmakefindingthisapidifficult/signup", methods=['POST'])
 def verifierSignup():
-    username = request.args.get("username")
-    email = request.args.get("email")
+    username = request.form.get("username")
+    email = request.form.get("email")
+    password = request.form.get("password")
 
-    if username != None and email != None:
-        if username != "" and email != "":
-            if validateEmail(email):
-                docs = db.collection("verifier").where("email", "==", email).get()
-                if len(docs) == 0:
-                    db.collection("verifier").document().set(
-                        {
-                            "username": username,
-                            "email": email,
-                        }
-                    )
+    # validate the inputs (basic)
+    if username == None or email == None or password == None or username == "" or email == "" or password == "":
+        return "Failed"
+    
+    # validate email
+    if not validateEmail(email=email):
+        return "Failed"
+    
+    # validate the password
+    if len(password) < 6:
+        return "Failed"
+    
+    try:
+        # create user
+        userObject = auth.create_user(email=email, password=password)
+        if userObject.uid == None or userObject.uid == "":
+            return "Failed"
+        # send data to firebase
+        db.collection("verifier").document(userObject.uid).set({"username": username, "email": email})
+        return "Success"
+    except:
+        print("something went wrong while signing up")
+        return "Failed"
 
-                    return "Success"
-
-    return "Failed"
 
 # USER LEVEL CALCULATION
 @app.route("/api/userlevelcalculate")
@@ -839,6 +854,7 @@ def userLevelCalculateAlternative():
     
     return "Failed"
 
+
 # START MATCH LOGIC
 @app.route("/api/startMatch")
 def startMatch():
@@ -883,6 +899,7 @@ def startMatch():
     except:
         return "Failed: Something went wrong"
 
+
 # STOP MATCH LOGIC
 @app.route("/api/stopMatch")
 def stopMatch():
@@ -923,6 +940,7 @@ def stopMatch():
         return "Success"
     except:
         return "Failed"
+
 
 # NOTIFICATION WHEN ORGANIZER SENDS MESSAGE
 @app.route("/api/receivedNotification")
@@ -1062,6 +1080,7 @@ def cancelMatch():
     matchType = request.args.get("matchType")
     matchUid = request.args.get("muid")
 
+    # basic parameter checks
     if matchUid == None or matchType == None:
         return "Failed"
     
@@ -1072,16 +1091,19 @@ def cancelMatch():
         return "Failed"
 
     try:
+        # if match is ongoing or finished, you can't cancel
         ref = db.collection(matchType).document(matchUid).get().to_dict()
         notifID = ref["notificationId"]
         started = ref["started"]
+        fee = ref["fee"]
         if started == 2 or started == 1:
-            return "Failed"
-        refund()
+            return "Failed: Match has already been started or finished"
+        updateHistoryToCancelled(matchType, matchUid)
+        refund(matchType, matchUid, fee)
         deleteChat(chatID=notifID)
         deleteGame(game=matchType.lower(), gameID=matchUid)
     except:
-        return "Failed"
+         return "Failed: Something went wrong"
 
     return "Success"
 
@@ -1103,5 +1125,142 @@ def organizerLevelCalculate():
     # calculating organizer level
     amountGiven = organizerData["amountGiven"]
     
+
+# BUY ZCOINS
+@app.route("/api/buyCoins")
+def buyCoins():
+    coinType = request.args.get("type")
+    uid = request.args.get("uid")
+
+    # basic checks
+    if coinType == None or uid == None:
+        return "Failed"
+    if coinType == "" or uid == "":
+        return "Failed"
+
+    # checking if uid exists
+    userdata = db.collection("userinfo").document(uid).get().to_dict()
+    if userdata == None:
+        return "Failed: User does not exist"
+    
+    # checking if coinType is correct
+    if coinType not in ["100", "500", "1000", "5000"]:
+        return "Failed: Invalid parameter value sent"
+    
+    # creating order
+    data = {
+        "amount": int(coinType) * 100,
+        "currency": "INR",
+        "notes": {
+            "coins": int(coinType) * 100,
+            "uid": uid
+        }
+    }
+    result = client.order.create(data=data)
+
+    # return the result
+    return result
+
+
+# VERIFY BUYING
+@app.route("/api/verifyBuyingCoins")
+def verifybuyingcoins():
+    payment_id = request.args.get("payment_id")
+    signature = request.args.get("signature")
+    order_id = request.args.get("order_id")
+
+    # verifying order
+    verifyStatus = client.utility.verify_payment_signature({
+    'razorpay_order_id': order_id,
+    'razorpay_payment_id': payment_id,
+    'razorpay_signature': signature
+    })
+
+    # if order verification successful
+    if verifyStatus:
+        try:
+            data = client.order.fetch(order_id)
+            # update zcoins of user and transactions
+            zcoins = db.collection("userinfo").document(data["notes"]["uid"]).get().to_dict()["zcoins"]
+            db.collection("userinfo").document(data["notes"]["uid"]).update({"zcoins":data["notes"]["coins"] // 100 + zcoins, 
+                "transactions": firestore.ArrayUnion([
+                    {
+                        "amount": data["notes"]["coins"] // 100, 
+                        "timestamp": datetime.now(),
+                        "type": "bought coins",
+                    }
+                ]
+            )})
+
+
+        except:
+            return "Failed"
+    else:
+        return "Failed"
+    
+    return "Payment Successful!"
+
+
+# SELECT WINNER
+@app.route("/api/selectWinner")
+def selectWinner():
+    winner_uid = request.args.get("winner_uid")
+    print(winner_uid)
+    match_uid = request.args.get("match_uid")
+    match_type = request.args.get("match_type")
+    organizer_uid = request.args.get("organizer_uid")
+
+    # update user coins ✔️
+    # update user transaction history ✔️
+    # update user history ✔️
+    # update contest winner ✔️
+    # update organizer amountgiven ✔️
+    # update organizer coins ✔️
+    # update match to finished
+
+    if match_type not in games:
+        return "Failed: match_type invalid"
+
+    # fetch user data
+    user_data = db.collection("userinfo").where("tempUid", "==", winner_uid).get()[0]
+    zcoins = user_data.to_dict()["zcoins"]
+
+    # fetch organizer data
+    organizer_data = db.collection("organizer").document(organizer_uid).get().to_dict()
+    if organizer_data == None:
+        return "Failed: wrong organizer_uid"
+    amountGiven = organizer_data["amountGiven"]
+    organizer_zcoins = organizer_data["zcoins"]
+
+    # fetch match data
+    match_reference = db.collection(match_type).document(match_uid)
+    match_data = match_reference.get().to_dict()
+    if match_data == None:
+        return "Failed: No such match"
+    
+    # fetch prize pool
+    match_fees = match_data["fee"]
+    prize_pool = fees[match_fees]
+
+    # based on number of registered users and the match fees, decide the amount to be paid
+    registered_users = match_reference.collection("registeredUsers").get()
+    users = len(registered_users)
+    amount_to_pay_winner = prize_pool * users * 60 // 100
+    amount_to_pay_organizer = prize_pool * 30 // 100
+
+    # update user data and user history
+    user_data.reference.collection("history").document(match_uid).update({"won": 1, "amount": amount_to_pay_winner})
+    user_data.reference.update({"zcoins": zcoins + amount_to_pay_winner, "transactions": firestore.ArrayUnion([{"type": "rewarded", "amount": amount_to_pay_winner, "timestamp": datetime.now()}])})
+    
+    # update contest history
+    db.collection(match_type).document(match_uid).update({"winnerhash": winner_uid})
+
+    # update organizer amount
+    db.collection("organizer").document(organizer_uid).update({"amountGiven": amountGiven + amount_to_pay_winner, "zcoins": amount_to_pay_organizer + organizer_zcoins})
+
+    # update match to finished
+    match_reference.update({"started": 2})
+
+    return "Success"
 
 app.run(debug=False)

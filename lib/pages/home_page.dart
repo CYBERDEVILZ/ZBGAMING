@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:zbgaming/model/usermodel.dart';
 import 'package:zbgaming/pages/contest_details.dart';
 import 'package:zbgaming/pages/history.dart';
+import 'package:zbgaming/pages/leaderboards.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
 import 'package:zbgaming/pages/user_account.dart';
 import 'package:zbgaming/services/local_notification_service.dart';
@@ -35,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   }; // mapping for bottom nav bar
 
   bool isLogged = false;
+  int? coin;
 
   void registerNotification() async {
     // initialize firebase app
@@ -89,6 +91,7 @@ class _HomePageState extends State<HomePage> {
           context.read<UserModel>().setusername(data["username"]);
           context.read<UserModel>().setemail(data["email"]);
           context.read<UserModel>().setimageurl(data["imageurl"]);
+          coin = data["zcoins"];
           isLogged = true;
 
           if (mounted) setState(() {});
@@ -108,7 +111,20 @@ class _HomePageState extends State<HomePage> {
         child: WillPopScope(
           onWillPop: () => showExitPopup(context),
           child: Scaffold(
-            appBar: index == 0 ? AppBar(title: const Text("Games"), elevation: 0, centerTitle: true) : null,
+            appBar: index == 0
+                ? AppBar(
+                    title: const Text("Games"),
+                    elevation: 0,
+                    centerTitle: true,
+                    actions: [
+                      IconButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: ((context) => const Leaderboard())));
+                          },
+                          icon: const Icon(Icons.leaderboard))
+                    ],
+                  )
+                : null,
             body: showBody[index], // contains list of games
             drawer: isLogged ? const AfterLoginDrawer() : const BeforeLoginDrawer(),
             bottomNavigationBar: !isLogged

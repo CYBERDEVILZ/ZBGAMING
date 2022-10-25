@@ -249,10 +249,7 @@ class _FreeFireTournamentsState extends State<FreeFireTournaments> {
                 }
                 if (snapshot.data!.docs.isEmpty) {
                   return SliverToBoxAdapter(
-                      child: Image.asset(
-                    "assets/images/no_data.png",
-                    fit: BoxFit.fitHeight,
-                  ));
+                      child: Image.asset("assets/images/no_data.png", fit: BoxFit.fitHeight, height: 300));
                 }
                 return SliverList(
                     delegate: SliverChildListDelegate(snapshot.data!.docs

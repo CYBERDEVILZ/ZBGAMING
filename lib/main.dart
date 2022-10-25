@@ -12,11 +12,13 @@ import 'package:zbgaming/pages/pubg.dart';
 import 'package:zbgaming/pages/registered_matches.dart';
 import 'package:zbgaming/pages/signup.dart';
 import 'package:zbgaming/pages/user_account.dart';
+import 'package:zbgaming/pages/verifer_login.dart';
 import 'package:zbgaming/pages/valorant.dart';
 import 'package:zbgaming/services/local_notification_service.dart';
 import 'package:zbgaming/utils/routes.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:zbgaming/widgets/zcoin.dart';
 
 import 'model/organizermodel.dart';
 import 'model/usermodel.dart';
@@ -56,6 +58,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: const HomePage(),
+      // home: const UserCoins(),
       debugShowCheckedModeBanner: false,
       title: "ZB-Gaming",
       routes: {

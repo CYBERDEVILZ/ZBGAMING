@@ -75,7 +75,7 @@ class _OrganizerLoginState extends State<OrganizerLogin> {
           Navigator.pushAndRemoveUntil(
               context, MaterialPageRoute(builder: (context) => const Organizer()), (route) => false);
         }).catchError((onError) {
-          Fluttertoast.showToast(msg: "Failed", backgroundColor: Colors.blue);
+          Fluttertoast.showToast(msg: onError.toString(), backgroundColor: Colors.blue);
         });
       }
       isLoading = false;

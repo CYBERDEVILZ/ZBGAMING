@@ -106,24 +106,11 @@ class _MatchStartState extends State<MatchStart> {
 
   // stop match logic
   Future<void> stopTheMatch() async {
-    String? igid = await Navigator.push(
+    await Navigator.push(
         context,
         MaterialPageRoute(
             builder: ((context) => SelectWinner(matchType: widget.matchType, matchUid: widget.matchuid))));
-    if (igid != null) {
-      await get(Uri.parse(
-              ApiEndpoints.baseUrl + ApiEndpoints.stopMatch + "?muid=${widget.matchuid}&mType=${widget.matchType}"))
-          .then((value) {
-        if (value.statusCode != 200) {
-          Fluttertoast.showToast(msg: "Some error occurred", backgroundColor: Colors.blue);
-        } else if (value.body == "Success") {
-          Fluttertoast.showToast(msg: "Success", backgroundColor: Colors.blue);
-          context.read<StartMatchIndicatorNotifier>().setStartMatchIndicator(2);
-        } else {
-          Fluttertoast.showToast(msg: value.body, backgroundColor: Colors.blue);
-        }
-      });
-    }
+    setState(() {});
   }
 
   @override
@@ -245,8 +232,8 @@ class _MatchStartState extends State<MatchStart> {
                                                       ApiEndpoints.cancel +
                                                       "?matchType=${widget.matchType}&muid=${widget.matchuid}"))
                                                   .then((value) {
-                                                if (value.body == "Failed") {
-                                                  Fluttertoast.showToast(msg: "Failed");
+                                                if (value.body != "Success") {
+                                                  Fluttertoast.showToast(msg: value.body);
                                                 }
                                               });
                                               setState(() {

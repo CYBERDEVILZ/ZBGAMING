@@ -56,6 +56,7 @@ class _SearchPlayerState extends State<SearchPlayer> {
                           ),
                           onPressed: () {
                             isClicked = !isClicked;
+                            usernameController.text = "";
                             setState(() {});
                           },
                         )),
@@ -72,7 +73,7 @@ class _SearchPlayerState extends State<SearchPlayer> {
                           .then((value) async {
                         if (value.docs.isEmpty) {
                           Fluttertoast.showToast(
-                              msg: "No such user",
+                              msg: "No such user: ${usernameController.text}",
                               backgroundColor: colorCodeForHeading[widget.levelAttrib],
                               textColor: colorCodeForCanvas[widget.levelAttrib]);
                           isButtonLoading = false;
