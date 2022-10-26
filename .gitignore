@@ -121,4 +121,4 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 
 # custom
-backend/
+ZBgamingAPI/
