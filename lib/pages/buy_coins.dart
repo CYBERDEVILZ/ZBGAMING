@@ -213,6 +213,7 @@ class BuyCoinsContainer extends StatefulWidget {
 class _BuyCoinsContainerState extends State<BuyCoinsContainer> {
   bool isLoading = false;
   final Razorpay _razorpay = Razorpay();
+  final String razorpayKeyId = "rzp_live_UtqSqZ9zVwQBsl";
 
   // FUNCTIONS
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
@@ -305,7 +306,7 @@ class _BuyCoinsContainerState extends State<BuyCoinsContainer> {
                               msg: "Creating order...", textColor: Colors.white, backgroundColor: Colors.blue);
                           var result = jsonDecode(value.body);
                           var options = {
-                            'key': 'rzp_test_rKi9TFV4sMHvz2',
+                            'key': razorpayKeyId,
                             'amount': result["amount"],
                             'name': 'ZBGaming',
                             'order_id': result['id'],
