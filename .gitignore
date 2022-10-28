@@ -121,3 +121,4 @@ app.*.symbols
 
 # custom
 ZBgamingAPI/
+start_server.bat
