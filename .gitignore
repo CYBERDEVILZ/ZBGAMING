@@ -10,7 +10,6 @@
 .history
 .svn/
 *.env
-**/lib/utils/apistring.dart
 **/lib/utils/portforwarding.py
 
 # IntelliJ related
@@ -122,3 +121,4 @@ app.*.symbols
 
 # custom
 ZBgamingAPI/
+start_server.bat
