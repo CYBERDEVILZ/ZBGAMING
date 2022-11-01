@@ -1,6 +1,6 @@
 class ApiEndpoints {
-  static String baseUrl = "https://443f-117-207-156-72.in.ngrok.io";
-  static String baseLiveUrl = "https://zbgaming-api-f77x3y5ota-uc.a.run.app/";
+  static String baseTestUrl = "https://443f-117-207-156-72.in.ngrok.io";
+  static String baseUrl = "https://zbgaming-api-f77x3y5ota-uc.a.run.app/";
   static String verifierSignup = "/api/verifier/thiswillmakefindingthisapidifficult/signup";
   static String userSignup = "/api/user_signup";
   static String organizerSignup = "/api/organizer_signup";
