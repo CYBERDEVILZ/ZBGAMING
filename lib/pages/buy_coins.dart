@@ -153,11 +153,6 @@ class _BuyCoinsState extends State<BuyCoins> {
               ),
             )
           ],
-          //  Column(
-          //     mainAxisAlignment: MainAxisAlignment.start,
-          //     children: [
-          //     ],
-          //   ),
         )),
       ),
     );
@@ -213,7 +208,7 @@ class BuyCoinsContainer extends StatefulWidget {
 class _BuyCoinsContainerState extends State<BuyCoinsContainer> {
   bool isLoading = false;
   final Razorpay _razorpay = Razorpay();
-  final String razorpayKeyId = "rzp_live_UtqSqZ9zVwQBsl";
+  final String razorpayKeyId = "rzp_test_3D8ESt5kpFSOlZ";
 
   // FUNCTIONS
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {

@@ -464,6 +464,13 @@ class _ShowUserAccountState extends State<ShowUserAccount> {
                   style: TextStyle(color: colorCodeForHeading[levelAttrib]),
                 );
               }
+              if (snapshot.data!.docs.isEmpty) {
+                return Text(
+                  "No data to show",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorCodeForHeading[levelAttrib]),
+                );
+              }
               return Column(
                 children: snapshot.data!.docs
                     .map((e) => GestureDetector(
