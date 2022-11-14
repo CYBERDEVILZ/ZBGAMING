@@ -422,7 +422,7 @@ class _TournamentBuilderState extends State<TournamentBuilder> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "28 December, 2022",
+                                      "${widget.date.day} ${widget.date.month == 1 ? 'January' : widget.date.month == 2 ? 'February' : widget.date.month == 3 ? 'March' : widget.date.month == 4 ? 'April' : widget.date.month == 5 ? 'May' : widget.date.month == 6 ? 'June' : widget.date.month == 7 ? 'July' : widget.date.month == 8 ? 'August' : widget.date.month == 9 ? 'September' : widget.date.month == 10 ? 'October' : widget.date.month == 11 ? 'November' : widget.date.month == 12 ? 'December' : null}, ${widget.date.year}",
                                       textScaleFactor: 1.1,
                                       style:
                                           TextStyle(fontWeight: FontWeight.bold, color: Colors.black.withOpacity(0.5)),
